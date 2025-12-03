@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects 管理 - AI-Tracks Studio Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">AI-Tracks Studio</div>
+                <div class="sidebar-subtitle">後台管理系統</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="/backend/projects" class="nav-link active">
+                            🎮 Projects 管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/backend/news" class="nav-link">
+                            📰 News 管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/backend/about" class="nav-link">
+                            ℹ️ About 管理
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1 class="header-title">Projects 管理</h1>
+                <div class="header-actions">
+                    <span class="user-info" id="userInfo">載入中...</span>
+                    <button onclick="logout()" class="logout-btn">登出</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <select id="categoryFilter" class="form-control" style="width: 200px; display: inline-block;">
+                            <option value="">所有類別</option>
+                            <option value="GAME">遊戲 (GAME)</option>
+                            <option value="WEBSITE">網站 (WEBSITE)</option>
+                        </select>
+                    </div>
+                    <button onclick="showAddModal()" class="btn btn-primary">
+                        ➕ 新增 Project
+                    </button>
+                </div>
+
+                <div id="projectsContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>載入中...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Modal (Simple version) -->
+    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 32px; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <h2 id="modalTitle" style="margin-bottom: 24px;">新增 Project</h2>
+            <form id="projectForm">
+                <div class="form-row">
+                    <label class="form-label">ID</label>
+                    <input type="text" id="projectId" class="form-control" required />
+                </div>
+                <div class="form-row">
+                    <label class="form-label">標題</label>
+                    <input type="text" id="projectTitle" class="form-control" required />
+                </div>
+                <div class="form-row">
+                    <label class="form-label">描述</label>
+                    <textarea id="projectDescription" class="form-control"></textarea>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">圖片 URL</label>
+                    <input type="url" id="projectThumbnail" class="form-control" />
+                </div>
+                <div class="form-row">
+                    <label class="form-label">類別</label>
+                    <select id="projectCategory" class="form-control" required>
+                        <option value="GAME">遊戲 (GAME)</option>
+                        <option value="WEBSITE">網站 (WEBSITE)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">日期</label>
+                    <input type="date" id="projectDate" class="form-control" />
+                </div>
+                <div class="form-row">
+                    <label class="form-label">標籤 (用逗號分隔)</label>
+                    <input type="text" id="projectTags" class="form-control" placeholder="action,adventure,3D" />
+                </div>
+                <div class="form-row">
+                    <label class="form-label">連結</label>
+                    <input type="url" id="projectLink" class="form-control" />
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" onclick="closeModal()" class="btn" style="background: #e2e8f0;">取消</button>
+                    <button type="submit" class="btn btn-success">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+    <script>
+        let currentUser = null;
+        let editingProjectId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = await checkAuth();
+            if (currentUser) {
+                document.getElementById('userInfo').textContent = currentUser.email;
+                await loadProjects();
+            }
+            
+            // Category filter
+            document.getElementById('categoryFilter').addEventListener('change', loadProjects);
+        });
+
+        // Load projects
+        async function loadProjects() {
+            showLoading('projectsContainer');
+            
+            try {
+                const category = document.getElementById('categoryFilter').value;
+                const url = category 
+                    ? `/api/admin/projects?category=${category}`
+                    : '/api/admin/projects';
+                
+                const data = await apiRequest(url);
+                renderProjects(data.items || []);
+            } catch (error) {
+                showError('projectsContainer', error.message);
+            }
+        }
+
+        // Render projects
+        function renderProjects(projects) {
+            const container = document.getElementById('projectsContainer');
+            
+            if (projects.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 40px; color: #718096;">暫無資料</p>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>標題</th>
+                                <th>類別</th>
+                                <th>日期</th>
+                                <th>標籤</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${projects.map(project => `
+                                <tr>
+                                    <td><code>${project.id}</code></td>
+                                    <td><strong>${project.title}</strong></td>
+                                    <td><span class="tag tag-${project.category.toLowerCase()}">${project.category}</span></td>
+                                    <td>${formatDate(project.date)}</td>
+                                    <td>${(project.tags || []).join(', ')}</td>
+                                    <td>
+                                        <button onclick="editProject('${project.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">編輯</button>
+                                        <button onclick="deleteProject('${project.id}')" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">刪除</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Show add modal
+        function showAddModal() {
+            editingProjectId = null;
+            document.getElementById('modalTitle').textContent = '新增 Project';
+            document.getElementById('projectForm').reset();
+            document.getElementById('projectId').disabled = false;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        // Edit project
+        async function editProject(id) {
+            try {
+                const project = await apiRequest(`/api/admin/projects/${id}`);
+                editingProjectId = id;
+                
+                document.getElementById('modalTitle').textContent = '編輯 Project';
+                document.getElementById('projectId').value = project.id;
+                document.getElementById('projectId').disabled = true;
+                document.getElementById('projectTitle').value = project.title;
+                document.getElementById('projectDescription').value = project.description || '';
+                document.getElementById('projectThumbnail').value = project.thumbnail_url || '';
+                document.getElementById('projectCategory').value = project.category;
+                document.getElementById('projectDate').value = project.date || '';
+                document.getElementById('projectTags').value = (project.tags || []).join(',');
+                document.getElementById('projectLink').value = project.link || '';
+                
+                document.getElementById('modal').style.display = 'flex';
+            } catch (error) {
+                alert('載入失敗: ' + error.message);
+            }
+        }
+
+        // Delete project
+        async function deleteProject(id) {
+            if (!confirm(`確定要刪除 Project「${id}」嗎？`)) return;
+            
+            try {
+                await apiRequest(`/api/admin/projects/${id}`, { method: 'DELETE' });
+                alert('刪除成功！');
+                await loadProjects();
+            } catch (error) {
+                alert('刪除失敗: ' + error.message);
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            editingProjectId = null;
+        }
+
+        // Form submit
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                id: document.getElementById('projectId').value,
+                title: document.getElementById('projectTitle').value,
+                description: document.getElementById('projectDescription').value || null,
+                thumbnail_url: document.getElementById('projectThumbnail').value || null,
+                category: document.getElementById('projectCategory').value,
+                date: document.getElementById('projectDate').value || null,
+                tags: document.getElementById('projectTags').value 
+                    ? document.getElementById('projectTags').value.split(',').map(t => t.trim()).filter(t => t)
+                    : [],
+                link: document.getElementById('projectLink').value || null,
+            };
+            
+            try {
+                if (editingProjectId) {
+                    // Update
+                    await apiRequest(`/api/admin/projects/${editingProjectId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(formData)
+                    });
+                    alert('更新成功！');
+                } else {
+                    // Create
+                    await apiRequest('/api/admin/projects', {
+                        method: 'POST',
+                        body: JSON.stringify(formData)
+                    });
+                    alert('新增成功！');
+                }
+                
+                closeModal();
+                await loadProjects();
+            } catch (error) {
+                alert('儲存失敗: ' + error.message);
+            }
+        });
+
+        // Close modal on background click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
+

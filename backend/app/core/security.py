@@ -3,11 +3,11 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+try:
+    import bcrypt as _bcrypt
+except ImportError:
+    _bcrypt = None
 from app.config import settings
-
-# Password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -21,7 +21,17 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True if password matches, False otherwise
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    if _bcrypt is None:
+        raise ImportError("bcrypt is not installed")
+    
+    try:
+        return _bcrypt.checkpw(
+            plain_password.encode('utf-8'),
+            hashed_password.encode('utf-8') if isinstance(hashed_password, str) else hashed_password
+        )
+    except Exception as e:
+        print(f"Password verification error: {e}")
+        return False
 
 
 def get_password_hash(password: str) -> str:
@@ -34,7 +44,17 @@ def get_password_hash(password: str) -> str:
     Returns:
         Hashed password
     """
-    return pwd_context.hash(password)
+    if _bcrypt is None:
+        raise ImportError("bcrypt is not installed")
+    
+    # Ensure password is not too long (bcrypt limit is 72 bytes)
+    password_bytes = password.encode('utf-8')
+    if len(password_bytes) > 72:
+        password_bytes = password_bytes[:72]
+    
+    salt = _bcrypt.gensalt()
+    hashed = _bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode('utf-8')
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
