@@ -1,5 +1,104 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-03 22:57:03 TST
+
+### Image Upload with WebP Conversion 圖片上傳與 WebP 轉換
+
+#### New Dependency 新增依賴
+- **Pillow 12.0.0** - Python imaging library for image processing
+
+#### Image Upload API 圖片上傳 API
+**Created `app/routers/admin/upload.py`:**
+- `POST /api/admin/upload/image` - Upload image and convert to WebP
+- `DELETE /api/admin/upload/image` - Delete uploaded image
+
+**Features 功能：**
+- ✅ Accepts: JPEG, PNG, GIF, WebP
+- ✅ Auto-convert to WebP format
+- ✅ Quality: 85% (optimal balance)
+- ✅ Compression method: 6 (best)
+- ✅ Transparency handling (convert to white background)
+- ✅ File size limit: 10MB
+- ✅ Unique filename: `{timestamp}.webp`
+- ✅ Saved to: `backend/app/static/uploads/`
+
+#### UI Improvements UI 改進
+**Projects add-edit:**
+- ✅ Image upload button next to URL input
+- ✅ Live preview after upload
+- ✅ Auto-fill URL after successful upload
+- ✅ Upload progress indicator
+- ✅ File size and format info display
+
+**News add-edit:**
+- ✅ Image upload functionality
+- ✅ Preview support
+- ✅ WebP conversion
+
+**Common Features:**
+- ✅ Drag-and-drop support (via file input)
+- ✅ Image preview with max-width/height
+- ✅ Success/error messages
+- ✅ File info display (name, size, format)
+
+#### ID Auto-Generation ID 自動生成
+**Removed manual ID input:**
+- ✅ Projects - Auto-generate: `{category}-{timestamp}`
+  - Example: `game-123456`, `website-789012`
+- ✅ News - Auto-generate: `news-{timestamp}`
+  - Example: `news-12345678`
+
+**Benefits:**
+- ✅ Simpler user experience
+- ✅ Guaranteed unique IDs
+- ✅ No ID conflicts
+- ✅ Faster data entry
+
+#### Upload Workflow 上傳流程
+1. User clicks "📤 上傳圖片" button
+2. Selects image file (JPEG/PNG/GIF)
+3. File uploads to `/api/admin/upload/image`
+4. Server converts to WebP (Pillow)
+5. Saves to `/static/uploads/{timestamp}.webp`
+6. Returns URL: `/static/uploads/{filename}.webp`
+7. Auto-fills URL input field
+8. Shows preview image
+9. Displays file info (size, format)
+
+#### WebP Conversion Details 轉換細節
+**Quality Settings:**
+- Quality: 85% (balanced)
+- Method: 6 (best compression)
+- Optimize: true
+
+**Transparency Handling:**
+- RGBA/LA/P modes → Convert to RGB with white background
+- Other modes → Convert to RGB
+- Ensures compatibility
+
+**File Naming:**
+- Format: `YYYYMMDD_HHMMSS_microseconds.webp`
+- Example: `20251203_225703_123456.webp`
+- Guaranteed uniqueness
+
+#### Storage Structure 儲存結構
+```
+backend/app/static/
+├── uploads/              # Uploaded images
+│   ├── 20251203_*.webp
+│   └── ...
+├── css/
+├── js/
+└── admin/
+```
+
+**Public Access:**
+- Images accessible at: `http://localhost:8000/static/uploads/{filename}.webp`
+- No authentication required for viewing
+- Suitable for frontend display
+
+---
+
 ## 2025-12-03 22:50:46 TST
 
 ### Refactored to Repository Pattern & Improved UI 重構為 Repository 模式並改進 UI

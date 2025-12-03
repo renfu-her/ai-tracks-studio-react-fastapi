@@ -73,8 +73,21 @@
                     </div>
 
                     <div class="form-row">
-                        <label class="form-label">縮圖 URL</label>
-                        <input type="url" id="projectThumbnail" class="form-control" placeholder="https://example.com/image.jpg" />
+                        <label class="form-label">縮圖</label>
+                        <div style="display: flex; gap: 12px; align-items: flex-start;">
+                            <input type="url" id="projectThumbnail" class="form-control" placeholder="https://example.com/image.jpg 或上傳圖片" style="flex: 1;" />
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label for="projectImageFile" class="btn btn-primary" style="margin: 0; cursor: pointer;">
+                                    📤 上傳圖片
+                                    <input type="file" id="projectImageFile" accept="image/*" style="display: none;" onchange="uploadProjectImage(event)" />
+                                </label>
+                                <small style="color: #718096; font-size: 11px;">自動轉為 WebP</small>
+                            </div>
+                        </div>
+                        <div id="projectImagePreview" style="margin-top: 12px; display: none;">
+                            <img id="projectPreviewImg" style="max-width: 300px; max-height: 200px; border-radius: 8px; border: 2px solid #e2e8f0;" />
+                            <div style="margin-top: 8px; color: #718096; font-size: 12px;" id="projectImageInfo"></div>
+                        </div>
                     </div>
 
                     <div class="form-row">
@@ -121,6 +134,56 @@
         let isEditMode = false;
         let editingId = null;
 
+        // Image upload function
+        async function uploadProjectImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Show loading
+            const preview = document.getElementById('projectImagePreview');
+            const previewImg = document.getElementById('projectPreviewImg');
+            const infoDiv = document.getElementById('projectImageInfo');
+            
+            preview.style.display = 'block';
+            infoDiv.textContent = '上傳中...';
+            previewImg.src = '';
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/api/admin/upload/image', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '上傳失敗');
+                }
+                
+                const result = await response.json();
+                
+                // Update URL input
+                document.getElementById('projectThumbnail').value = result.url;
+                
+                // Show preview
+                previewImg.src = result.url;
+                infoDiv.innerHTML = `
+                    ✅ 上傳成功！<br>
+                    檔案：${result.filename}<br>
+                    大小：${(result.size / 1024).toFixed(2)} KB<br>
+                    格式：WebP
+                `;
+                infoDiv.style.color = '#48bb78';
+                
+            } catch (error) {
+                infoDiv.textContent = '❌ ' + error.message;
+                infoDiv.style.color = '#e53e3e';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             currentUser = await checkAuth();
             if (currentUser) {
@@ -157,6 +220,15 @@
                 document.getElementById('projectDate').value = project.date || '';
                 document.getElementById('projectTags').value = (project.tags || []).join(', ');
                 document.getElementById('projectLink').value = project.link || '';
+                
+                // Show image preview if exists
+                if (project.thumbnail_url) {
+                    const preview = document.getElementById('projectImagePreview');
+                    const previewImg = document.getElementById('projectPreviewImg');
+                    preview.style.display = 'block';
+                    previewImg.src = project.thumbnail_url;
+                    document.getElementById('projectImageInfo').textContent = '當前圖片';
+                }
             } catch (error) {
                 alert('載入 Project 失敗: ' + error.message);
                 window.location.href = '/backend/projects';
