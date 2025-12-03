@@ -15,9 +15,32 @@
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li class="nav-item"><a href="/backend/projects" class="nav-link">🎮 Projects 管理</a></li>
-                    <li class="nav-item"><a href="/backend/news" class="nav-link active">📰 News 管理</a></li>
-                    <li class="nav-item"><a href="/backend/about" class="nav-link">ℹ️ About 管理</a></li>
+                    <li class="nav-section expanded">
+                        <div class="nav-section-title">
+                            <span>📦 內容管理</span>
+                            <span class="nav-section-icon">▼</span>
+                        </div>
+                        <ul class="nav-section-items">
+                            <li class="nav-item">
+                                <a href="/backend/projects" class="nav-link">
+                                    <span class="nav-icon">🎮</span>
+                                    <span>Projects 管理</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/backend/news" class="nav-link active">
+                                    <span class="nav-icon">📰</span>
+                                    <span>News 管理</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/backend/about" class="nav-link">
+                                    <span class="nav-icon">ℹ️</span>
+                                    <span>About 管理</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
         </aside>
@@ -35,10 +58,8 @@
                 <h2 id="formTitle" style="font-size: 24px; margin-bottom: 32px;">新增 News</h2>
                 
                 <form id="newsForm" style="max-width: 800px;">
-                    <div class="form-row">
-                        <label class="form-label">ID <span style="color: #e53e3e;">*</span></label>
-                        <input type="text" id="newsId" class="form-control" required />
-                    </div>
+                    <input type="hidden" id="newsId" />
+                    
                     <div class="form-row">
                         <label class="form-label">標題 <span style="color: #e53e3e;">*</span></label>
                         <input type="text" id="newsTitle" class="form-control" required />
@@ -90,7 +111,6 @@
                     document.getElementById('pageTitle').textContent = '編輯 News';
                     document.getElementById('headerTitle').textContent = '編輯 News';
                     document.getElementById('formTitle').textContent = '編輯 News';
-                    document.getElementById('newsId').disabled = true;
                     await loadNews(editingId);
                 }
             }
@@ -115,9 +135,22 @@
         document.getElementById('newsForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const title = document.getElementById('newsTitle').value.trim();
+            if (!title) {
+                alert('請填寫標題');
+                return;
+            }
+            
+            // Auto-generate ID if not in edit mode
+            let newsId = document.getElementById('newsId').value;
+            if (!isEditMode) {
+                const timestamp = Date.now().toString().slice(-8);
+                newsId = `news-${timestamp}`;
+            }
+            
             const formData = {
-                id: document.getElementById('newsId').value.trim(),
-                title: document.getElementById('newsTitle').value.trim(),
+                id: newsId,
+                title: title,
                 excerpt: document.getElementById('newsExcerpt').value.trim() || null,
                 content: document.getElementById('newsContent').value.trim() || null,
                 image_url: document.getElementById('newsImage').value.trim() || null,

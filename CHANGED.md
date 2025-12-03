@@ -1,5 +1,53 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-03 22:50:46 TST
+
+### Refactored to Repository Pattern & Improved UI 重構為 Repository 模式並改進 UI
+
+#### Repository Pattern 倉儲模式
+**重構 Admin API 使用 Repository：**
+- ✅ `admin/projects_admin.py` - 使用 `ProjectRepository`
+- ✅ `admin/news_admin.py` - 使用 `NewsRepository`
+- ✅ `admin/about_admin.py` - 使用 `AboutUsRepository`
+
+**優點：**
+- ✅ Clean Architecture - 分離關注點
+- ✅ DRY Principle - 消除重複代碼
+- ✅ 易於測試 - Repository 可獨立測試
+- ✅ 一致性 - Public 和 Admin API 使用相同 Repository
+
+#### UI Improvements UI 改進
+參考 shopping-react-flask 精確設計：
+
+**側邊欄選單改進：**
+- ✅ 分組結構 - "內容管理" 群組
+- ✅ 可展開/摺疊 - 支持多層選單
+- ✅ 圖標對齊 - 統一的 icon 樣式
+- ✅ 高亮效果 - 當前頁面左側藍色邊條
+- ✅ 深藍色背景 (#1e3a5f) - 專業風格
+
+**按鈕樣式改進：**
+- ✅ 編輯按鈕 - 藍色文字連結樣式
+- ✅ 刪除按鈕 - 紅色文字，hover 時淺紅背景
+- ✅ 新增按鈕 - 藍色實心按鈕 (#4299e1)
+- ✅ 更簡潔的設計 - 符合現代 UI 標準
+
+**標籤 (Tags) 樣式：**
+- ✅ GAME - 淺綠色背景
+- ✅ WEBSITE - 淺藍色背景
+- ✅ ADMIN - 淺紅色背景
+- ✅ USER - 淺粉色背景
+- ✅ ACTIVE - 綠色背景
+- ✅ INACTIVE - 紅色背景
+
+**CSS 更新：**
+- 更新 `static/css/admin.css` 匹配 shopping-react-flask 風格
+- 側邊欄分組樣式
+- 按鈕 hover 效果
+- 表格樣式細節
+
+---
+
 ## 2025-12-03 22:16:00 TST
 
 ### Admin UI - HTML Management Interface 後台管理界面

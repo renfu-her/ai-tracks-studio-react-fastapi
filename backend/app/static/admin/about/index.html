@@ -15,9 +15,32 @@
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li class="nav-item"><a href="/backend/projects" class="nav-link">🎮 Projects 管理</a></li>
-                    <li class="nav-item"><a href="/backend/news" class="nav-link">📰 News 管理</a></li>
-                    <li class="nav-item"><a href="/backend/about" class="nav-link active">ℹ️ About 管理</a></li>
+                    <li class="nav-section expanded">
+                        <div class="nav-section-title">
+                            <span>📦 內容管理</span>
+                            <span class="nav-section-icon">▼</span>
+                        </div>
+                        <ul class="nav-section-items">
+                            <li class="nav-item">
+                                <a href="/backend/projects" class="nav-link">
+                                    <span class="nav-icon">🎮</span>
+                                    <span>Projects 管理</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/backend/news" class="nav-link">
+                                    <span class="nav-icon">📰</span>
+                                    <span>News 管理</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/backend/about" class="nav-link active">
+                                    <span class="nav-icon">ℹ️</span>
+                                    <span>About 管理</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
         </aside>
@@ -82,8 +105,8 @@
                                 <td>${a.contact_email || '-'}</td>
                                 <td>${formatDateTime(a.updated_at)}</td>
                                 <td>
-                                    <a href="/backend/about/edit?id=${a.id}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">編輯</a>
-                                    <button onclick="deleteAbout(${a.id})" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">刪除</button>
+                                    <a href="/backend/about/edit?id=${a.id}" class="btn-link">編輯</a>
+                                    <button onclick="deleteAbout(${a.id})" class="btn-danger">刪除</button>
                                 </td>
                             </tr>
                         `).join('')}

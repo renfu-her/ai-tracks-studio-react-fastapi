@@ -16,20 +16,31 @@
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li class="nav-item">
-                        <a href="/backend/projects" class="nav-link active">
-                            🎮 Projects 管理
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/backend/news" class="nav-link">
-                            📰 News 管理
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/backend/about" class="nav-link">
-                            ℹ️ About 管理
-                        </a>
+                    <li class="nav-section expanded">
+                        <div class="nav-section-title">
+                            <span>📦 內容管理</span>
+                            <span class="nav-section-icon">▼</span>
+                        </div>
+                        <ul class="nav-section-items">
+                            <li class="nav-item">
+                                <a href="/backend/projects" class="nav-link active">
+                                    <span class="nav-icon">🎮</span>
+                                    <span>Projects 管理</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/backend/news" class="nav-link">
+                                    <span class="nav-icon">📰</span>
+                                    <span>News 管理</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/backend/about" class="nav-link">
+                                    <span class="nav-icon">ℹ️</span>
+                                    <span>About 管理</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </nav>
@@ -49,12 +60,8 @@
                 <h2 id="formTitle" style="font-size: 24px; margin-bottom: 32px; color: #2d3748;">新增 Project</h2>
                 
                 <form id="projectForm" style="max-width: 800px;">
-                    <div class="form-row">
-                        <label class="form-label">ID <span style="color: #e53e3e;">*</span></label>
-                        <input type="text" id="projectId" class="form-control" required />
-                        <small style="color: #718096;">唯一識別碼，例如：game-1, website-1</small>
-                    </div>
-
+                    <input type="hidden" id="projectId" />
+                    
                     <div class="form-row">
                         <label class="form-label">標題 <span style="color: #e53e3e;">*</span></label>
                         <input type="text" id="projectTitle" class="form-control" required />
@@ -128,12 +135,12 @@
                     document.getElementById('pageTitle').textContent = '編輯 Project - AI-Tracks Studio Admin';
                     document.getElementById('headerTitle').textContent = '編輯 Project';
                     document.getElementById('formTitle').textContent = '編輯 Project';
-                    document.getElementById('projectId').disabled = true;
                     await loadProject(editingId);
                 } else {
                     document.getElementById('pageTitle').textContent = '新增 Project - AI-Tracks Studio Admin';
                     document.getElementById('headerTitle').textContent = '新增 Project';
                     document.getElementById('formTitle').textContent = '新增 Project';
+                    // Auto-generate ID based on title and category
                 }
             }
         });
@@ -159,23 +166,35 @@
         document.getElementById('projectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const title = document.getElementById('projectTitle').value.trim();
+            const category = document.getElementById('projectCategory').value;
+            
+            // Validation
+            if (!title || !category) {
+                alert('請填寫所有必填欄位（標題、類別）');
+                return;
+            }
+            
+            // Auto-generate ID if not in edit mode
+            let projectId = document.getElementById('projectId').value;
+            if (!isEditMode) {
+                // Generate ID from category and timestamp
+                const prefix = category.toLowerCase();
+                const timestamp = Date.now().toString().slice(-6);
+                projectId = `${prefix}-${timestamp}`;
+            }
+            
             const formData = {
-                id: document.getElementById('projectId').value.trim(),
-                title: document.getElementById('projectTitle').value.trim(),
+                id: projectId,
+                title: title,
                 description: document.getElementById('projectDescription').value.trim() || null,
                 thumbnail_url: document.getElementById('projectThumbnail').value.trim() || null,
-                category: document.getElementById('projectCategory').value,
+                category: category,
                 date: document.getElementById('projectDate').value || null,
                 tags: document.getElementById('projectTags').value
                     ? document.getElementById('projectTags').value.split(',').map(t => t.trim()).filter(t => t)
                     : [],
                 link: document.getElementById('projectLink').value.trim() || null,
-            };
-            
-            // Validation
-            if (!formData.id || !formData.title || !formData.category) {
-                alert('請填寫所有必填欄位（ID、標題、類別）');
-                return;
             }
             
             try {

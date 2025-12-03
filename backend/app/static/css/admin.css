@@ -20,57 +20,106 @@ body {
 /* Sidebar */
 .sidebar {
     width: 260px;
-    background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+    background: #1e3a5f;
     color: white;
-    padding: 24px;
+    padding: 0;
     position: fixed;
     height: 100vh;
     overflow-y: auto;
 }
 
 .sidebar-header {
-    margin-bottom: 32px;
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logo {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .sidebar-subtitle {
-    font-size: 13px;
+    font-size: 12px;
     color: #a0aec0;
 }
 
 .sidebar-nav {
     list-style: none;
+    padding: 12px 0;
+}
+
+.nav-section {
+    margin-bottom: 4px;
+}
+
+.nav-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-section-title:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-section-icon {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+
+.nav-section.expanded .nav-section-icon {
+    transform: rotate(180deg);
+}
+
+.nav-section-items {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.nav-section.expanded .nav-section-items {
+    max-height: 500px;
 }
 
 .nav-item {
-    margin-bottom: 8px;
+    margin: 0;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    color: #cbd5e0;
+    gap: 10px;
+    padding: 12px 20px 12px 40px;
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
 }
 
 .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     color: white;
 }
 
 .nav-link.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: rgba(102, 126, 234, 0.15);
     color: white;
+    border-left-color: #667eea;
+}
+
+.nav-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
 }
 
 /* Main Content */
@@ -136,24 +185,24 @@ body {
 .btn {
     padding: 10px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    text-decoration: none;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #4299e1;
     color: white;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    background: #3182ce;
 }
 
 .btn-success {
@@ -166,12 +215,27 @@ body {
 }
 
 .btn-danger {
-    background: #f56565;
-    color: white;
+    background: transparent;
+    color: #e53e3e;
+    padding: 4px 8px;
+    font-size: 13px;
 }
 
 .btn-danger:hover {
-    background: #e53e3e;
+    color: #c53030;
+    background: #fff5f5;
+}
+
+.btn-link {
+    background: transparent;
+    color: #4299e1;
+    padding: 4px 8px;
+    font-size: 13px;
+}
+
+.btn-link:hover {
+    color: #3182ce;
+    background: #ebf8ff;
 }
 
 /* Table */
@@ -215,17 +279,37 @@ tr:hover {
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .tag-game {
-    background: #bee3f8;
-    color: #2c5282;
+    background: #e6fffa;
+    color: #047857;
 }
 
 .tag-website {
-    background: #c6f6d5;
-    color: #22543d;
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.tag-admin {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.tag-user {
+    background: #fce7f3;
+    color: #831843;
+}
+
+.tag-active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.tag-inactive {
+    background: #fecaca;
+    color: #991b1b;
 }
 
 /* Loading */
