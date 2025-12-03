@@ -13,9 +13,19 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = ""
     DB_NAME: str = "studio"
     
+    # Security settings
+    SECRET_KEY: str = "your-secret-key-change-in-production-please"
+    SESSION_SECRET_KEY: str = "your-session-secret-key-change-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    
     # API settings
     API_PREFIX: str = "/api"
-    CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+    CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000", "http://localhost:8000"]
+    
+    # Frontend/Backend URLs
+    FRONTEND_URL: str = "http://localhost:5173"
+    BACKEND_URL: str = "http://localhost:8000"
     
     @property
     def database_url(self) -> str:

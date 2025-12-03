@@ -1,5 +1,144 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-03 22:01:56 TST
+
+### Complete Admin Backend System 完整後台管理系統
+
+參考 shopping-react-flask 項目，實現完整的後台管理系統。
+
+#### New Dependencies 新增依賴
+- `python-jose[cryptography]` - JWT token handling  
+- `passlib` + `bcrypt` - Password hashing
+- `python-multipart` - Form data handling
+- `itsdangerous` - Session management
+
+#### User Model & Authentication 用戶模型與認證
+**Created `app/models/user.py`:**
+- User model with roles (ADMIN, USER)
+- User status (ACTIVE, INACTIVE, SUSPENDED)
+- Password hash storage
+- Email unique constraint
+
+**Created `app/core/security.py`:**
+- Password hashing with bcrypt
+- JWT token creation/decoding
+- Secure authentication utilities
+
+#### Admin APIs 管理 API
+**Authentication APIs** (`app/routers/admin/`):
+- `POST /api/admin/login` - Admin login with session
+- `POST /api/admin/logout` - Clear session
+- `GET /api/admin/me` - Get current admin info
+
+**Projects Management APIs:**
+- `GET /api/admin/projects` - List all projects (admin only)
+- `GET /api/admin/projects/{id}` - Get project details
+- `POST /api/admin/projects` - Create new project
+- `PUT /api/admin/projects/{id}` - Update project
+- `DELETE /api/admin/projects/{id}` - Delete project
+
+**News Management APIs:**
+- `GET /api/admin/news` - List all news
+- `POST /api/admin/news` - Create news article
+- `PUT /api/admin/news/{id}` - Update news
+- `DELETE /api/admin/news/{id}` - Delete news
+
+**About Us Management APIs:**
+- `GET /api/admin/about` - List about entries
+- `POST /api/admin/about` - Create about entry
+- `PUT /api/admin/about/{id}` - Update about
+- `DELETE /api/admin/about/{id}` - Delete about
+
+#### Dependencies & Security 依賴與安全
+**Created `app/dependencies.py`:**
+- `get_db()` - Database session dependency
+- `get_current_user_from_session()` - Get user from session
+- `require_admin()` - Admin authentication guard
+
+**Session Management:**
+- Session-based authentication (24 hour expiry)
+- Secure cookie handling
+- CSRF protection with same_site=lax
+
+#### Admin Initialization 管理員初始化
+**Created `app/init_admin.py`:**
+- Auto-create admin user on startup
+- Default credentials:
+  - Email: `admin@admin.com`
+  - Password: `admin123` ⚠️ (change in production!)
+- Updates existing users to admin if needed
+
+#### Configuration Updates 配置更新
+**Updated `app/config.py`:**
+- Added `SECRET_KEY` for JWT signing
+- Added `SESSION_SECRET_KEY` for session encryption  
+- Added `ALGORITHM` (HS256) for JWT
+- Added `ACCESS_TOKEN_EXPIRE_MINUTES` (30)
+- Added `FRONTEND_URL` and `BACKEND_URL`
+
+#### Files Created 創建的文件
+**Models:**
+- `backend/app/models/user.py` - User model with roles
+
+**Core:**
+- `backend/app/core/security.py` - Security utilities
+- `backend/app/core/__init__.py` - Core exports
+
+**Admin APIs:**
+- `backend/app/routers/admin/__init__.py` - Admin router
+- `backend/app/routers/admin/login.py` - Login API
+- `backend/app/routers/admin/logout.py` - Logout API
+- `backend/app/routers/admin/me.py` - Current user API
+- `backend/app/routers/admin/projects_admin.py` - Projects CRUD
+- `backend/app/routers/admin/news_admin.py` - News CRUD
+- `backend/app/routers/admin/about_admin.py` - About CRUD
+
+**Dependencies:**
+- `backend/app/dependencies.py` - FastAPI dependencies
+
+**Initialization:**
+- `backend/app/init_admin.py` - Admin user setup
+
+**Documentation:**
+- `backend/ADMIN_SYSTEM.md` - Complete admin system guide
+
+#### Next Steps 下一步
+**To complete the admin system:**
+1. Update `backend/app/main.py`:
+   - Add `SessionMiddleware`
+   - Import and include `admin_router`
+   - Call `init_admin_user()` on startup
+   - (Optional) Add `/backend` routes for admin UI
+
+2. Create admin frontend:
+   - Login page at `/backend`
+   - Admin dashboard
+   - CRUD interfaces for Projects, News, About
+
+#### Security Notes 安全提示
+⚠️ **IMPORTANT - Change in Production:**
+- `SECRET_KEY` - JWT signing key
+- `SESSION_SECRET_KEY` - Session encryption key
+- Admin password (currently: admin123)
+
+Set via `.env` file:
+```env
+SECRET_KEY=your-super-secret-key-here
+SESSION_SECRET_KEY=your-session-key-here
+```
+
+#### Features Implemented 實現功能
+✅ **User Authentication** - Secure session-based auth  
+✅ **Role-Based Access** - Admin-only endpoints  
+✅ **Password Security** - Bcrypt hashing  
+✅ **JWT Tokens** - Token generation/validation  
+✅ **Auto Admin Init** - Default admin creation  
+✅ **Complete CRUD** - All content management  
+✅ **Type Safety** - Full Pydantic validation  
+✅ **Clean Architecture** - Separated concerns  
+
+---
+
 ## 2025-12-03 21:43:58 TST
 
 ### Frontend API Integration 前端 API 整合
