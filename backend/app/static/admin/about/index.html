@@ -15,21 +15,9 @@
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li class="nav-item">
-                        <a href="/backend/projects" class="nav-link">
-                            🎮 Projects 管理
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/backend/news" class="nav-link">
-                            📰 News 管理
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/backend/about" class="nav-link active">
-                            ℹ️ About 管理
-                        </a>
-                    </li>
+                    <li class="nav-item"><a href="/backend/projects" class="nav-link">🎮 Projects 管理</a></li>
+                    <li class="nav-item"><a href="/backend/news" class="nav-link">📰 News 管理</a></li>
+                    <li class="nav-item"><a href="/backend/about" class="nav-link active">ℹ️ About 管理</a></li>
                 </ul>
             </nav>
         </aside>
@@ -45,63 +33,21 @@
 
             <div class="card">
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
-                    <button onclick="showAddModal()" class="btn btn-primary">
-                        ➕ 新增 About
-                    </button>
+                    <a href="/backend/about/add" class="btn btn-primary">➕ 新增 About</a>
                 </div>
 
-                <div id="aboutContainer">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>載入中...</p>
-                    </div>
-                </div>
+                <div id="aboutContainer"><div class="loading"><div class="spinner"></div><p>載入中...</p></div></div>
+                <div id="pageInfo" style="margin-top: 20px; color: #718096; font-size: 14px;"></div>
             </div>
         </main>
     </div>
 
-    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 32px; border-radius: 16px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto;">
-            <h2 id="modalTitle">編輯 About Us</h2>
-            <form id="aboutForm">
-                <div class="form-row">
-                    <label class="form-label">標題</label>
-                    <input type="text" id="aboutTitle" class="form-control" />
-                </div>
-                <div class="form-row">
-                    <label class="form-label">副標題</label>
-                    <input type="text" id="aboutSubtitle" class="form-control" />
-                </div>
-                <div class="form-row">
-                    <label class="form-label">描述</label>
-                    <textarea id="aboutDescription" class="form-control" rows="4"></textarea>
-                </div>
-                <div class="form-row">
-                    <label class="form-label">聯絡 Email</label>
-                    <input type="email" id="aboutEmail" class="form-control" />
-                </div>
-                <div class="form-row">
-                    <label class="form-label">Values (JSON 格式)</label>
-                    <textarea id="aboutValues" class="form-control" rows="6" placeholder='[{"icon":"Star","title":"Creativity First","description":"We believe..."}]'></textarea>
-                    <small style="color: #718096;">輸入 JSON 陣列格式，每個項目包含 icon, title, description</small>
-                </div>
-                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                    <button type="button" onclick="closeModal()" class="btn" style="background: #e2e8f0;">取消</button>
-                    <button type="submit" class="btn btn-success">儲存</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script src="/static/js/admin.js"></script>
     <script>
-        let currentUser = null;
-        let editingAboutId = null;
-
         document.addEventListener('DOMContentLoaded', async () => {
-            currentUser = await checkAuth();
-            if (currentUser) {
-                document.getElementById('userInfo').textContent = currentUser.email;
+            const user = await checkAuth();
+            if (user) {
+                document.getElementById('userInfo').textContent = user.email;
                 await loadAbout();
             }
         });
@@ -110,7 +56,8 @@
             showLoading('aboutContainer');
             try {
                 const items = await apiRequest('/api/admin/about');
-                renderAbout(Array.isArray(items) ? items : [items]);
+                const list = Array.isArray(items) ? items : [items];
+                renderAbout(list);
             } catch (error) {
                 showError('aboutContainer', error.message);
             }
@@ -124,65 +71,30 @@
             }
             
             container.innerHTML = `
-                <div class="table-container">
-                    <table>
-                        <thead>
+                <table>
+                    <thead><tr><th>ID</th><th>標題</th><th>副標題</th><th>Email</th><th>更新時間</th><th style="width: 160px;">操作</th></tr></thead>
+                    <tbody>
+                        ${aboutList.map(a => `
                             <tr>
-                                <th>ID</th>
-                                <th>標題</th>
-                                <th>副標題</th>
-                                <th>Email</th>
-                                <th>更新時間</th>
-                                <th>操作</th>
+                                <td>${a.id}</td>
+                                <td><strong>${a.title || '-'}</strong></td>
+                                <td>${a.subtitle || '-'}</td>
+                                <td>${a.contact_email || '-'}</td>
+                                <td>${formatDateTime(a.updated_at)}</td>
+                                <td>
+                                    <a href="/backend/about/edit?id=${a.id}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">編輯</a>
+                                    <button onclick="deleteAbout(${a.id})" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">刪除</button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${aboutList.map(about => `
-                                <tr>
-                                    <td>${about.id}</td>
-                                    <td><strong>${about.title || '-'}</strong></td>
-                                    <td>${about.subtitle || '-'}</td>
-                                    <td>${about.contact_email || '-'}</td>
-                                    <td>${formatDateTime(about.updated_at)}</td>
-                                    <td>
-                                        <button onclick="editAbout(${about.id})" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">編輯</button>
-                                        <button onclick="deleteAbout(${about.id})" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">刪除</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
+                        `).join('')}
+                    </tbody>
+                </table>
             `;
-        }
-
-        function showAddModal() {
-            editingAboutId = null;
-            document.getElementById('modalTitle').textContent = '新增 About';
-            document.getElementById('aboutForm').reset();
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        async function editAbout(id) {
-            try {
-                const about = await apiRequest(`/api/about/${id}`);
-                editingAboutId = id;
-                
-                document.getElementById('modalTitle').textContent = '編輯 About Us';
-                document.getElementById('aboutTitle').value = about.title || '';
-                document.getElementById('aboutSubtitle').value = about.subtitle || '';
-                document.getElementById('aboutDescription').value = about.description || '';
-                document.getElementById('aboutEmail').value = about.contact_email || '';
-                document.getElementById('aboutValues').value = JSON.stringify(about.values || [], null, 2);
-                
-                document.getElementById('modal').style.display = 'flex';
-            } catch (error) {
-                alert('載入失敗: ' + error.message);
-            }
+            document.getElementById('pageInfo').textContent = `顯示 1-${aboutList.length} / 共 ${aboutList.length} 筆`;
         }
 
         async function deleteAbout(id) {
-            if (!confirm(`確定要刪除 About Us (ID: ${id}) 嗎？`)) return;
+            if (!confirm(`確定要刪除 About (ID: ${id}) 嗎？`)) return;
             try {
                 await apiRequest(`/api/admin/about/${id}`, { method: 'DELETE' });
                 alert('刪除成功！');
@@ -191,55 +103,6 @@
                 alert('刪除失敗: ' + error.message);
             }
         }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        document.getElementById('aboutForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            let values = [];
-            try {
-                const valuesText = document.getElementById('aboutValues').value.trim();
-                if (valuesText) {
-                    values = JSON.parse(valuesText);
-                }
-            } catch (error) {
-                alert('Values JSON 格式錯誤');
-                return;
-            }
-            
-            const formData = {
-                title: document.getElementById('aboutTitle').value || null,
-                subtitle: document.getElementById('aboutSubtitle').value || null,
-                description: document.getElementById('aboutDescription').value || null,
-                contact_email: document.getElementById('aboutEmail').value || null,
-                values: values
-            };
-            
-            try {
-                if (editingAboutId) {
-                    await apiRequest(`/api/admin/about/${editingAboutId}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(formData)
-                    });
-                    alert('更新成功！');
-                } else {
-                    await apiRequest('/api/admin/about', {
-                        method: 'POST',
-                        body: JSON.stringify(formData)
-                    });
-                    alert('新增成功！');
-                }
-                
-                closeModal();
-                await loadAbout();
-            } catch (error) {
-                alert('儲存失敗: ' + error.message);
-            }
-        });
     </script>
 </body>
 </html>
-

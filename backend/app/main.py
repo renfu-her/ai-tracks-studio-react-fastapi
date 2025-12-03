@@ -111,18 +111,54 @@ async def backend_login():
 
 @app.get("/backend/projects")
 async def backend_projects():
-    """Projects management page."""
+    """Projects management page - list."""
     return FileResponse(static_dir / "admin" / "projects" / "index.html")
+
+
+@app.get("/backend/projects/add")
+async def backend_projects_add():
+    """Projects management page - add."""
+    return FileResponse(static_dir / "admin" / "projects" / "add-edit.html")
+
+
+@app.get("/backend/projects/edit")
+async def backend_projects_edit():
+    """Projects management page - edit."""
+    return FileResponse(static_dir / "admin" / "projects" / "add-edit.html")
 
 
 @app.get("/backend/news")
 async def backend_news():
-    """News management page."""
+    """News management page - list."""
     return FileResponse(static_dir / "admin" / "news" / "index.html")
+
+
+@app.get("/backend/news/add")
+async def backend_news_add():
+    """News management page - add."""
+    return FileResponse(static_dir / "admin" / "news" / "add-edit.html")
+
+
+@app.get("/backend/news/edit")
+async def backend_news_edit():
+    """News management page - edit."""
+    return FileResponse(static_dir / "admin" / "news" / "add-edit.html")
 
 
 @app.get("/backend/about")
 async def backend_about():
-    """About Us management page."""
+    """About Us management page - list."""
     return FileResponse(static_dir / "admin" / "about" / "index.html")
+
+
+@app.get("/backend/about/add")
+async def backend_about_add():
+    """About Us management page - add."""
+    return FileResponse(static_dir / "admin" / "about" / "add-edit.html")
+
+
+@app.get("/backend/about/edit")
+async def backend_about_edit():
+    """About Us management page - edit."""
+    return FileResponse(static_dir / "admin" / "about" / "add-edit.html")
 

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">About 管理</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">AI-Tracks Studio</div>
+                <div class="sidebar-subtitle">後台管理系統</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item"><a href="/backend/projects" class="nav-link">🎮 Projects 管理</a></li>
+                    <li class="nav-item"><a href="/backend/news" class="nav-link">📰 News 管理</a></li>
+                    <li class="nav-item"><a href="/backend/about" class="nav-link active">ℹ️ About 管理</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h1 class="header-title" id="headerTitle">新增 About</h1>
+                <div class="header-actions">
+                    <span class="user-info" id="userInfo">載入中...</span>
+                    <button onclick="logout()" class="logout-btn">登出</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 id="formTitle" style="font-size: 24px; margin-bottom: 32px;">新增 About Us</h2>
+                
+                <form id="aboutForm" style="max-width: 800px;">
+                    <div class="form-row">
+                        <label class="form-label">標題</label>
+                        <input type="text" id="aboutTitle" class="form-control" />
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">副標題</label>
+                        <input type="text" id="aboutSubtitle" class="form-control" />
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">描述</label>
+                        <textarea id="aboutDescription" class="form-control" rows="6"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">聯絡 Email</label>
+                        <input type="email" id="aboutEmail" class="form-control" />
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">Values (JSON 格式)</label>
+                        <textarea id="aboutValues" class="form-control" rows="10" placeholder='[{"icon":"Star","title":"Creativity First","description":"描述..."}]'></textarea>
+                        <small style="color: #718096;">請輸入有效的 JSON 陣列格式</small>
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 32px;">💾 儲存</button>
+                        <a href="/backend/about" class="btn" style="padding: 12px 32px; background: #e2e8f0; text-decoration: none; color: #2d3748;">取消</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+    <script>
+        let isEditMode = false;
+        let editingId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkAuth();
+            if (user) {
+                document.getElementById('userInfo').textContent = user.email;
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                editingId = urlParams.get('id');
+                isEditMode = !!editingId;
+                
+                if (isEditMode) {
+                    document.getElementById('headerTitle').textContent = '編輯 About';
+                    document.getElementById('formTitle').textContent = '編輯 About Us';
+                    await loadAbout(editingId);
+                }
+            }
+        });
+
+        async function loadAbout(id) {
+            try {
+                const about = await apiRequest(`/api/about/${id}`);
+                document.getElementById('aboutTitle').value = about.title || '';
+                document.getElementById('aboutSubtitle').value = about.subtitle || '';
+                document.getElementById('aboutDescription').value = about.description || '';
+                document.getElementById('aboutEmail').value = about.contact_email || '';
+                document.getElementById('aboutValues').value = JSON.stringify(about.values || [], null, 2);
+            } catch (error) {
+                alert('載入失敗: ' + error.message);
+                window.location.href = '/backend/about';
+            }
+        }
+
+        document.getElementById('aboutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            let values = [];
+            try {
+                const valuesText = document.getElementById('aboutValues').value.trim();
+                if (valuesText) values = JSON.parse(valuesText);
+            } catch {
+                alert('❌ Values JSON 格式錯誤！請檢查格式。');
+                return;
+            }
+            
+            const formData = {
+                title: document.getElementById('aboutTitle').value.trim() || null,
+                subtitle: document.getElementById('aboutSubtitle').value.trim() || null,
+                description: document.getElementById('aboutDescription').value.trim() || null,
+                contact_email: document.getElementById('aboutEmail').value.trim() || null,
+                values: values
+            };
+            
+            try {
+                if (isEditMode) {
+                    await apiRequest(`/api/admin/about/${editingId}`, { method: 'PUT', body: JSON.stringify(formData) });
+                    alert('✅ 更新成功！');
+                } else {
+                    await apiRequest('/api/admin/about', { method: 'POST', body: JSON.stringify(formData) });
+                    alert('✅ 新增成功！');
+                }
+                window.location.href = '/backend/about';
+            } catch (error) {
+                alert('❌ 儲存失敗: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">News 管理 - AI-Tracks Studio Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">AI-Tracks Studio</div>
+                <div class="sidebar-subtitle">後台管理系統</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item"><a href="/backend/projects" class="nav-link">🎮 Projects 管理</a></li>
+                    <li class="nav-item"><a href="/backend/news" class="nav-link active">📰 News 管理</a></li>
+                    <li class="nav-item"><a href="/backend/about" class="nav-link">ℹ️ About 管理</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h1 class="header-title" id="headerTitle">新增 News</h1>
+                <div class="header-actions">
+                    <span class="user-info" id="userInfo">載入中...</span>
+                    <button onclick="logout()" class="logout-btn">登出</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 id="formTitle" style="font-size: 24px; margin-bottom: 32px;">新增 News</h2>
+                
+                <form id="newsForm" style="max-width: 800px;">
+                    <div class="form-row">
+                        <label class="form-label">ID <span style="color: #e53e3e;">*</span></label>
+                        <input type="text" id="newsId" class="form-control" required />
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">標題 <span style="color: #e53e3e;">*</span></label>
+                        <input type="text" id="newsTitle" class="form-control" required />
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">摘要</label>
+                        <textarea id="newsExcerpt" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">內容</label>
+                        <textarea id="newsContent" class="form-control" rows="8"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">圖片 URL</label>
+                        <input type="url" id="newsImage" class="form-control" />
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">日期</label>
+                        <input type="date" id="newsDate" class="form-control" />
+                    </div>
+                    <div class="form-row">
+                        <label class="form-label">作者</label>
+                        <input type="text" id="newsAuthor" class="form-control" />
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 32px;">💾 儲存</button>
+                        <a href="/backend/news" class="btn" style="padding: 12px 32px; background: #e2e8f0; text-decoration: none; color: #2d3748;">取消</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+    <script>
+        let isEditMode = false;
+        let editingId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkAuth();
+            if (user) {
+                document.getElementById('userInfo').textContent = user.email;
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                editingId = urlParams.get('id');
+                isEditMode = !!editingId;
+                
+                if (isEditMode) {
+                    document.getElementById('pageTitle').textContent = '編輯 News';
+                    document.getElementById('headerTitle').textContent = '編輯 News';
+                    document.getElementById('formTitle').textContent = '編輯 News';
+                    document.getElementById('newsId').disabled = true;
+                    await loadNews(editingId);
+                }
+            }
+        });
+
+        async function loadNews(id) {
+            try {
+                const news = await apiRequest(`/api/news/${id}`);
+                document.getElementById('newsId').value = news.id;
+                document.getElementById('newsTitle').value = news.title;
+                document.getElementById('newsExcerpt').value = news.excerpt || '';
+                document.getElementById('newsContent').value = news.content || '';
+                document.getElementById('newsImage').value = news.image_url || '';
+                document.getElementById('newsDate').value = news.date || '';
+                document.getElementById('newsAuthor').value = news.author || '';
+            } catch (error) {
+                alert('載入失敗: ' + error.message);
+                window.location.href = '/backend/news';
+            }
+        }
+
+        document.getElementById('newsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                id: document.getElementById('newsId').value.trim(),
+                title: document.getElementById('newsTitle').value.trim(),
+                excerpt: document.getElementById('newsExcerpt').value.trim() || null,
+                content: document.getElementById('newsContent').value.trim() || null,
+                image_url: document.getElementById('newsImage').value.trim() || null,
+                date: document.getElementById('newsDate').value || null,
+                author: document.getElementById('newsAuthor').value.trim() || null,
+            };
+            
+            try {
+                if (isEditMode) {
+                    await apiRequest(`/api/admin/news/${editingId}`, { method: 'PUT', body: JSON.stringify(formData) });
+                    alert('✅ 更新成功！');
+                } else {
+                    await apiRequest('/api/admin/news', { method: 'POST', body: JSON.stringify(formData) });
+                    alert('✅ 新增成功！');
+                }
+                window.location.href = '/backend/news';
+            } catch (error) {
+                alert('❌ 儲存失敗: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+

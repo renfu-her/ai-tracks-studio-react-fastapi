@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Project 管理 - AI-Tracks Studio Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">AI-Tracks Studio</div>
+                <div class="sidebar-subtitle">後台管理系統</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="/backend/projects" class="nav-link active">
+                            🎮 Projects 管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/backend/news" class="nav-link">
+                            📰 News 管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/backend/about" class="nav-link">
+                            ℹ️ About 管理
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1 class="header-title" id="headerTitle">新增 Project</h1>
+                <div class="header-actions">
+                    <span class="user-info" id="userInfo">載入中...</span>
+                    <button onclick="logout()" class="logout-btn">登出</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 id="formTitle" style="font-size: 24px; margin-bottom: 32px; color: #2d3748;">新增 Project</h2>
+                
+                <form id="projectForm" style="max-width: 800px;">
+                    <div class="form-row">
+                        <label class="form-label">ID <span style="color: #e53e3e;">*</span></label>
+                        <input type="text" id="projectId" class="form-control" required />
+                        <small style="color: #718096;">唯一識別碼，例如：game-1, website-1</small>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">標題 <span style="color: #e53e3e;">*</span></label>
+                        <input type="text" id="projectTitle" class="form-control" required />
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">描述</label>
+                        <textarea id="projectDescription" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">縮圖 URL</label>
+                        <input type="url" id="projectThumbnail" class="form-control" placeholder="https://example.com/image.jpg" />
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">類別 <span style="color: #e53e3e;">*</span></label>
+                        <select id="projectCategory" class="form-control" required>
+                            <option value="">請選擇類別</option>
+                            <option value="GAME">遊戲 (GAME)</option>
+                            <option value="WEBSITE">網站 (WEBSITE)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">日期</label>
+                        <input type="date" id="projectDate" class="form-control" />
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">標籤</label>
+                        <input type="text" id="projectTags" class="form-control" placeholder="action, adventure, 3D" />
+                        <small style="color: #718096;">多個標籤請用逗號分隔</small>
+                    </div>
+
+                    <div class="form-row">
+                        <label class="form-label">外部連結</label>
+                        <input type="url" id="projectLink" class="form-control" placeholder="https://example.com" />
+                    </div>
+
+                    <div style="display: flex; gap: 16px; justify-content: flex-start; margin-top: 32px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 32px;">
+                            💾 儲存
+                        </button>
+                        <a href="/backend/projects" class="btn" style="padding: 12px 32px; background: #e2e8f0; text-decoration: none; color: #2d3748;">
+                            取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/admin.js"></script>
+    <script>
+        let currentUser = null;
+        let isEditMode = false;
+        let editingId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            currentUser = await checkAuth();
+            if (currentUser) {
+                document.getElementById('userInfo').textContent = currentUser.email;
+                
+                // Check if edit mode (URL has ?id=xxx)
+                const urlParams = new URLSearchParams(window.location.search);
+                editingId = urlParams.get('id');
+                isEditMode = !!editingId;
+                
+                if (isEditMode) {
+                    document.getElementById('pageTitle').textContent = '編輯 Project - AI-Tracks Studio Admin';
+                    document.getElementById('headerTitle').textContent = '編輯 Project';
+                    document.getElementById('formTitle').textContent = '編輯 Project';
+                    document.getElementById('projectId').disabled = true;
+                    await loadProject(editingId);
+                } else {
+                    document.getElementById('pageTitle').textContent = '新增 Project - AI-Tracks Studio Admin';
+                    document.getElementById('headerTitle').textContent = '新增 Project';
+                    document.getElementById('formTitle').textContent = '新增 Project';
+                }
+            }
+        });
+
+        async function loadProject(id) {
+            try {
+                const project = await apiRequest(`/api/admin/projects/${id}`);
+                
+                document.getElementById('projectId').value = project.id;
+                document.getElementById('projectTitle').value = project.title;
+                document.getElementById('projectDescription').value = project.description || '';
+                document.getElementById('projectThumbnail').value = project.thumbnail_url || '';
+                document.getElementById('projectCategory').value = project.category;
+                document.getElementById('projectDate').value = project.date || '';
+                document.getElementById('projectTags').value = (project.tags || []).join(', ');
+                document.getElementById('projectLink').value = project.link || '';
+            } catch (error) {
+                alert('載入 Project 失敗: ' + error.message);
+                window.location.href = '/backend/projects';
+            }
+        }
+
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                id: document.getElementById('projectId').value.trim(),
+                title: document.getElementById('projectTitle').value.trim(),
+                description: document.getElementById('projectDescription').value.trim() || null,
+                thumbnail_url: document.getElementById('projectThumbnail').value.trim() || null,
+                category: document.getElementById('projectCategory').value,
+                date: document.getElementById('projectDate').value || null,
+                tags: document.getElementById('projectTags').value
+                    ? document.getElementById('projectTags').value.split(',').map(t => t.trim()).filter(t => t)
+                    : [],
+                link: document.getElementById('projectLink').value.trim() || null,
+            };
+            
+            // Validation
+            if (!formData.id || !formData.title || !formData.category) {
+                alert('請填寫所有必填欄位（ID、標題、類別）');
+                return;
+            }
+            
+            try {
+                if (isEditMode) {
+                    // Update existing project
+                    await apiRequest(`/api/admin/projects/${editingId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(formData)
+                    });
+                    alert('✅ Project 更新成功！');
+                } else {
+                    // Create new project
+                    await apiRequest('/api/admin/projects', {
+                        method: 'POST',
+                        body: JSON.stringify(formData)
+                    });
+                    alert('✅ Project 新增成功！');
+                }
+                
+                window.location.href = '/backend/projects';
+            } catch (error) {
+                alert('❌ 儲存失敗: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -15,21 +15,9 @@
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li class="nav-item">
-                        <a href="/backend/projects" class="nav-link">
-                            🎮 Projects 管理
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/backend/news" class="nav-link active">
-                            📰 News 管理
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/backend/about" class="nav-link">
-                            ℹ️ About 管理
-                        </a>
-                    </li>
+                    <li class="nav-item"><a href="/backend/projects" class="nav-link">🎮 Projects 管理</a></li>
+                    <li class="nav-item"><a href="/backend/news" class="nav-link active">📰 News 管理</a></li>
+                    <li class="nav-item"><a href="/backend/about" class="nav-link">ℹ️ About 管理</a></li>
                 </ul>
             </nav>
         </aside>
@@ -44,83 +32,49 @@
             </div>
 
             <div class="card">
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
-                    <button onclick="showAddModal()" class="btn btn-primary">
-                        ➕ 新增 News
-                    </button>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+                    <input type="text" id="searchInput" class="form-control" placeholder="搜尋標題、作者..." style="max-width: 300px;" />
+                    <a href="/backend/news/add" class="btn btn-primary">➕ 新增 News</a>
                 </div>
 
-                <div id="newsContainer">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>載入中...</p>
-                    </div>
+                <div id="newsContainer"><div class="loading"><div class="spinner"></div><p>載入中...</p></div></div>
+                <div id="pagination" style="margin-top: 20px; display: flex; justify-content: space-between;">
+                    <div id="pageInfo" style="color: #718096; font-size: 14px;"></div>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 32px; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
-            <h2 id="modalTitle">新增 News</h2>
-            <form id="newsForm">
-                <div class="form-row">
-                    <label class="form-label">ID</label>
-                    <input type="text" id="newsId" class="form-control" required />
-                </div>
-                <div class="form-row">
-                    <label class="form-label">標題</label>
-                    <input type="text" id="newsTitle" class="form-control" required />
-                </div>
-                <div class="form-row">
-                    <label class="form-label">摘要</label>
-                    <textarea id="newsExcerpt" class="form-control" rows="3"></textarea>
-                </div>
-                <div class="form-row">
-                    <label class="form-label">內容</label>
-                    <textarea id="newsContent" class="form-control" rows="6"></textarea>
-                </div>
-                <div class="form-row">
-                    <label class="form-label">圖片 URL</label>
-                    <input type="url" id="newsImage" class="form-control" />
-                </div>
-                <div class="form-row">
-                    <label class="form-label">日期</label>
-                    <input type="date" id="newsDate" class="form-control" />
-                </div>
-                <div class="form-row">
-                    <label class="form-label">作者</label>
-                    <input type="text" id="newsAuthor" class="form-control" />
-                </div>
-                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                    <button type="button" onclick="closeModal()" class="btn" style="background: #e2e8f0;">取消</button>
-                    <button type="submit" class="btn btn-success">儲存</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script src="/static/js/admin.js"></script>
     <script>
-        let currentUser = null;
-        let editingNewsId = null;
-
+        let allNews = [];
         document.addEventListener('DOMContentLoaded', async () => {
-            currentUser = await checkAuth();
-            if (currentUser) {
-                document.getElementById('userInfo').textContent = currentUser.email;
+            const user = await checkAuth();
+            if (user) {
+                document.getElementById('userInfo').textContent = user.email;
                 await loadNews();
             }
+            document.getElementById('searchInput').addEventListener('input', filterNews);
         });
 
         async function loadNews() {
             showLoading('newsContainer');
             try {
-                const data = await apiRequest('/api/admin/news');
-                renderNews(data.items || []);
+                const data = await apiRequest('/api/admin/news?limit=1000');
+                allNews = data.items || [];
+                filterNews();
             } catch (error) {
                 showError('newsContainer', error.message);
             }
+        }
+
+        function filterNews() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allNews.filter(n => 
+                n.title.toLowerCase().includes(search) || 
+                (n.author||'').toLowerCase().includes(search)
+            );
+            renderNews(filtered);
         }
 
         function renderNews(newsList) {
@@ -131,63 +85,25 @@
             }
             
             container.innerHTML = `
-                <div class="table-container">
-                    <table>
-                        <thead>
+                <table>
+                    <thead><tr><th>ID</th><th>標題</th><th>作者</th><th>日期</th><th style="width: 160px;">操作</th></tr></thead>
+                    <tbody>
+                        ${newsList.map(n => `
                             <tr>
-                                <th>ID</th>
-                                <th>標題</th>
-                                <th>作者</th>
-                                <th>日期</th>
-                                <th>操作</th>
+                                <td><code style="font-size: 12px;">${n.id}</code></td>
+                                <td><strong>${n.title}</strong></td>
+                                <td>${n.author || '-'}</td>
+                                <td>${formatDate(n.date)}</td>
+                                <td>
+                                    <a href="/backend/news/edit?id=${encodeURIComponent(n.id)}" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px; text-decoration: none;">編輯</a>
+                                    <button onclick="deleteNews('${n.id}')" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">刪除</button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${newsList.map(news => `
-                                <tr>
-                                    <td><code>${news.id}</code></td>
-                                    <td><strong>${news.title}</strong></td>
-                                    <td>${news.author || '-'}</td>
-                                    <td>${formatDate(news.date)}</td>
-                                    <td>
-                                        <button onclick="editNews('${news.id}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">編輯</button>
-                                        <button onclick="deleteNews('${news.id}')" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">刪除</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
+                        `).join('')}
+                    </tbody>
+                </table>
             `;
-        }
-
-        function showAddModal() {
-            editingNewsId = null;
-            document.getElementById('modalTitle').textContent = '新增 News';
-            document.getElementById('newsForm').reset();
-            document.getElementById('newsId').disabled = false;
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        async function editNews(id) {
-            try {
-                const news = await apiRequest(`/api/news/${id}`);
-                editingNewsId = id;
-                
-                document.getElementById('modalTitle').textContent = '編輯 News';
-                document.getElementById('newsId').value = news.id;
-                document.getElementById('newsId').disabled = true;
-                document.getElementById('newsTitle').value = news.title;
-                document.getElementById('newsExcerpt').value = news.excerpt || '';
-                document.getElementById('newsContent').value = news.content || '';
-                document.getElementById('newsImage').value = news.image_url || '';
-                document.getElementById('newsDate').value = news.date || '';
-                document.getElementById('newsAuthor').value = news.author || '';
-                
-                document.getElementById('modal').style.display = 'flex';
-            } catch (error) {
-                alert('載入失敗: ' + error.message);
-            }
+            document.getElementById('pageInfo').textContent = `顯示 1-${newsList.length} / 共 ${newsList.length} 筆`;
         }
 
         async function deleteNews(id) {
@@ -200,46 +116,6 @@
                 alert('刪除失敗: ' + error.message);
             }
         }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        document.getElementById('newsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                id: document.getElementById('newsId').value,
-                title: document.getElementById('newsTitle').value,
-                excerpt: document.getElementById('newsExcerpt').value || null,
-                content: document.getElementById('newsContent').value || null,
-                image_url: document.getElementById('newsImage').value || null,
-                date: document.getElementById('newsDate').value || null,
-                author: document.getElementById('newsAuthor').value || null,
-            };
-            
-            try {
-                if (editingNewsId) {
-                    await apiRequest(`/api/admin/news/${editingNewsId}`, {
-                        method: 'PUT',
-                        body: JSON.stringify(formData)
-                    });
-                    alert('更新成功！');
-                } else {
-                    await apiRequest('/api/admin/news', {
-                        method: 'POST',
-                        body: JSON.stringify(formData)
-                    });
-                    alert('新增成功！');
-                }
-                
-                closeModal();
-                await loadNews();
-            } catch (error) {
-                alert('儲存失敗: ' + error.message);
-            }
-        });
     </script>
 </body>
 </html>
-
