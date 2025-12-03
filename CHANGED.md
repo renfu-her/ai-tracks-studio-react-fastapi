@@ -1,5 +1,84 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-03 21:43:58 TST
+
+### Frontend API Integration 前端 API 整合
+
+#### Connected Frontend to Backend API 連接前端到後端 API
+
+Successfully integrated the React frontend with the FastAPI backend, replacing all hardcoded data with real API calls.
+
+#### New API Layer 新增 API 層
+Created comprehensive API client layer:
+- **`frontend/api/config.ts`** - API configuration and base URL management
+- **`frontend/api/client.ts`** - HTTP client with error handling and timeouts
+- **`frontend/api/projects.ts`** - Projects/Games API service
+- **`frontend/api/news.ts`** - News API service
+- **`frontend/api/about.ts`** - About Us API service
+- **`frontend/api/index.ts`** - Central export point
+
+#### Updated Types 更新類型
+- Updated `frontend/types.ts` with API response types
+- Added `ProjectListResponse`, `NewsListResponse`
+- Added `AboutUs` and `AboutValue` interfaces
+- Added `LoadingState` interface
+- Matched backend schema (snake_case: `thumbnail_url`, `image_url`)
+
+#### Route Changes 路由變更
+Updated routing structure as requested:
+- `/games` → `/game` (displays games from API: `category=GAME`)
+- `/websites` → `/website` (displays websites from API: `category=WEBSITE`)
+- `/news` → `/news` (fetches from news API)
+- `/about` → `/about` (fetches from about API)
+- `/` → Home (displays featured games)
+
+#### Component Updates 組件更新
+**`frontend/App.tsx`** - Complete rewrite:
+- Removed hardcoded data (GAMES, WEBSITES, NEWS constants)
+- Added data fetching with `useEffect` hooks
+- Created separate page components: `GamesPage`, `WebsitesPage`, `NewsPage`, `AboutPage`
+- Added `LoadingSpinner` component
+- Added `ErrorMessage` component with retry functionality
+- Implemented proper error handling for all API calls
+
+**`frontend/components/Layout.tsx`**:
+- Updated navigation links to use new routes
+- Desktop menu: `/game`, `/website` instead of `/games`, `/websites`
+- Mobile menu: Updated all route references
+- Footer: Updated quick links
+
+**`frontend/components/ItemGrid.tsx`**:
+- Updated to use `thumbnail_url` instead of `thumbnailUrl`
+- Matches backend API response format
+
+**`frontend/constants.ts`**:
+- Removed hardcoded GAMES, WEBSITES, NEWS arrays
+- Kept HERO_IMAGES for hero sections
+
+#### Features Implemented 實現功能
+✅ **Dynamic Data Loading** - All content from backend API  
+✅ **Loading States** - Spinner during data fetch  
+✅ **Error Handling** - User-friendly error messages  
+✅ **Retry Functionality** - Try again on failed requests  
+✅ **Empty States** - Handled when no data available  
+✅ **Type Safety** - Full TypeScript throughout  
+✅ **Clean Architecture** - Separated API layer from components  
+
+#### API Configuration API 配置
+- Base URL: `http://localhost:8000` (development)
+- Configurable via `VITE_API_BASE_URL` environment variable
+- 30-second timeout for requests
+- Proper error handling for network issues
+
+#### Data Flow 數據流
+1. Component mounts → `useEffect` triggered
+2. Display loading spinner
+3. API call via service layer
+4. On success: Display data
+5. On error: Show error message with retry option
+
+---
+
 ## 2025-12-03 21:31:51 TST
 
 ### Added Gunicorn for Production Deployment

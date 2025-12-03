@@ -36,7 +36,7 @@ export const ItemGrid: React.FC<ItemGridProps> = ({ items, title, itemsPerPage =
             {/* Image Container */}
             <div className="relative h-56 overflow-hidden">
               <img 
-                src={item.thumbnailUrl} 
+                src={item.thumbnail_url} 
                 alt={item.title} 
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
               />

@@ -80,8 +80,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-2 bg-white/50 backdrop-blur-sm p-1 rounded-full border border-white/20 shadow-sm">
             <NavLink to="/" icon={Home} active={isActive('/')}>Home</NavLink>
-            <NavLink to="/games" icon={Gamepad2} active={isActive('/games')}>Games</NavLink>
-            <NavLink to="/websites" icon={Globe} active={isActive('/websites')}>Websites</NavLink>
+            <NavLink to="/game" icon={Gamepad2} active={isActive('/game')}>Games</NavLink>
+            <NavLink to="/website" icon={Globe} active={isActive('/website')}>Websites</NavLink>
             <NavLink to="/news" icon={Newspaper} active={isActive('/news')}>News</NavLink>
             <NavLink to="/about" icon={Info} active={isActive('/about')}>About</NavLink>
           </div>
@@ -99,8 +99,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         {isMobileMenuOpen && (
           <div className="absolute top-full left-0 w-full bg-white shadow-xl border-t border-slate-100 flex flex-col md:hidden animate-in slide-in-from-top-5">
             <MobileNavLink to="/" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/')}>Home</MobileNavLink>
-            <MobileNavLink to="/games" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/games')}>Games</MobileNavLink>
-            <MobileNavLink to="/websites" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/websites')}>Websites</MobileNavLink>
+            <MobileNavLink to="/game" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/game')}>Games</MobileNavLink>
+            <MobileNavLink to="/website" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/website')}>Websites</MobileNavLink>
             <MobileNavLink to="/news" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/news')}>News</MobileNavLink>
             <MobileNavLink to="/about" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/about')}>About</MobileNavLink>
           </div>
@@ -143,8 +143,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div>
               <h3 className="text-lg font-bold mb-6 text-lively-yellow">Quick Links</h3>
               <ul className="space-y-3">
-                <li><Link to="/games" className="text-slate-400 hover:text-white transition-colors">Our Games</Link></li>
-                <li><Link to="/websites" className="text-slate-400 hover:text-white transition-colors">Web Demos</Link></li>
+                <li><Link to="/game" className="text-slate-400 hover:text-white transition-colors">Our Games</Link></li>
+                <li><Link to="/website" className="text-slate-400 hover:text-white transition-colors">Web Demos</Link></li>
                 <li><Link to="/news" className="text-slate-400 hover:text-white transition-colors">Latest News</Link></li>
                 <li><Link to="/about" className="text-slate-400 hover:text-white transition-colors">About Us</Link></li>
               </ul>
