@@ -1,5 +1,7 @@
 """Configuration settings for the application."""
 
+from typing import Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -21,7 +23,16 @@ class Settings(BaseSettings):
     
     # API settings
     API_PREFIX: str = "/api"
-    CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://localhost:3000", "http://localhost:8000"]
+    CORS_ORIGINS: Union[str, list[str]] = ["http://localhost:5173", "http://localhost:3000", "http://localhost:8000"]
+    
+    @field_validator('CORS_ORIGINS', mode='before')
+    @classmethod
+    def parse_cors_origins(cls, v):
+        """Parse CORS_ORIGINS from comma-separated string or list."""
+        if isinstance(v, str):
+            # Split by comma and strip whitespace
+            return [origin.strip() for origin in v.split(',') if origin.strip()]
+        return v
     
     # Frontend/Backend URLs
     FRONTEND_URL: str = "http://localhost:5173"

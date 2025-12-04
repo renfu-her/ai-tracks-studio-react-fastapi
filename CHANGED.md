@@ -1,5 +1,71 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 (Current Time) - Production Environment Fix
+
+### Fixed CORS_ORIGINS Environment Variable Parsing 修復 CORS_ORIGINS 環境變數解析
+
+#### Problem 問題
+- Production server failed to start with `JSONDecodeError`
+- Pydantic Settings tried to parse `CORS_ORIGINS` as JSON
+- `.env` file used comma-separated format: `https://studio.ai-tracks.com,http://localhost:9001,http://localhost:10001`
+- But Pydantic expected JSON format: `["url1","url2","url3"]`
+
+#### Error Message 錯誤訊息
+```
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+pydantic_settings.exceptions.SettingsError: error parsing value for field "CORS_ORIGINS" from source "DotEnvSettingsSource"
+```
+
+#### Solution 解決方案
+**Updated `backend/app/config.py`:**
+- ✅ Added custom field validator for `CORS_ORIGINS`
+- ✅ Support both formats: comma-separated string OR JSON array
+- ✅ Parse comma-separated values automatically
+- ✅ Strip whitespace from each origin
+- ✅ Type changed from `list[str]` to `Union[str, list[str]]`
+
+**Code Changes:**
+```python
+# Added imports
+from typing import Union
+from pydantic import field_validator
+
+# Updated field type
+CORS_ORIGINS: Union[str, list[str]] = [...]
+
+# Added validator
+@field_validator('CORS_ORIGINS', mode='before')
+@classmethod
+def parse_cors_origins(cls, v):
+    """Parse CORS_ORIGINS from comma-separated string or list."""
+    if isinstance(v, str):
+        return [origin.strip() for origin in v.split(',') if origin.strip()]
+    return v
+```
+
+#### Benefits 優點
+- ✅ User-friendly `.env` format (comma-separated)
+- ✅ Backward compatible with JSON array format
+- ✅ Automatic whitespace trimming
+- ✅ No code changes needed in production `.env`
+- ✅ Works with existing development setups
+
+#### Production `.env` Format 生產環境 .env 格式
+**Now supports this format:**
+```env
+CORS_ORIGINS=https://studio.ai-tracks.com,http://localhost:9001,http://localhost:10001
+```
+
+**Also supports JSON format:**
+```env
+CORS_ORIGINS=["https://studio.ai-tracks.com","http://localhost:9001"]
+```
+
+#### Files Changed 更改的文件
+- `backend/app/config.py` - Added field validator and Union type
+
+---
+
 ## 2025-12-04 12:40:00 TST
 
 ### Frontend: News Detail Page 前端：新聞詳細頁面
