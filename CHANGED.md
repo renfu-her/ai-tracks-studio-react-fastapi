@@ -1,5 +1,79 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 12:40:00 TST
+
+### Frontend: News Detail Page 前端：新聞詳細頁面
+
+#### Added Features 新增功能
+
+**1. Created NewsDetail Component 創建新聞詳細組件:**
+- File: `frontend/components/NewsDetail.tsx`
+- Full article view with hero image
+- Markdown-rendered excerpt and content
+- Author and date information
+- Back navigation to news list
+- Loading and error states
+
+**2. Added Route 添加路由:**
+```typescript
+<Route path="/news/:id" element={<NewsDetail />} />
+```
+
+**3. Made News Cards Clickable 讓新聞卡片可點擊:**
+- Entire news card is now a link
+- "Read Full Story" button navigates to detail page
+- Hover effects preserved
+- Smooth transitions
+
+#### User Flow 用戶流程
+
+```
+News List Page (/news)
+  ↓ Click any news card or "Read Full Story"
+News Detail Page (/news/:id)
+  ↓ View full article with:
+    - Hero image
+    - Title
+    - Date & author
+    - Excerpt (highlighted)
+    - Full content (Markdown)
+  ↓ Click "Back to All News"
+News List Page
+```
+
+#### Features 功能特色
+
+**NewsDetail Page:**
+- 📸 Hero image (if available)
+- 📝 Full Markdown content
+- 📅 Publication date
+- ✍️ Author name
+- 💬 Excerpt in highlighted box
+- ⬅️ Back navigation
+- 📱 Fully responsive
+
+**Styling:**
+- Clean, article-focused layout
+- Maximum 4xl width for readability
+- Gradient background
+- Sticky header with back button
+- Professional typography
+
+#### Files Changed 更改的文件
+
+**New Files:**
+- `frontend/components/NewsDetail.tsx`
+
+**Updated Files:**
+- `frontend/App.tsx` - Added NewsDetail import and route, made news cards clickable
+
+#### Example URL 示例 URL
+
+```
+List: http://localhost:3000/news
+Detail: http://localhost:3000/news/news-123
+```
+
 ## 2025-12-04 12:35:00 TST
 
 ### Frontend: Removed Descriptions from List Pages 前端：移除列表頁面的描述

@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { SectionHero } from './components/SectionHero';
 import { ItemGrid } from './components/ItemGrid';
 import { ProjectDetail } from './components/ProjectDetail';
+import { NewsDetail } from './components/NewsDetail';
 import { MarkdownContent } from './components/MarkdownContent';
 import { HERO_IMAGES } from './constants';
 import { ArrowRight, Calendar, User, Star, Zap, Mail, Loader2, AlertCircle } from 'lucide-react';
@@ -174,9 +175,10 @@ const NewsPage: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 gap-12 max-w-4xl mx-auto">
               {news.map((item) => (
-                <article
+                <Link
                   key={item.id}
-                  className="flex flex-col md:flex-row gap-8 items-start border-b border-slate-100 pb-12 last:border-0 group"
+                  to={`/news/${item.id}`}
+                  className="flex flex-col md:flex-row gap-8 items-start border-b border-slate-100 pb-12 last:border-0 group block"
                 >
                   <div className="w-full md:w-1/3 aspect-video rounded-2xl overflow-hidden shadow-md relative">
                     <img
@@ -201,11 +203,11 @@ const NewsPage: React.FC = () => {
                     <div className="text-slate-600 leading-relaxed text-lg">
                       <MarkdownContent content={item.excerpt} />
                     </div>
-                    <button className="flex items-center gap-2 text-accent-600 font-bold hover:gap-3 transition-all mt-2">
+                    <div className="flex items-center gap-2 text-accent-600 font-bold group-hover:gap-3 transition-all mt-2">
                       Read Full Story <ArrowRight size={18} />
-                    </button>
+                    </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           )}
@@ -423,6 +425,7 @@ const App: React.FC = () => {
           <Route path="/website" element={<WebsitesPage />} />
           <Route path="/website/:id" element={<ProjectDetail />} />
           <Route path="/news" element={<NewsPage />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
       </Layout>
