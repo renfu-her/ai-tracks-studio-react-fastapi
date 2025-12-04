@@ -4,14 +4,6 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 
-class ValueItem(BaseModel):
-    """Schema for a value item in About Us."""
-    
-    icon: str = Field(..., description="Icon identifier (e.g., 'Star', 'Zap')")
-    title: str = Field(..., description="Value title")
-    description: str = Field(..., description="Value description")
-
-
 class AboutUsBase(BaseModel):
     """Base schema for About Us with common fields."""
     
@@ -19,7 +11,6 @@ class AboutUsBase(BaseModel):
     subtitle: str | None = Field(None, description="About page subtitle")
     description: str | None = Field(None, description="About page description")
     image: str | None = Field(None, max_length=500, description="About image filename")
-    values: list[ValueItem] | None = Field(default_factory=list, description="Company values")
     contact_email: str | None = Field(None, max_length=255, description="Contact email")
 
 

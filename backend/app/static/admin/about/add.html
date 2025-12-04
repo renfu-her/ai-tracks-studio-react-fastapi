@@ -24,19 +24,32 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">聯絡 Email</label>
-                    <input type="email" class="form-control" id="aboutEmail">
+                    <label class="form-label fw-bold">圖片</label>
+                    <input type="hidden" id="aboutImage">
+                    <div class="mb-2">
+                        <label for="aboutImageFile" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i> 上傳圖片
+                            <input type="file" id="aboutImageFile" accept="image/*" class="d-none">
+                        </label>
+                        <small class="text-muted ms-2">自動轉換為 WebP</small>
+                    </div>
+                    
+                    <div id="imagePreview" class="mt-3 p-3 bg-light rounded border d-none">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="flex-grow-1">
+                                <img id="previewImg" class="img-fluid rounded" style="max-height: 200px;">
+                            </div>
+                            <button type="button" class="btn btn-sm btn-danger ms-2" id="deleteImageBtn" title="刪除圖片">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="small" id="imageInfo"></div>
+                    </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">
-                        Values (JSON 格式)
-                        <button type="button" class="btn btn-sm btn-outline-info ms-2" onclick="showJsonHelp()">
-                            <i class="fas fa-question-circle"></i> 格式說明
-                        </button>
-                    </label>
-                    <textarea class="form-control font-monospace" id="aboutValues" rows="12" placeholder='[{"icon":"Star","title":"Creativity First","description":"描述..."}]'></textarea>
-                    <small class="text-muted">請輸入有效的 JSON 陣列</small>
+                    <label class="form-label fw-bold">聯絡 Email</label>
+                    <input type="email" class="form-control" id="aboutEmail">
                 </div>
             </div>
         </div>
@@ -71,6 +84,46 @@ window.pageInit = async function() {
         });
     }
 
+    // Handle image upload
+    $('#aboutImageFile').on('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        $('#imagePreview').removeClass('d-none');
+        $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
+
+        try {
+            const filename = await uploadImage(file);
+            
+            // Save only filename (not path)
+            $('#aboutImage').val(filename);
+            
+            // Display image preview with full URL
+            const imageUrl = getImageUrl(filename);
+            $('#previewImg').attr('src', imageUrl);
+            
+            // Show UUID info
+            const uuid = filename.split('.')[0];
+            $('#imageInfo').html(`<i class="fas fa-check-circle text-success"></i> 上傳成功！${uuid.substring(0, 12)}...`);
+        } catch (error) {
+            $('#imageInfo').html(`<i class="fas fa-times-circle text-danger"></i> ${error.message}`);
+        }
+    });
+
+    // Handle image delete
+    $('#deleteImageBtn').on('click', function() {
+        if (!confirm('確定要刪除這張圖片嗎？')) return;
+        
+        // Clear input and hide preview
+        $('#aboutImage').val('');
+        $('#previewImg').attr('src', '');
+        $('#imagePreview').addClass('d-none');
+        $('#imageInfo').html('');
+        $('#aboutImageFile').val(''); // Reset file input
+        
+        showSuccessToast('圖片已移除');
+    });
+
     // Check edit mode
     const hash = window.location.hash;
     const match = hash.match(/#about\/edit\/(\d+)/);
@@ -95,70 +148,21 @@ window.pageInit = async function() {
             }
             
             $('#aboutEmail').val(about.contact_email || '');
-            $('#aboutValues').val(JSON.stringify(about.values || [], null, 2));
         } catch (error) {
             showErrorToast('載入失敗: ' + error.message);
             window.location.hash = 'about/list';
         }
     }
 
-    window.showJsonHelp = function() {
-        const helpHtml = `
-            <div class="modal fade" id="jsonHelpModal" tabindex="-1">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">JSON 格式說明</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Values 欄位應為 JSON 陣列，每個項目包含：</p>
-                            <pre class="bg-light p-3 rounded"><code>[
-  {
-    "icon": "Star",
-    "title": "Creativity First",
-    "description": "We believe in lively designs..."
-  },
-  {
-    "icon": "Zap",
-    "title": "Powered by AI",
-    "description": "Leveraging cutting-edge..."
-  }
-]</code></pre>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        $('#jsonHelpModal').remove();
-        $('body').append(helpHtml);
-        new bootstrap.Modal('#jsonHelpModal').show();
-    };
-
     $('#aboutForm').submit(async function(e) {
         e.preventDefault();
-
-        let values = [];
-        try {
-            const valuesText = $('#aboutValues').val().trim();
-            if (valuesText) {
-                values = JSON.parse(valuesText);
-            }
-        } catch {
-            showErrorToast('Values JSON 格式錯誤！請檢查格式。');
-            return;
-        }
 
         const data = {
             title: $('#aboutTitle').val().trim() || null,
             subtitle: $('#aboutSubtitle').val().trim() || null,
             description: descriptionEditor ? descriptionEditor.value().trim() || null : null,
-            contact_email: $('#aboutEmail').val().trim() || null,
-            values: values
+            image: $('#aboutImage').val().trim() || null,
+            contact_email: $('#aboutEmail').val().trim() || null
         };
 
         try {

@@ -16,7 +16,6 @@ class AboutUs(Base):
     subtitle = Column(LONGTEXT, nullable=True)
     description = Column(LONGTEXT, nullable=True)
     image = Column(String(500), nullable=True)
-    values = Column(JSON, nullable=True, default=list)  # Array of {icon, title, description}
     contact_email = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
