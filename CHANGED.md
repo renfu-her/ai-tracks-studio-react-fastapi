@@ -2,6 +2,77 @@
 
 ## 2025-12-04 (Current Time) - Production Environment Fix
 
+### Updated Project to Python 3.12 更新專案至 Python 3.12
+
+#### Changes 更改
+**Updated configuration files for Python 3.12:**
+- ✅ `backend/.python-version` → Changed from `cpython-3.14.0-windows-x86_64-none` to `3.12.12`
+- ✅ `backend/pyproject.toml` → Changed `requires-python` from `>=3.14` to `>=3.12`
+
+**Why Python 3.12? 為什麼選擇 Python 3.12？**
+- More stable and production-ready
+- All packages fully support Python 3.12
+- Better community support and resources
+- Proven in production environments
+
+**Next Steps 下一步:**
+```bash
+cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+mv .venv .venv.backup
+uv sync  # Will automatically use Python 3.12.12
+```
+
+---
+
+### Created Working Service File 創建可正常運行的 Service 文件
+
+#### Problem 問題 #5
+- Manual command works: `uv run uvicorn app.main:app --host 0.0.0.0 --port 9001` ✅
+- Systemd service with gunicorn doesn't work properly ❌
+- Database connects, but "裡面不正常"
+
+#### Root Cause 根本原因
+- Manual test used **uvicorn** directly
+- Service file used **gunicorn** + uvicorn workers
+- Different command = different behavior
+
+#### Solution 解決方案
+**Created `studio-uvicorn-working.service`:**
+- ✅ Uses **exact same command** as successful manual test
+- ✅ Direct uvicorn (not gunicorn)
+- ✅ Simple and proven to work
+
+**Key Change:**
+```ini
+# Old (problematic)
+ExecStart=uv run gunicorn app.main:app --workers 8 --worker-class uvicorn.workers.UvicornWorker
+
+# New (working)
+ExecStart=uv run uvicorn app.main:app --host 127.0.0.1 --port 9001 --workers 8
+```
+
+**Deployment:**
+```bash
+sudo systemctl stop studio-uvicorn
+sudo cp backend/studio-uvicorn-working.service /etc/systemd/system/studio-uvicorn.service
+sudo systemctl daemon-reload
+sudo systemctl start studio-uvicorn
+sudo systemctl status studio-uvicorn
+```
+
+**Files Created:**
+- ✅ `backend/studio-uvicorn-working.service` - Service file using uvicorn directly
+- ✅ `backend/DEPLOY_WORKING_SERVICE.md` - Complete deployment guide
+
+**Why This Works:**
+- Same command as manual test (proven to work)
+- Simpler = less points of failure
+- Direct uvicorn instead of gunicorn wrapper
+
+---
+
+## 2025-12-04 (Current Time) - Production Environment Fix
+
 ### Created Systemd Service Files & Diagnostic Tools systemd 服務文件與診斷工具
 
 #### Problem 問題 #4

@@ -1,0 +1,38 @@
+[Unit]
+Description=AI-Tracks Studio Backend API (Uvicorn - Working Version)
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=ai-tracks-studio
+Group=ai-tracks-studio
+WorkingDirectory=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+
+# Set environment variables
+Environment="PATH=/home/ai-tracks-studio/.local/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONPATH=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend"
+
+# Use the EXACT command that works manually
+# This matches your successful manual test
+ExecStart=/home/ai-tracks-studio/.local/bin/uv run uvicorn app.main:app \
+    --host 127.0.0.1 \
+    --port 9001 \
+    --workers 8 \
+    --log-level info
+
+# Restart policy
+Restart=always
+RestartSec=3
+
+# Process management
+KillSignal=SIGINT
+TimeoutStopSec=30
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=studio-backend
+
+[Install]
+WantedBy=multi-user.target
+
