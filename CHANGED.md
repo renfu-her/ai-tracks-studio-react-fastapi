@@ -2,9 +2,43 @@
 
 ## 2025-12-04 (Current Time) - Production Environment Fix
 
+### Fixed Missing Environment Variables 修復缺少的環境變數
+
+#### Problem 問題 #2
+- Production server failed with `ValidationError`
+- `.env` file has `ENVIRONMENT` and `DEBUG` fields
+- But `Settings` class didn't define these fields
+- Pydantic v2 doesn't allow extra fields by default
+
+#### Error Message 錯誤訊息
+```
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for Settings
+ENVIRONMENT
+  Extra inputs are not permitted [type=extra_forbidden, input_value='development', input_type=str]
+DEBUG
+  Extra inputs are not permitted [type=extra_forbidden, input_value='True', input_type=str]
+```
+
+#### Solution 解決方案
+**Updated `backend/app/config.py`:**
+- ✅ Added `ENVIRONMENT: str = "development"` field
+- ✅ Added `DEBUG: bool = False` field
+- ✅ Now accepts these environment variables from `.env`
+
+**Supported ENVIRONMENT values:**
+- `development` - Local development
+- `staging` - Staging server
+- `production` - Production server
+
+**DEBUG flag:**
+- `True` - Enable debug mode (detailed error messages)
+- `False` - Disable debug mode (production)
+
+---
+
 ### Fixed CORS_ORIGINS Environment Variable Parsing 修復 CORS_ORIGINS 環境變數解析
 
-#### Problem 問題
+#### Problem 問題 #1
 - Production server failed to start with `JSONDecodeError`
 - Pydantic Settings tried to parse `CORS_ORIGINS` as JSON
 - `.env` file used comma-separated format: `https://studio.ai-tracks.com,http://localhost:9001,http://localhost:10001`
