@@ -1,0 +1,136 @@
+<!-- News List Content Fragment (不含 html/head/body) -->
+<div class="admin-card">
+    <!-- RWD Filter Bar - Flexbox 分散佈局 -->
+    <div class="d-flex flex-wrap gap-3 mb-4 align-items-center justify-content-between">
+        <!-- 左側控制組 -->
+        <div class="d-flex flex-wrap gap-3 align-items-center flex-grow-1">
+            <!-- 搜尋框 -->
+            <input type="text" class="form-control" id="searchInput" placeholder="搜尋標題、作者..." style="min-width: 200px; max-width: 300px; flex: 1 1 auto;">
+            
+            <!-- 每頁筆數 -->
+            <select class="form-select" id="pageSize" style="width: auto; min-width: 120px;">
+                <option value="10">10筆/頁</option>
+                <option value="20">20筆/頁</option>
+                <option value="50">50筆/頁</option>
+                <option value="100">100筆/頁</option>
+            </select>
+        </div>
+        
+        <!-- 新增按鈕 -->
+        <a href="#news/add" class="btn btn-primary" style="white-space: nowrap;">
+            <i class="fas fa-plus me-2"></i> 新增 News
+        </a>
+    </div>
+
+    <!-- Table Container -->
+    <div id="newsTable">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+        </div>
+    </div>
+
+    <!-- Pagination Info -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <small class="text-muted" id="pageInfo"></small>
+    </div>
+</div>
+
+<script>
+window.pageInit = async function() {
+    let allNews = [];
+
+    await loadNews();
+
+    $('#searchInput').on('input', filterNews);
+    $('#pageSize').on('change', filterNews);
+
+    async function loadNews() {
+        showLoading('newsTable');
+        try {
+            const data = await apiRequest('/api/admin/news?limit=1000');
+            allNews = data.items || [];
+            filterNews();
+        } catch (error) {
+            showError('newsTable', error.message);
+        }
+    }
+
+    function filterNews() {
+        const search = $('#searchInput').val().toLowerCase();
+        const filtered = allNews.filter(n => 
+            n.title.toLowerCase().includes(search) ||
+            (n.author || '').toLowerCase().includes(search) ||
+            (n.excerpt || '').toLowerCase().includes(search)
+        );
+        renderNews(filtered);
+    }
+
+    function renderNews(newsList) {
+        if (newsList.length === 0) {
+            $('#newsTable').html(`
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> 暫無資料
+                </div>
+            `);
+            $('#pageInfo').text('顯示 0 / 共 0 筆');
+            return;
+        }
+
+        const html = `
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 100px;">ID</th>
+                            <th>標題</th>
+                            <th style="width: 120px;">作者</th>
+                            <th style="width: 110px;">日期</th>
+                            <th style="width: 160px;" class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${newsList.map(n => `
+                            <tr>
+                                <td><code class="small text-muted">${n.id}</code></td>
+                                <td>
+                                    <div class="fw-bold">${n.title}</div>
+                                    ${n.excerpt ? `<small class="text-muted">${n.excerpt.substring(0, 60)}...</small>` : ''}
+                                </td>
+                                <td class="small">${n.author || '-'}</td>
+                                <td class="small">${formatDate(n.date)}</td>
+                                <td class="text-center">
+                                    <a href="#news/edit/${n.id}" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="deleteNews('${n.id}')" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        $('#newsTable').html(html);
+        $('#pageInfo').text(`顯示 1-${newsList.length} / 共 ${newsList.length} 筆`);
+    }
+
+    window.deleteNews = async function(id) {
+        confirmDelete(
+            `確定要刪除 News 「<strong>${id}</strong>」嗎？<br><span class="text-danger">此操作無法復原。</span>`,
+            async function() {
+                try {
+                    await apiRequest(`/api/admin/news/${id}`, { method: 'DELETE' });
+                    showSuccessToast('刪除成功！');
+                    await loadNews();
+                } catch (error) {
+                    showErrorToast('刪除失敗: ' + error.message);
+                }
+            }
+        );
+    };
+};
+</script>
+

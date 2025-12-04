@@ -1,0 +1,160 @@
+<!-- Projects List Content Fragment (不含 html/head/body) -->
+<div class="admin-card">
+    <!-- RWD Filter Bar - 真正的分散式佈局 (Flexbox) -->
+    <div class="d-flex flex-wrap gap-3 mb-4 align-items-center justify-content-between">
+        <!-- 左側控制組 -->
+        <div class="d-flex flex-wrap gap-3 align-items-center flex-grow-1">
+            <!-- 搜尋框 -->
+            <input type="text" class="form-control" id="searchInput" placeholder="搜尋標題..." style="min-width: 200px; max-width: 300px; flex: 1 1 auto;">
+            
+            <!-- 類別篩選 -->
+            <select class="form-select" id="categoryFilter" style="width: auto; min-width: 140px;">
+                <option value="">所有類別</option>
+                <option value="GAME">遊戲 (GAME)</option>
+                <option value="WEBSITE">網站 (WEBSITE)</option>
+            </select>
+            
+            <!-- 每頁筆數 -->
+            <select class="form-select" id="pageSize" style="width: auto; min-width: 120px;">
+                <option value="10">10筆/頁</option>
+                <option value="20">20筆/頁</option>
+                <option value="50">50筆/頁</option>
+                <option value="100">100筆/頁</option>
+            </select>
+        </div>
+        
+        <!-- 新增按鈕（自動推到右側） -->
+        <a href="#projects/add" class="btn btn-primary" style="white-space: nowrap;">
+            <i class="fas fa-plus me-2"></i> 新增 Project
+        </a>
+    </div>
+
+    <!-- Table Container -->
+    <div id="projectsTable">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+        </div>
+    </div>
+
+    <!-- Pagination Info -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <small class="text-muted" id="pageInfo"></small>
+    </div>
+</div>
+
+<script>
+window.pageInit = async function() {
+    let allProjects = [];
+
+    await loadProjects();
+
+    // Event listeners
+    $('#searchInput').on('input', filterProjects);
+    $('#categoryFilter').on('change', filterProjects);
+    $('#pageSize').on('change', filterProjects);
+
+    async function loadProjects() {
+        showLoading('projectsTable');
+        try {
+            const data = await apiRequest('/api/admin/projects?limit=1000');
+            allProjects = data.items || [];
+            filterProjects();
+        } catch (error) {
+            showError('projectsTable', error.message);
+        }
+    }
+
+    function filterProjects() {
+        const search = $('#searchInput').val().toLowerCase();
+        const category = $('#categoryFilter').val();
+
+        const filtered = allProjects.filter(p => {
+            const matchCat = !category || p.category === category;
+            const matchSearch = !search || 
+                p.title.toLowerCase().includes(search) ||
+                (p.description || '').toLowerCase().includes(search);
+            return matchCat && matchSearch;
+        });
+
+        renderProjects(filtered);
+    }
+
+    function renderProjects(projects) {
+        if (projects.length === 0) {
+            $('#projectsTable').html(`
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> 暫無資料
+                </div>
+            `);
+            $('#pageInfo').text('顯示 0 / 共 0 筆');
+            return;
+        }
+
+        const html = `
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 100px;">ID</th>
+                            <th>標題</th>
+                            <th style="width: 110px;">類別</th>
+                            <th style="width: 110px;">日期</th>
+                            <th>標籤</th>
+                            <th style="width: 160px;" class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${projects.map(p => `
+                            <tr>
+                                <td><code class="small text-muted">${p.id}</code></td>
+                                <td>
+                                    <div class="fw-bold">${p.title}</div>
+                                    ${p.description ? `<small class="text-muted">${p.description.substring(0, 50)}...</small>` : ''}
+                                </td>
+                                <td>
+                                    <span class="badge ${p.category === 'GAME' ? 'bg-success' : 'bg-info'}">
+                                        ${p.category}
+                                    </span>
+                                </td>
+                                <td class="small">${formatDate(p.date)}</td>
+                                <td>
+                                    ${(p.tags || []).slice(0, 3).map(tag => 
+                                        `<span class="badge bg-light text-dark small me-1">${tag}</span>`
+                                    ).join('')}
+                                </td>
+                                <td class="text-center">
+                                    <a href="#projects/edit/${p.id}" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="deleteProject('${p.id}')" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        $('#projectsTable').html(html);
+        $('#pageInfo').text(`顯示 1-${projects.length} / 共 ${projects.length} 筆`);
+    }
+
+    window.deleteProject = async function(id) {
+        confirmDelete(
+            `確定要刪除 Project 「<strong>${id}</strong>」嗎？<br><span class="text-danger">此操作無法復原。</span>`,
+            async function() {
+                try {
+                    await apiRequest(`/api/admin/projects/${id}`, { method: 'DELETE' });
+                    showSuccessToast('刪除成功！');
+                    await loadProjects();
+                } catch (error) {
+                    showErrorToast('刪除失敗: ' + error.message);
+                }
+            }
+        );
+    };
+};
+</script>
+

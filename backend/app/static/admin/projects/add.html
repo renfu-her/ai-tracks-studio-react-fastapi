@@ -1,0 +1,202 @@
+<!-- Projects Add/Edit Content Fragment (不含 html/head/body) -->
+<div class="admin-card">
+    <h2 class="mb-4" id="formTitle">新增 Project</h2>
+    
+    <!-- RWD Form - 兩欄佈局 -->
+    <form id="projectForm">
+        <input type="hidden" id="projectId" />
+        
+        <div class="row g-4">
+            <!-- 左欄 -->
+            <div class="col-12 col-lg-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        標題 <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="projectTitle" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">描述</label>
+                    <textarea class="form-control" id="projectDescription" rows="4"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        類別 <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select" id="projectCategory" required>
+                        <option value="">請選擇類別</option>
+                        <option value="GAME">遊戲 (GAME)</option>
+                        <option value="WEBSITE">網站 (WEBSITE)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">日期</label>
+                    <input type="date" class="form-control" id="projectDate">
+                </div>
+            </div>
+
+            <!-- 右欄 -->
+            <div class="col-12 col-lg-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">縮圖</label>
+                    <div class="input-group mb-2">
+                        <input type="url" class="form-control" id="projectThumbnail" placeholder="https://example.com/image.jpg">
+                        <label for="projectImageFile" class="btn btn-outline-primary">
+                            <i class="fas fa-upload"></i> 上傳
+                            <input type="file" id="projectImageFile" accept="image/*" class="d-none">
+                        </label>
+                    </div>
+                    <small class="text-muted">自動轉換為 WebP</small>
+                    
+                    <div id="imagePreview" class="mt-3 p-3 bg-light rounded border d-none">
+                        <img id="previewImg" class="img-fluid rounded" style="max-height: 200px;">
+                        <div class="mt-2 small" id="imageInfo"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">標籤</label>
+                    <input type="text" class="form-control" id="projectTags" placeholder="action, adventure, 3D">
+                    <small class="text-muted">用逗號分隔</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">外部連結</label>
+                    <input type="url" class="form-control" id="projectLink" placeholder="https://example.com">
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="border-top pt-4 mt-4">
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="fas fa-save me-2"></i> 儲存
+            </button>
+            <a href="#projects/list" class="btn btn-secondary px-4 ms-2">
+                <i class="fas fa-times me-2"></i> 取消
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+window.pageInit = async function() {
+    let isEditMode = false;
+    let editingId = null;
+
+    // Check if edit mode
+    const hash = window.location.hash;
+    const match = hash.match(/#projects\/edit\/(.+)/);
+    if (match) {
+        isEditMode = true;
+        editingId = match[1];
+        $('#formTitle').text('編輯 Project');
+        $('#pageHeader').text('編輯 Project');
+        await loadProject(editingId);
+    }
+
+    // Image upload
+    $('#projectImageFile').change(async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        $('#imagePreview').removeClass('d-none');
+        $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const result = await $.ajax({
+                url: '/api/admin/upload/image',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhrFields: { withCredentials: true }
+            });
+
+            $('#projectThumbnail').val(result.url);
+            $('#previewImg').attr('src', result.url);
+            $('#imageInfo').html(`<i class="fas fa-check-circle text-success"></i> 上傳成功！WebP ${(result.size/1024).toFixed(2)} KB`);
+        } catch (error) {
+            $('#imageInfo').html(`<i class="fas fa-times-circle text-danger"></i> 上傳失敗`);
+        }
+    });
+
+    async function loadProject(id) {
+        try {
+            const project = await apiRequest(`/api/admin/projects/${id}`);
+            $('#projectId').val(project.id);
+            $('#projectTitle').val(project.title);
+            $('#projectDescription').val(project.description || '');
+            $('#projectThumbnail').val(project.thumbnail_url || '');
+            $('#projectCategory').val(project.category);
+            $('#projectDate').val(project.date || '');
+            $('#projectTags').val((project.tags || []).join(', '));
+            $('#projectLink').val(project.link || '');
+
+            if (project.thumbnail_url) {
+                $('#imagePreview').removeClass('d-none');
+                $('#previewImg').attr('src', project.thumbnail_url);
+                $('#imageInfo').text('當前圖片');
+            }
+        } catch (error) {
+            showErrorToast('載入失敗: ' + error.message);
+            window.location.hash = 'projects/list';
+        }
+    }
+
+    $('#projectForm').submit(async function(e) {
+        e.preventDefault();
+
+        const title = $('#projectTitle').val().trim();
+        const category = $('#projectCategory').val();
+
+        if (!title || !category) {
+            showErrorToast('請填寫所有必填欄位');
+            return;
+        }
+
+        let projectId = $('#projectId').val();
+        if (!isEditMode) {
+            projectId = `${category.toLowerCase()}-${Date.now().toString().slice(-6)}`;
+        }
+
+        const data = {
+            id: projectId,
+            title: title,
+            description: $('#projectDescription').val().trim() || null,
+            thumbnail_url: $('#projectThumbnail').val().trim() || null,
+            category: category,
+            date: $('#projectDate').val() || null,
+            tags: $('#projectTags').val() ? $('#projectTags').val().split(',').map(t => t.trim()).filter(t => t) : [],
+            link: $('#projectLink').val().trim() || null,
+        };
+
+        try {
+            if (isEditMode) {
+                await apiRequest(`/api/admin/projects/${editingId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data)
+                });
+                showSuccessToast('更新成功！');
+            } else {
+                await apiRequest('/api/admin/projects', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                showSuccessToast('新增成功！');
+            }
+
+            setTimeout(() => window.location.hash = 'projects/list', 1000);
+        } catch (error) {
+            showErrorToast('儲存失敗: ' + error.message);
+        }
+    });
+};
+</script>
+

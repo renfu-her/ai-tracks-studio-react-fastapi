@@ -1,5 +1,87 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-03 23:03:00 TST
+
+### Bootstrap 5 + jQuery Integration Bootstrap 5 + jQuery 整合
+
+#### Framework Integration 框架整合
+**Added Frontend Frameworks:**
+- **Bootstrap 5.3.2** - Modern responsive UI framework
+- **jQuery 3.7.1** - Simplified DOM manipulation
+- **Font Awesome 6.5.1** - Professional icon library (already integrated)
+
+#### Base Template System 基礎模板系統
+**Created Template Infrastructure:**
+- `static/base.html` - Base template reference
+- `static/js/common-ui.js` - Shared UI components with jQuery
+- `static/css/admin-bootstrap.css` - Bootstrap 5 custom styles
+
+**Shared Components 共用組件:**
+- `loadSidebar()` - Auto-load navigation sidebar
+- `loadHeader()` - Auto-load page header with user info
+- `setPageTitle(title)` - Set page title dynamically
+
+#### UI Components UI 組件
+**Bootstrap 5 Components:**
+- ✅ Responsive tables with hover effects
+- ✅ Modern buttons (primary, secondary, outline)
+- ✅ Dropdown menus for filters
+- ✅ Toast notifications (success/error)
+- ✅ Modal dialogs for confirmations
+- ✅ Spinners for loading states
+- ✅ Alerts for messages
+- ✅ Badges for categories/status
+
+**jQuery Utilities:**
+- ✅ `$()` selectors for easy DOM access
+- ✅ `.click()`, `.on()` event handling
+- ✅ `.ajax()` for API requests
+- ✅ `.html()`, `.val()` for content manipulation
+
+#### Full-Width Filter Bar 全寬篩選欄
+**New Design (matching reference image):**
+- 搜尋輸入框（flex-grow）
+- 類別下拉選單（Bootstrap dropdown）
+- 每頁筆數下拉選單
+- 新增按鈕（ms-auto 推到右側）
+- 使用 `d-flex` 實現響應式佈局
+
+#### Example Pages 示範頁面
+**Created:**
+- `admin/projects/index-bootstrap.html` - Complete Bootstrap 5 example
+  - Full-width filter bar
+  - Dropdown menus
+  - Responsive table
+  - Toast notifications
+  - Delete confirmation modal
+
+**Features:**
+- jQuery event handling
+- Bootstrap dropdown integration
+- Dynamic content rendering
+- Shared sidebar/header loading
+
+#### Form Improvements 表單改進
+**Full-Width Forms:**
+- ✅ All forms now use `width: 100%` instead of `max-width: 800px`
+- ✅ Better space utilization
+- ✅ Larger input areas
+- ✅ More comfortable editing experience
+
+**Auto-Generated IDs:**
+- Projects: Removed manual ID input (auto-gen: `{category}-{timestamp}`)
+- News: Removed manual ID input (auto-gen: `news-{timestamp}`)
+
+#### Documentation 文檔
+**Created:**
+- `backend/BOOTSTRAP_GUIDE.md` - Complete Bootstrap 5 + jQuery guide
+  - Component usage examples
+  - jQuery common operations
+  - Template structure
+  - Best practices
+
+---
+
 ## 2025-12-03 22:57:03 TST
 
 ### Image Upload with WebP Conversion 圖片上傳與 WebP 轉換
@@ -84,7 +166,7 @@
 #### Storage Structure 儲存結構
 ```
 backend/app/static/
-├── uploads/              # Uploaded images
+├── uploads/              # Uploaded images (NEW)
 │   ├── 20251203_*.webp
 │   └── ...
 ├── css/
@@ -96,6 +178,29 @@ backend/app/static/
 - Images accessible at: `http://localhost:8000/static/uploads/{filename}.webp`
 - No authentication required for viewing
 - Suitable for frontend display
+
+#### Testing 測試
+**Via UI:**
+1. 訪問 `/backend/projects/add`
+2. 點擊「上傳圖片」
+3. 選擇 JPG/PNG 圖片
+4. 查看自動轉換為 WebP
+5. 預覽圖片
+6. 儲存表單
+
+**Via API:**
+```bash
+curl -X POST http://localhost:8000/api/admin/upload/image \
+  -F "file=@test.jpg" \
+  --cookie cookies.txt
+```
+
+#### Benefits 優勢
+✅ **省空間** - WebP 比 JPEG/PNG 小 30-80%  
+✅ **更快載入** - 減少頻寬使用  
+✅ **自動化** - 無需手動轉換  
+✅ **透明支持** - PNG 透明背景轉白色  
+✅ **唯一命名** - 時間戳避免衝突  
 
 ---
 
