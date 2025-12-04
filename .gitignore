@@ -1,0 +1,201 @@
+# AI-Tracks Studio - Git Ignore File
+
+# ==========================================
+# Environment Variables 環境變量
+# ==========================================
+.env
+.env.local
+.env.*.local
+
+# Keep example files
+!.env.example
+
+# ==========================================
+# Python 相關
+# ==========================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# uv
+.uv/
+uv.lock
+
+# ==========================================
+# Node.js / Frontend 相關
+# ==========================================
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production build
+dist/
+build/
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==========================================
+# Database 相關
+# ==========================================
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# MySQL dumps
+*.sql.gz
+*.sql.backup
+
+# ==========================================
+# Uploads & Static Files 上傳和靜態文件
+# ==========================================
+
+# Uploaded images (keep the directory, ignore contents)
+backend/app/static/uploads/*
+!backend/app/static/uploads/.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# ==========================================
+# IDE 相關
+# ==========================================
+
+# JetBrains
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ==========================================
+# OS 相關
+# ==========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ==========================================
+# Backup Files 備份文件
+# ==========================================
+
+*.backup
+*.bak
+*.old
+*~
+
+# ==========================================
+# Documentation 文檔
+# ==========================================
+
+# Keep documentation files, but ignore generated docs
+# docs/_build/
+# docs/.doctrees/
+
+# ==========================================
+# Package Managers 套件管理器
+# ==========================================
+
+# npm
+package-lock.json
+
+# yarn
+yarn.lock
+
+# pnpm
+pnpm-lock.yaml
+.pnpm-debug.log
+

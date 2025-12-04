@@ -193,20 +193,27 @@ EXIT;
 ```
 
 ```bash
-# Configure environment (optional)
-# Create .env file if needed
-cp .env.example .env
+# Create .env file
+cat > .env << 'EOF'
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=studio
+SECRET_KEY=dev-secret-key-please-change-in-production
+ENVIRONMENT=development
+DEBUG=True
+CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+EOF
 
-# Edit database settings if necessary
-# DB_HOST=localhost
-# DB_PORT=3306
-# DB_USER=root
-# DB_PASSWORD=your_password
-# DB_NAME=studio
+# IMPORTANT: Edit .env and set your MySQL password
+# nano .env  (or use your preferred editor)
 
 # Run database migrations and seed data
 mysql -u root -p studio < seed_about.sql
 ```
+
+**Note:** See [ENV_SETUP.md](ENV_SETUP.md) for detailed environment configuration.
 
 ### 3. Frontend Setup 前端設置
 
@@ -217,10 +224,11 @@ cd ../frontend
 # Install dependencies with pnpm
 pnpm install
 
-# Configure API endpoint (optional)
 # Create .env file
 echo "VITE_API_BASE_URL=http://localhost:8000" > .env
 ```
+
+**Note:** For production, change `VITE_API_BASE_URL` to your production API URL.
 
 ## 🏃 Running the Application
 
