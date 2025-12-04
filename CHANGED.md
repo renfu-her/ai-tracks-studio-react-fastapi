@@ -2,6 +2,116 @@
 
 ## 2025-12-04 (Current Time) - Production Environment Fix
 
+### Created Systemd Service Files systemd 服務文件
+
+#### Problem 問題 #4
+- Systemd service with direct `.venv/bin/gunicorn` path failed
+- `ModuleNotFoundError: No module named 'app'` in systemd service
+- Need to use `uv run` for projects managed by uv
+
+#### Solution 解決方案
+**Created systemd service files:**
+- ✅ `backend/studio-uvicorn.service` - Gunicorn with Uvicorn workers (recommended)
+- ✅ `backend/studio-uvicorn-simple.service` - Simple Uvicorn (easier)
+- ✅ `backend/SYSTEMD_SETUP.md` - Complete systemd setup guide
+
+**Key Changes in Service Files:**
+```ini
+# Use uv run instead of direct venv path
+ExecStart=/home/ai-tracks-studio/.local/bin/uv run gunicorn app.main:app ...
+
+# Set PYTHONPATH explicitly
+Environment="PYTHONPATH=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend"
+
+# Set correct WorkingDirectory
+WorkingDirectory=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+```
+
+**Two Service Options:**
+
+**Option 1: Gunicorn (Production)**
+- Better process management
+- Auto-restart failed workers
+- Graceful reload and shutdown
+- Suitable for high-traffic production
+
+**Option 2: Simple Uvicorn (Development/Small Projects)**
+- Simpler configuration
+- Easier to debug
+- Faster startup
+- Suitable for small to medium projects
+
+**Installation Steps:**
+```bash
+# Choose and copy service file
+sudo cp backend/studio-uvicorn.service /etc/systemd/system/
+
+# Create log directory (if using Gunicorn)
+sudo mkdir -p /var/log/uvicorn
+sudo chown ai-tracks-studio:ai-tracks-studio /var/log/uvicorn
+
+# Reload systemd
+sudo systemctl daemon-reload
+
+# Enable and start
+sudo systemctl enable studio-uvicorn
+sudo systemctl start studio-uvicorn
+
+# Check status
+sudo systemctl status studio-uvicorn
+```
+
+**Common Commands:**
+```bash
+# View logs
+sudo journalctl -u studio-uvicorn -f
+
+# Restart service
+sudo systemctl restart studio-uvicorn
+
+# Check if running
+curl http://127.0.0.1:9001/docs
+```
+
+---
+
+### Created Production Deployment Scripts 創建生產環境部署腳本
+
+#### Problem 問題 #3
+- Gunicorn failed with `ModuleNotFoundError: No module named 'app'`
+- Working directory was not set correctly
+- Commands must be run from `backend/` directory
+
+#### Solution 解決方案
+**Created deployment files:**
+- ✅ `backend/start.sh` - Production startup script
+- ✅ `backend/PRODUCTION_DEPLOY.md` - Complete deployment guide
+
+**startup script features 啟動腳本功能:**
+- Auto-detect script directory
+- Change to correct working directory
+- Support both Uvicorn and Gunicorn
+- Show Python version and working directory
+- Easy to use with systemd service
+
+**Usage 使用方式:**
+```bash
+cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+chmod +x start.sh
+./start.sh
+```
+
+**Or direct command 或直接命令:**
+```bash
+cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+**Key Point 重點:**
+⚠️ Always run from `backend/` directory, not from project root!
+
+---
+
 ### Fixed Missing Environment Variables 修復缺少的環境變數
 
 #### Problem 問題 #2

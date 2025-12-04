@@ -1,0 +1,47 @@
+[Unit]
+Description=AI-Tracks Studio Backend API (FastAPI with Uvicorn)
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=ai-tracks-studio
+Group=ai-tracks-studio
+WorkingDirectory=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+
+# Set environment variables
+Environment="PATH=/home/ai-tracks-studio/.local/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONPATH=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend"
+
+# Use uv run to ensure correct environment setup
+# This is the recommended way when using uv package manager
+ExecStart=/home/ai-tracks-studio/.local/bin/uv run gunicorn app.main:app \
+    --workers 8 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 127.0.0.1:9001 \
+    --timeout 120 \
+    --graceful-timeout 30 \
+    --access-logfile /var/log/uvicorn/studio-access.log \
+    --error-logfile /var/log/uvicorn/studio-error.log \
+    --log-level info \
+    --capture-output
+
+# Restart policy
+Restart=always
+RestartSec=3
+
+# Process management
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Security settings (optional but recommended)
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=studio-backend
+
+[Install]
+WantedBy=multi-user.target
+
