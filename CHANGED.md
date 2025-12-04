@@ -1,5 +1,98 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 12:20:00 TST
+
+### Fixed: About Us Page Not Found 修復：找不到關於我們頁面
+
+#### Problem 問題
+- Frontend showed: "About Us content not found"
+- API endpoint `/api/about` returned 404
+- Database `about_us` table was empty
+
+#### Solution 解決方案
+
+**1. Created Seed Data Script 創建種子數據腳本:**
+- ✅ `backend/seed_about.sql`
+- Inserts default About Us content
+- Includes title, subtitle, full description (Markdown)
+- Contact email included
+
+**2. Executed Seed Script 執行種子腳本:**
+```bash
+mysql -u root studio < seed_about.sql
+```
+
+**3. Verified Fix 驗證修復:**
+```bash
+curl http://localhost:8000/api/about
+# ✅ Returns complete data
+```
+
+**Content Added:**
+```
+Title: AI-Tracks Studio
+Subtitle: Innovative Web & Game Experiences Powered by AI
+Description: Full Markdown content with:
+  - Who We Are
+  - Our Mission
+  - What We Do
+  - Our Approach
+  - Get In Touch
+Email: contact@ai-tracks.studio
+```
+
+**Files Created:**
+- `backend/seed_about.sql` - SQL seed script
+- `backend/ABOUT_US_SETUP.md` - Documentation
+
+**Now Working:**
+- ✅ Visit: http://localhost:3000/about
+- ✅ API returns data
+- ✅ Frontend displays content
+- ✅ No more "not found" error
+
+## 2025-12-04 12:15:00 TST
+
+### Frontend: Clean URLs (Browser Router) 前端：清晰的 URL
+
+#### Changed Routing 更改路由
+
+**From Hash Router to Browser Router:**
+- ✅ Changed `HashRouter` to `BrowserRouter` in `App.tsx`
+- No more `#` in URLs!
+
+**URL Changes:**
+```
+Before 之前:  /#/game  /#/website  /#/news
+After  之後:  /game    /website    /news
+```
+
+**Benefits:**
+- ✅ Cleaner, more professional URLs
+- ✅ Better user experience
+- ✅ Easier to share links
+- ✅ Modern web standard
+- ✅ Better for SEO (if needed)
+
+**Examples:**
+```
+Old: http://localhost:3000/#/game/game-123
+New: http://localhost:3000/game/game-123
+
+Old: http://localhost:3000/#/news
+New: http://localhost:3000/news
+```
+
+**Development:**
+- Vite automatically handles History API fallback
+- All routes work on direct access
+- Page refresh works correctly
+- No additional configuration needed
+
+**Files Changed:**
+- `frontend/App.tsx` - Changed import from `HashRouter` to `BrowserRouter`
+- `frontend/ROUTING_CHANGE.md` - Documentation
+
 ## 2025-12-04 12:00:00 TST
 
 ### Frontend: Project Detail Page 前端：專案詳細頁面

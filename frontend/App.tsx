@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { SectionHero } from './components/SectionHero';
 import { ItemGrid } from './components/ItemGrid';
