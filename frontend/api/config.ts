@@ -43,7 +43,7 @@ export const getImageUrl = (filename: string | null | undefined): string => {
     return 'https://via.placeholder.com/800x600?text=No+Image';
   }
   
-  // Build full URL: http://localhost:8000/static/uploads/filename.webp
-  return `${API_CONFIG.BASE_URL}/static/uploads/${filename}`;
+  // Build full URL: http://localhost:8000/backend/static/uploads/filename.webp
+  return `${API_CONFIG.BASE_URL}/backend/static/uploads/${filename}`;
 };
 

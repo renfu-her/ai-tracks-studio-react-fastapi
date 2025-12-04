@@ -2,6 +2,166 @@
 
 ## 2025-12-04 (Current Time) - Production Environment Fix
 
+### Created Complete Production Deployment Guide 創建完整生產環境部署指南
+
+#### Problem 問題 #7
+**Frontend issues in production:**
+1. Page stuck at "載入中..." (Loading...)
+2. Browser error: `GET https://studio.ai-tracks.com/index.css net::ERR_ABORTED 404`
+3. Frontend not correctly deployed
+4. Backend API not responding to frontend requests
+
+#### Root Cause 根本原因
+- Frontend not built and deployed to production server
+- Missing `.env.production` configuration
+- Frontend still pointing to localhost instead of production domain
+- Static files (HTML, CSS, JS) not uploaded
+- Nginx not configured to serve frontend
+
+#### Solution 解決方案
+**Created comprehensive deployment guides:**
+- ✅ `PRODUCTION_DEPLOYMENT.md` - Complete production deployment guide
+  - Backend setup and verification
+  - Frontend build process
+  - Nginx configuration
+  - Troubleshooting steps
+- ✅ `frontend/DEPLOY_CONFIG.md` - Frontend-specific deployment guide
+  - Environment variable configuration
+  - Build commands
+  - Upload methods
+  - Verification steps
+
+**Complete Deployment Flow:**
+
+```
+Development (Windows)                   Production (Linux Server)
+─────────────────────                   ─────────────────────────
+1. Create .env.production               1. Backend running on :9001
+   VITE_API_BASE_URL=https://...       
+                                        2. Nginx serving on :80/:443
+2. npm run build                           ├─ Frontend (React SPA)
+   → generates dist/                       ├─ /api/* → Backend API
+                                           └─ /static/* → Backend static
+3. Upload dist/* to server
+   → /public/ directory                 3. Domain: studio.ai-tracks.com
+```
+
+**Quick Fix Steps:**
+
+```bash
+# On Windows (development)
+cd frontend
+# Create .env.production with: VITE_API_BASE_URL=https://studio.ai-tracks.com
+npm install
+npm run build
+
+# Upload dist/* to server
+
+# On Linux (production)
+cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com
+# Copy frontend files
+cp -r frontend/dist/* public/
+
+# Configure Nginx (see PRODUCTION_DEPLOYMENT.md)
+sudo nano /etc/nginx/sites-available/studio.ai-tracks.com
+sudo systemctl restart nginx
+```
+
+**Nginx Configuration Key Points:**
+```nginx
+root /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/public;
+
+location / {
+    try_files $uri $uri/ /index.html;  # SPA routing
+}
+
+location /api/ {
+    proxy_pass http://127.0.0.1:9001;  # Backend API
+}
+
+location /static/ {
+    proxy_pass http://127.0.0.1:9001/static/;  # Backend static
+}
+```
+
+**Expected Results:**
+- ✅ Homepage loads (not stuck at "載入中...")
+- ✅ No 404 errors for CSS/JS files
+- ✅ API requests successful
+- ✅ Frontend connects to backend
+- ✅ Images display correctly
+- ✅ Admin backend accessible at /backend
+
+**Files Created:**
+- `PRODUCTION_DEPLOYMENT.md` - Master deployment guide
+- `frontend/DEPLOY_CONFIG.md` - Frontend deployment config
+- Example Nginx configuration
+- Deployment checklist
+- Troubleshooting guide
+
+---
+
+### Fixed Static Files 404 Error 修復靜態文件 404 錯誤
+
+#### Problem 問題 #6
+**Browser console errors in production:**
+```
+Failed to load resource: the server responded with a status of 404
+- template-loader.js
+- admin.js
+
+Uncaught ReferenceError: checkAuth is not defined
+```
+
+#### Root Cause 根本原因
+- Static JavaScript files not deployed to production server
+- Files exist in development but missing in production
+- Results in admin backend not functioning
+
+#### Solution 解決方案
+**Created diagnostic and fix tools:**
+- ✅ `backend/FIX_STATIC_FILES_404.md` - Complete troubleshooting guide
+- ✅ `backend/check_static_files.sh` - Automated diagnostic script
+
+**Quick Fix Steps:**
+```bash
+# On production server
+cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com
+
+# 1. Pull latest code (includes static files)
+git pull origin main
+
+# 2. Fix permissions
+chmod -R 755 backend/app/static
+
+# 3. Restart service
+sudo systemctl restart studio-uvicorn
+
+# 4. Verify
+curl http://127.0.0.1:9001/static/js/admin.js
+curl http://127.0.0.1:9001/static/js/template-loader.js
+```
+
+**Diagnostic Tool:**
+```bash
+cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+chmod +x check_static_files.sh
+bash check_static_files.sh
+```
+
+**Common Causes:**
+1. Files not committed to Git
+2. Files excluded by .gitignore
+3. Permission issues
+4. Deployment didn't include static files
+
+**Files to Check:**
+- `backend/app/static/js/admin.js`
+- `backend/app/static/js/template-loader.js`
+- `backend/app/static/js/common-ui.js`
+
+---
+
 ### Updated Project to Python 3.12 更新專案至 Python 3.12
 
 #### Changes 更改
