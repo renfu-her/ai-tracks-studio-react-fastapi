@@ -33,3 +33,17 @@ export const API_ENDPOINTS = {
   ABOUT: '/about',
 } as const;
 
+/**
+ * Build full image URL from filename
+ * Backend now returns only filename, not full URL
+ */
+export const getImageUrl = (filename: string | null | undefined): string => {
+  if (!filename) {
+    // Return placeholder image if no filename
+    return 'https://via.placeholder.com/800x600?text=No+Image';
+  }
+  
+  // Build full URL: http://localhost:8000/static/uploads/filename.webp
+  return `${API_CONFIG.BASE_URL}/static/uploads/${filename}`;
+};
+

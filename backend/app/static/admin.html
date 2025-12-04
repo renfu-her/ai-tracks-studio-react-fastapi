@@ -392,8 +392,14 @@
             $('#pageTitle').text(pageTitle + ' - AI-Tracks Studio Admin');
             $('#pageHeader').text(pageTitle);
 
+            // Map add and edit actions to add-edit.html (single form handles both)
+            let actualAction = action;
+            if (action === 'add' || action === 'edit') {
+                actualAction = 'add-edit';
+            }
+
             // Load content based on module and action
-            const contentPath = `/static/admin/${module}/${action}.html`;
+            const contentPath = `/static/admin/${module}/${actualAction}.html`;
             
             try {
                 const response = await $.get(contentPath);

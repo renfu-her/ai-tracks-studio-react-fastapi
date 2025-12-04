@@ -3,10 +3,12 @@ import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { SectionHero } from './components/SectionHero';
 import { ItemGrid } from './components/ItemGrid';
+import { ProjectDetail } from './components/ProjectDetail';
 import { HERO_IMAGES } from './constants';
 import { ArrowRight, Calendar, User, Star, Zap, Mail, Loader2, AlertCircle } from 'lucide-react';
 import { projectsApi, newsApi, aboutApi } from './api';
 import type { ProjectItem, NewsItem, AboutUs } from './types';
+import { getImageUrl } from './api/config';
 
 // --- Utility Components ---
 
@@ -173,7 +175,7 @@ const NewsPage: React.FC = () => {
                 >
                   <div className="w-full md:w-1/3 aspect-video rounded-2xl overflow-hidden shadow-md relative">
                     <img
-                      src={item.image_url}
+                      src={getImageUrl(item.image)}
                       alt={item.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -295,7 +297,7 @@ const HomePage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {featuredGames.map((game) => (
                   <Link to="/game" key={game.id} className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                    <img src={game.thumbnail_url} alt={game.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <img src={getImageUrl(game.image)} alt={game.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent opacity-90"></div>
                     <div className="absolute bottom-0 left-0 p-8 w-full">
                       <div className="mb-3">
@@ -415,7 +417,9 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/game" element={<GamesPage />} />
+          <Route path="/game/:id" element={<ProjectDetail />} />
           <Route path="/website" element={<WebsitesPage />} />
+          <Route path="/website/:id" element={<ProjectDetail />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/about" element={<AboutPage />} />
         </Routes>

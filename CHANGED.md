@@ -1,5 +1,168 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 12:00:00 TST
+
+### Frontend: Project Detail Page 前端：專案詳細頁面
+
+#### Added Features 新增功能
+
+**1. Project Detail Component 專案詳細組件:**
+- ✅ Created `frontend/components/ProjectDetail.tsx`
+- Full-screen hero image with gradient overlay
+- Project title and category badge
+- Detailed description section
+- Metadata sidebar (date, tags, external link)
+- Back navigation to list page
+- Loading and error states
+- Responsive design
+
+**2. Clickable Project Cards 可點擊的專案卡片:**
+- ✅ Updated `frontend/components/ItemGrid.tsx`
+- Wrapped cards in `<Link>` components
+- Dynamic routing: `/game/:id` or `/website/:id`
+- Hover shows "View Details" button
+- Smooth transitions
+
+**3. New Routes 新路由:**
+- ✅ `/game/:id` → Project detail (games)
+- ✅ `/website/:id` → Project detail (websites)
+
+**4. Fixed Image Display 修復圖片顯示:**
+- ✅ Updated `frontend/types.ts` - Changed `thumbnail_url` to `image`, `image_url` to `image`
+- ✅ Added `getImageUrl()` helper in `frontend/api/config.ts`
+- ✅ Updated all components to use `getImageUrl(item.image)`
+- Images now construct full URL from filename
+
+#### User Flow 用戶流程
+
+```
+Games Page → Click Card → /#/game/game-123 → Detail Page → Back to Games
+Websites Page → Click Card → /#/website/website-456 → Detail Page → Back to Websites
+Home → Featured Game → Click → Games List → Click Card → Detail Page
+```
+
+#### Files Changed 更改的文件
+
+**New Files 新文件:**
+- `frontend/components/ProjectDetail.tsx` - Detail page component
+- `frontend/PROJECT_DETAIL_PAGE.md` - Documentation
+- `frontend/IMAGE_URL_FIX.md` - Image URL fix documentation
+
+**Updated Files 更新的文件:**
+- `frontend/App.tsx` - Added detail routes, imported `ProjectDetail`, added `getImageUrl`
+- `frontend/components/ItemGrid.tsx` - Made cards clickable with `Link`
+- `frontend/types.ts` - Changed image field names
+- `frontend/api/config.ts` - Added `getImageUrl()` helper
+
+#### Benefits 優點
+
+- ✅ Users can view full project details
+- ✅ Better UX with dedicated detail pages
+- ✅ Clean, semantic URLs
+- ✅ Images display correctly from backend
+- ✅ Responsive on all devices
+- ✅ Easy to navigate back to list
+
+## 2025-12-04 11:45:00 TST
+
+### Unified Add-Edit Form 統一新增編輯表單
+
+#### Implementation 實作方式
+**Created unified `add-edit.html` for all modules:**
+- ✅ `projects/add-edit.html` (renamed from `add.html`)
+- ✅ `news/add-edit.html` (renamed from `add.html`)
+- ✅ `about/add-edit.html` (renamed from `add.html`)
+
+**Routing Logic in `admin.html`:**
+```javascript
+// Map add and edit actions to add-edit.html (single form handles both)
+let actualAction = action;
+if (action === 'add' || action === 'edit') {
+    actualAction = 'add-edit';
+}
+```
+
+**URL Patterns:**
+- `#projects/add` → Loads `add-edit.html` in create mode
+- `#projects/edit/game-123` → Loads `add-edit.html` in edit mode
+- Same for News and About
+
+**Form Behavior:**
+- Detects edit mode by checking for `/edit/ID` in URL
+- Automatically loads existing data when in edit mode
+- Shows correct title: "新增專案" or "編輯專案"
+- Single source of truth for form logic
+
+**Benefits:**
+- ✅ Clean, semantic URLs
+- ✅ Single file to maintain per module
+- ✅ Consistent behavior across all modules
+- ✅ Easy to understand and modify
+- ✅ No duplicate code
+
+## 2025-12-04 11:30:00 TST
+
+### Fixed Edit URL Routing 修復編輯頁面路由 (DEPRECATED)
+
+#### Problem 問題
+- When clicking "Edit" button, URL showed `#projects/add/ID` instead of `#projects/edit/ID`
+- This was confusing because "add" URL with ID looked wrong
+- News and About had the same issue
+- Old URLs with `/add/ID` format didn't work as edit mode
+
+#### Root Cause 根本原因
+- `edit.html` files were redirecting from `#module/edit/ID` to `#module/add/ID`
+- This was done because `add.html` handles both add and edit modes
+- But the URL looked incorrect to users
+- `add.html` only checked for `/edit/ID` pattern, not `/add/ID`
+
+#### Solution 解決方案
+**1. Improved routing logic in `admin.html`:**
+```javascript
+// Map edit action to add.html (single form handles both add and edit)
+let actualAction = action;
+if (action === 'edit' && id) {
+    actualAction = 'add'; // Use add.html for both add and edit
+}
+```
+
+**2. Enhanced pattern matching in all `add.html` files:**
+```javascript
+// Support both /edit/ID and /add/ID for backward compatibility
+const match = hash.match(/#projects\/(edit|add)\/(.+)/);
+if (match && match[2]) {
+    isEditMode = true;
+    editingId = match[2];
+    
+    // Auto-redirect old /add/ID URLs to /edit/ID format
+    if (match[1] === 'add') {
+        window.location.hash = `projects/edit/${editingId}`;
+        return;
+    }
+}
+```
+
+**3. Removed redirect files:**
+- ❌ Deleted `projects/edit.html`
+- ❌ Deleted `news/edit.html`
+- ❌ Deleted `about/edit.html`
+
+**Now routing works correctly:**
+- ✅ `#projects/edit/game-123` → Loads `add.html` in edit mode
+- ✅ `#projects/add` → Loads `add.html` in create mode
+- ✅ `#projects/add/game-123` → Auto-redirects to `#projects/edit/game-123`
+- ✅ URL stays clean as `#projects/edit/ID`
+- ✅ Page title correctly shows "編輯專案" (Edit Project)
+- ✅ Same for News and About
+
+**Benefits:**
+- ✅ Clean URLs that make sense
+- ✅ No confusing redirects
+- ✅ Backward compatible with old URLs
+- ✅ Single source of truth (add.html handles both modes)
+- ✅ Better user experience
+- ✅ Correct page titles for edit mode
+
 ## 2025-12-04 09:15:00 TST
 
 ### Database LONGTEXT & Chinese Labels 資料庫 LONGTEXT 與中文標籤

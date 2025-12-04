@@ -7,7 +7,7 @@ export interface ProjectItem {
   id: string;
   title: string;
   description: string;
-  thumbnail_url: string;
+  image: string; // Changed from thumbnail_url - now stores filename only
   category: Category;
   date: string;
   tags: string[];
@@ -22,16 +22,10 @@ export interface NewsItem {
   excerpt: string;
   content: string;
   date: string;
-  image_url: string;
+  image: string; // Changed from image_url - now stores filename only
   author: string;
   created_at: string;
   updated_at: string;
-}
-
-export interface AboutValue {
-  icon: string;
-  title: string;
-  description: string;
 }
 
 export interface AboutUs {
@@ -39,7 +33,7 @@ export interface AboutUs {
   title: string | null;
   subtitle: string | null;
   description: string | null;
-  values: AboutValue[];
+  image: string | null; // Image filename
   contact_email: string | null;
   created_at: string;
   updated_at: string;

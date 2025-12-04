@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ProjectItem } from '../types';
 import { ArrowRight, Calendar, Tag } from 'lucide-react';
+import { getImageUrl } from '../api/config';
 
 interface ItemGridProps {
   items: ProjectItem[];
@@ -28,27 +30,31 @@ export const ItemGrid: React.FC<ItemGridProps> = ({ items, title, itemsPerPage =
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {displayItems.map((item) => (
-          <div 
-            key={item.id} 
-            className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-slate-100"
-          >
-            {/* Image Container */}
-            <div className="relative h-56 overflow-hidden">
-              <img 
-                src={item.thumbnail_url} 
-                alt={item.title} 
-                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <button className="bg-white text-slate-900 px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
-                  View Details
-                </button>
+        {displayItems.map((item) => {
+          const detailPath = item.category === 'GAME' ? `/game/${item.id}` : `/website/${item.id}`;
+          
+          return (
+            <Link
+              key={item.id}
+              to={detailPath}
+              className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-slate-100 block"
+            >
+              {/* Image Container */}
+              <div className="relative h-56 overflow-hidden">
+                <img 
+                  src={getImageUrl(item.image)} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <span className="bg-white text-slate-900 px-6 py-2 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+                    View Details
+                  </span>
+                </div>
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-accent-600 shadow-sm">
+                  {item.category}
+                </div>
               </div>
-              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-accent-600 shadow-sm">
-                {item.category}
-              </div>
-            </div>
 
             {/* Content */}
             <div className="p-6">
@@ -71,13 +77,14 @@ export const ItemGrid: React.FC<ItemGridProps> = ({ items, title, itemsPerPage =
                   <Calendar size={14} />
                   {item.date}
                 </div>
-                <div className="text-accent-500 font-semibold text-sm flex items-center gap-1 group/link cursor-pointer">
+                <div className="text-accent-500 font-semibold text-sm flex items-center gap-1 group/link">
                   Learn More <ArrowRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          </Link>
+          );
+        })}
       </div>
 
       {/* Pagination Controls */}
