@@ -11,6 +11,8 @@ import { ArrowRight, Calendar, User, Star, Zap, Mail, Loader2, AlertCircle } fro
 import { projectsApi, newsApi, aboutApi } from './api';
 import type { ProjectItem, NewsItem, AboutUs } from './types';
 import { getImageUrl } from './api/config';
+import { useSEO } from './hooks/useSEO';
+import { generatePageSEO, ORGANIZATION_DATA, generateArticleData } from './utils/seo';
 
 // --- Utility Components ---
 
@@ -45,6 +47,19 @@ const AboutPage: React.FC = () => {
   const [about, setAbout] = useState<AboutUs | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // SEO
+  useSEO(
+    generatePageSEO(
+      'About Us',
+      'Learn about AI-Tracks Studio, our mission, and the innovative team behind cutting-edge web and game experiences powered by artificial intelligence.',
+      { 
+        canonical: 'https://studio.ai-tracks.com/about',
+        keywords: 'about us, AI studio, team, mission, innovation, web development, game development'
+      }
+    ),
+    ORGANIZATION_DATA
+  );
 
   const fetchAbout = async () => {
     setLoading(true);
@@ -137,6 +152,19 @@ const NewsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // SEO
+  useSEO(
+    generatePageSEO(
+      'Latest News',
+      'Stay updated with the latest insights, announcements, and developments from AI-Tracks Studio. Explore our articles on AI, web development, and game design.',
+      { 
+        canonical: 'https://studio.ai-tracks.com/news',
+        keywords: 'news, blog, updates, AI news, tech articles, announcements',
+        ogType: 'website'
+      }
+    )
+  );
+
   const fetchNews = async () => {
     setLoading(true);
     setError(null);
@@ -221,6 +249,20 @@ const HomePage: React.FC = () => {
   const [featuredGames, setFeaturedGames] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // SEO - Home Page
+  useSEO(
+    {
+      title: 'AI-Tracks Studio - Innovative Web & Game Experiences Powered by AI',
+      description: 'Discover cutting-edge web applications and interactive games created with artificial intelligence. Explore immersive experiences and innovative digital solutions from AI-Tracks Studio.',
+      keywords: 'AI studio, web development, game development, interactive experiences, AI-powered games, web demos, React, TypeScript',
+      canonical: 'https://studio.ai-tracks.com',
+      ogType: 'website',
+      ogImage: 'https://studio.ai-tracks.com/og-image.jpg',
+      ogUrl: 'https://studio.ai-tracks.com',
+    },
+    ORGANIZATION_DATA
+  );
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -337,6 +379,19 @@ const GamesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // SEO
+  useSEO(
+    generatePageSEO(
+      'Game Projects',
+      'Explore our collection of interactive games and gaming experiences powered by AI. From puzzle games to action adventures, discover innovative gameplay mechanics.',
+      { 
+        canonical: 'https://studio.ai-tracks.com/game',
+        keywords: 'games, interactive games, web games, AI games, mini games, browser games',
+        ogType: 'website'
+      }
+    )
+  );
+
   const fetchGames = async () => {
     setLoading(true);
     setError(null);
@@ -377,6 +432,19 @@ const WebsitesPage: React.FC = () => {
   const [websites, setWebsites] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // SEO
+  useSEO(
+    generatePageSEO(
+      'Web Demos',
+      'Discover our portfolio of responsive, high-performance web applications and demos. Explore cutting-edge web development techniques and innovative UI/UX designs.',
+      { 
+        canonical: 'https://studio.ai-tracks.com/website',
+        keywords: 'web demos, web development, responsive design, UI/UX, web applications, prototypes',
+        ogType: 'website'
+      }
+    )
+  );
 
   const fetchWebsites = async () => {
     setLoading(true);

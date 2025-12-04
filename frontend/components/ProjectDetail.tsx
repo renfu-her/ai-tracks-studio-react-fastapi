@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { projectsApi } from '../api';
-import { getImageUrl } from '../api/config';
+import { getImageUrl, API_CONFIG } from '../api/config';
 import { ProjectItem } from '../types';
 import { ArrowLeft, Calendar, Tag, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
 import { MarkdownContent } from './MarkdownContent';
+import { useSEO } from '../hooks/useSEO';
+import { generateProductData } from '../utils/seo';
 
 export const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +37,31 @@ export const ProjectDetail: React.FC = () => {
 
     fetchProject();
   }, [id]);
+
+  // Dynamic SEO based on project data
+  useSEO(
+    project ? {
+      title: `${project.title} | AI-Tracks Studio`,
+      description: project.description.substring(0, 160) || `Explore ${project.title}, an innovative ${project.category.toLowerCase()} project by AI-Tracks Studio.`,
+      keywords: `${project.category.toLowerCase()}, ${project.tags.join(', ')}, interactive, web development`,
+      canonical: `https://studio.ai-tracks.com/${project.category === 'GAME' ? 'game' : 'website'}/${project.id}`,
+      ogTitle: project.title,
+      ogDescription: project.description.substring(0, 160),
+      ogImage: project.image ? `${API_CONFIG.BASE_URL}/backend/static/uploads/${project.image}` : undefined,
+      ogType: 'website',
+      ogUrl: `https://studio.ai-tracks.com/${project.category === 'GAME' ? 'game' : 'website'}/${project.id}`,
+    } : {
+      title: 'Loading Project | AI-Tracks Studio',
+      description: 'Loading project details...',
+    },
+    project ? generateProductData({
+      name: project.title,
+      description: project.description,
+      image: project.image ? `${API_CONFIG.BASE_URL}/backend/static/uploads/${project.image}` : undefined,
+      category: project.category,
+      url: project.link || undefined,
+    }) : undefined
+  );
 
   if (loading) {
     return (

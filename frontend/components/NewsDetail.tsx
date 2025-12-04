@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { newsApi } from '../api';
-import { getImageUrl } from '../api/config';
+import { getImageUrl, API_CONFIG } from '../api/config';
 import { NewsItem } from '../types';
 import { ArrowLeft, Calendar, User, Loader2, AlertCircle } from 'lucide-react';
 import { MarkdownContent } from './MarkdownContent';
+import { useSEO } from '../hooks/useSEO';
+import { generateArticleData } from '../utils/seo';
 
 export const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +37,31 @@ export const NewsDetail: React.FC = () => {
 
     fetchNews();
   }, [id]);
+
+  // Dynamic SEO based on news data
+  useSEO(
+    news ? {
+      title: `${news.title} | AI-Tracks Studio News`,
+      description: news.excerpt.substring(0, 160) || `Read ${news.title} on AI-Tracks Studio blog.`,
+      keywords: `news, article, blog, ${news.title}, AI-Tracks Studio`,
+      canonical: `https://studio.ai-tracks.com/news/${news.id}`,
+      ogTitle: news.title,
+      ogDescription: news.excerpt.substring(0, 160),
+      ogImage: news.image ? `${API_CONFIG.BASE_URL}/backend/static/uploads/${news.image}` : undefined,
+      ogType: 'article',
+      ogUrl: `https://studio.ai-tracks.com/news/${news.id}`,
+    } : {
+      title: 'Loading Article | AI-Tracks Studio',
+      description: 'Loading article...',
+    },
+    news ? generateArticleData({
+      title: news.title,
+      description: news.excerpt,
+      image: news.image ? `${API_CONFIG.BASE_URL}/backend/static/uploads/${news.image}` : undefined,
+      datePublished: news.date,
+      author: news.author,
+    }) : undefined
+  );
 
   if (loading) {
     return (

@@ -1,0 +1,16 @@
+# Robots.txt for AI-Tracks Studio
+# https://studio.ai-tracks.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://studio.ai-tracks.com/sitemap.xml
+
+# Disallow admin areas (if any)
+# Disallow: /admin/
+# Disallow: /backend/
+
+# Crawl-delay (optional, helps prevent server overload)
+# Crawl-delay: 1
+
