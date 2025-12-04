@@ -134,23 +134,20 @@ window.pageInit = async function() {
         $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
 
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const result = await $.ajax({
-                url: '/api/admin/upload/image',
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                xhrFields: { withCredentials: true }
-            });
-
-            $('#newsImage').val(result.url);
-            $('#previewImg').attr('src', result.url);
-            $('#imageInfo').html(`<i class="fas fa-check-circle text-success"></i> 上傳成功！WebP ${(result.size/1024).toFixed(2)} KB`);
+            const filename = await uploadImage(file);
+            
+            // Save only filename (not path)
+            $('#newsImage').val(filename);
+            
+            // Display image preview with full URL
+            const imageUrl = getImageUrl(filename);
+            $('#previewImg').attr('src', imageUrl);
+            
+            // Show UUID info
+            const uuid = filename.split('.')[0];
+            $('#imageInfo').html(`<i class="fas fa-check-circle text-success"></i> 上傳成功！UUID7: ${uuid.substring(0, 12)}...`);
         } catch (error) {
-            $('#imageInfo').html(`<i class="fas fa-times-circle text-danger"></i> 上傳失敗`);
+            $('#imageInfo').html(`<i class="fas fa-times-circle text-danger"></i> ${error.message}`);
         }
     });
 
@@ -168,12 +165,14 @@ window.pageInit = async function() {
                 contentEditor.value(news.content || '');
             }
             
-            $('#newsImage').val(news.image_url || '');
+            const imageFilename = news.image_url || '';
+            $('#newsImage').val(imageFilename);
             $('#newsDate').val(news.date || '');
             $('#newsAuthor').val(news.author || '');
 
-            if (news.image_url) {
+            if (imageFilename) {
                 $('#imagePreview').removeClass('d-none');
+                $('#previewImg').attr('src', getImageUrl(imageFilename));
                 $('#previewImg').attr('src', news.image_url);
                 $('#imageInfo').text('當前圖片');
             }

@@ -70,6 +70,38 @@ async function apiRequest(url, options = {}) {
     return data;
 }
 
+// Upload image (returns only filename)
+async function uploadImage(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch('/api/admin/upload/image', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+    });
+    
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || '上傳失敗');
+    }
+    
+    const result = await response.json();
+    return result.filename; // Only return filename
+}
+
+// Get full image URL from filename
+function getImageUrl(filename) {
+    if (!filename) return '';
+    if (filename.startsWith('http://') || filename.startsWith('https://')) {
+        return filename;
+    }
+    if (filename.startsWith('/static/uploads/')) {
+        return filename;
+    }
+    return `/static/uploads/${filename}`;
+}
+
 // Show loading
 function showLoading(containerId) {
     const container = document.getElementById(containerId);

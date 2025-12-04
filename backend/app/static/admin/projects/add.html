@@ -134,23 +134,20 @@ window.pageInit = async function() {
         $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
 
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const result = await $.ajax({
-                url: '/api/admin/upload/image',
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                xhrFields: { withCredentials: true }
-            });
-
-            $('#projectThumbnail').val(result.url);
-            $('#previewImg').attr('src', result.url);
-            $('#imageInfo').html(`<i class="fas fa-check-circle text-success"></i> 上傳成功！WebP ${(result.size/1024).toFixed(2)} KB`);
+            const filename = await uploadImage(file);
+            
+            // Save only filename (not path)
+            $('#projectThumbnail').val(filename);
+            
+            // Display image preview with full URL
+            const imageUrl = getImageUrl(filename);
+            $('#previewImg').attr('src', imageUrl);
+            
+            // Show UUID info
+            const uuid = filename.split('.')[0];
+            $('#imageInfo').html(`<i class="fas fa-check-circle text-success"></i> 上傳成功！UUID7: ${uuid.substring(0, 12)}...`);
         } catch (error) {
-            $('#imageInfo').html(`<i class="fas fa-times-circle text-danger"></i> 上傳失敗`);
+            $('#imageInfo').html(`<i class="fas fa-times-circle text-danger"></i> ${error.message}`);
         }
     });
 
@@ -165,7 +162,14 @@ window.pageInit = async function() {
                 descriptionEditor.value(project.description || '');
             }
             
-            $('#projectThumbnail').val(project.thumbnail_url || '');
+            const thumbnailFilename = project.thumbnail_url || '';
+            $('#projectThumbnail').val(thumbnailFilename);
+            
+            // Show preview if has image
+            if (thumbnailFilename) {
+                $('#previewImg').attr('src', getImageUrl(thumbnailFilename));
+            }
+            
             $('#projectCategory').val(project.category);
             $('#projectDate').val(project.date || '');
             $('#projectTags').val((project.tags || []).join(', '));

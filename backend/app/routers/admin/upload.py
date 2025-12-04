@@ -1,10 +1,10 @@
 """Image upload API with WebP conversion."""
 
 from pathlib import Path
-from datetime import datetime
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from PIL import Image
 import io
+import uuid7
 from app.dependencies import require_admin
 from app.models.user import User
 
@@ -69,9 +69,9 @@ async def upload_image(
         elif image.mode != 'RGB':
             image = image.convert('RGB')
         
-        # Generate unique filename
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
-        filename = f"{timestamp}.webp"
+        # Generate unique filename with UUID7
+        unique_id = str(uuid7.uuid7())
+        filename = f"{unique_id}.webp"
         filepath = UPLOAD_DIR / filename
         
         # Save as WebP with optimization
@@ -83,12 +83,9 @@ async def upload_image(
             optimize=True
         )
         
-        # Return URL
-        url = f"/static/uploads/{filename}"
-        
+        # Return only filename (not full path)
         return {
             "success": True,
-            "url": url,
             "filename": filename,
             "size": filepath.stat().st_size
         }
