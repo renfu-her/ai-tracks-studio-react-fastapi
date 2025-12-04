@@ -1,0 +1,44 @@
+[Unit]
+Description=AI-Tracks Studio Backend API (Direct Python Path)
+After=network.target mysql.service
+
+[Service]
+Type=simple
+User=ai-tracks-studio
+Group=ai-tracks-studio
+
+# Change to backend directory BEFORE running command
+WorkingDirectory=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+
+# Use bash to ensure we're in the right directory
+# This is the most reliable way to ensure Python can find the app module
+ExecStart=/bin/bash -c '\
+    cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend && \
+    export PYTHONPATH=/home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend && \
+    exec /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend/.venv/bin/gunicorn \
+        app.main:app \
+        --workers 8 \
+        --worker-class uvicorn.workers.UvicornWorker \
+        --bind 127.0.0.1:9001 \
+        --timeout 120 \
+        --graceful-timeout 30 \
+        --access-logfile /var/log/uvicorn/studio-access.log \
+        --error-logfile /var/log/uvicorn/studio-error.log \
+        --log-level info'
+
+# Restart policy
+Restart=always
+RestartSec=3
+
+# Process management
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=studio-backend
+
+[Install]
+WantedBy=multi-user.target
+

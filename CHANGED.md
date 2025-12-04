@@ -2,18 +2,31 @@
 
 ## 2025-12-04 (Current Time) - Production Environment Fix
 
-### Created Systemd Service Files systemd 服務文件
+### Created Systemd Service Files & Diagnostic Tools systemd 服務文件與診斷工具
 
 #### Problem 問題 #4
 - Systemd service with direct `.venv/bin/gunicorn` path failed
 - `ModuleNotFoundError: No module named 'app'` in systemd service
-- Need to use `uv run` for projects managed by uv
+- Need proper PYTHONPATH and working directory setup
 
 #### Solution 解決方案
 **Created systemd service files:**
-- ✅ `backend/studio-uvicorn.service` - Gunicorn with Uvicorn workers (recommended)
-- ✅ `backend/studio-uvicorn-simple.service` - Simple Uvicorn (easier)
+- ✅ `backend/studio-uvicorn.service` - Gunicorn with Uvicorn workers (using uv run)
+- ✅ `backend/studio-uvicorn-simple.service` - Simple Uvicorn (using uv run)
+- ✅ `backend/studio-uvicorn-direct.service` - Direct path with bash wrapper (most reliable)
 - ✅ `backend/SYSTEMD_SETUP.md` - Complete systemd setup guide
+- ✅ `backend/diagnose.sh` - Diagnostic script to troubleshoot issues
+- ✅ `backend/QUICK_FIX.md` - Quick fix guide with step-by-step solutions
+- ✅ `backend/check_python_compatibility.sh` - Python 3.14 compatibility check script
+- ✅ `backend/PYTHON_3.14_NOTES.md` - Python 3.14 compatibility notes and recommendations
+- ✅ `backend/switch_to_python_3.12.sh` - Automated script to switch from Python 3.14 to 3.12
+- ✅ `backend/SWITCH_TO_PYTHON_3.12.md` - Complete guide for switching to Python 3.12
+
+**Recommendation for Production 生產環境建議:**
+- Python 3.12 is more stable and fully tested
+- All packages have complete Python 3.12 support
+- Better for production environments
+- Use the automated script to switch in 2-5 minutes
 
 **Key Changes in Service Files:**
 ```ini
