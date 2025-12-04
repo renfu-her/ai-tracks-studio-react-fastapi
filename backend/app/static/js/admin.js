@@ -1,18 +1,19 @@
 // Admin Panel Common JavaScript
 // Version: 2024120401
 
-// Prevent multiple loading
+// Skip if already loaded (but still define functions below)
 if (window.ADMIN_JS_LOADED) {
-    console.log('admin.js already loaded, skipping');
+    console.log('[admin.js] Already loaded v2024120401');
 } else {
     window.ADMIN_JS_LOADED = true;
-    console.log('Loading admin.js v2024120401');
+    console.log('[admin.js] Loading v2024120401');
+}
 
 // API Base URL
 window.API_BASE = window.API_BASE || '';
 
 // Check authentication
-async function checkAuth() {
+window.checkAuth = async function checkAuth() {
     try {
         const response = await fetch('/api/admin/me', {
             credentials: 'include'
@@ -30,10 +31,10 @@ async function checkAuth() {
         window.location.href = '/backend/login';
         return null;
     }
-}
+};
 
 // Logout function
-async function logout() {
+window.logout = async function logout() {
     if (!confirm('確定要登出嗎？')) return;
     
     try {
@@ -46,10 +47,10 @@ async function logout() {
         console.error('Logout failed:', error);
         alert('登出失敗');
     }
-}
+};
 
 // API fetch wrapper
-async function apiRequest(url, options = {}) {
+window.apiRequest = async function apiRequest(url, options = {}) {
     const defaultOptions = {
         credentials: 'include',
         headers: {
@@ -76,7 +77,7 @@ async function apiRequest(url, options = {}) {
     }
     
     return data;
-}
+};
 
 // Upload image (returns only filename)
 // Make sure it's in global scope
@@ -157,20 +158,25 @@ function showError(containerId, message) {
     }
 }
 
-// Format date
-function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('zh-TW');
-}
-
 // Format datetime
-function formatDateTime(dateString) {
+window.formatDateTime = function formatDateTime(dateString) {
     if (!dateString) return '-';
     const date = new Date(dateString);
     return date.toLocaleString('zh-TW');
-}
+};
 
-} // End of ADMIN_JS_LOADED check
+// Format date
+window.formatDate = function formatDate(dateString) {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('zh-TW');
+};
 
 console.log('[admin.js] All functions loaded successfully');
+console.log('[admin.js] Functions available:', {
+    checkAuth: typeof window.checkAuth,
+    logout: typeof window.logout,
+    apiRequest: typeof window.apiRequest,
+    uploadImage: typeof window.uploadImage,
+    getImageUrl: typeof window.getImageUrl
+});
