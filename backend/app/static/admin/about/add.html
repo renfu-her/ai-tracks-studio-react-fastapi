@@ -1,6 +1,6 @@
 <!-- About Add/Edit Content Fragment (不含 html/head/body) -->
 <div class="admin-card">
-    <h2 class="mb-4" id="formTitle">新增 About Us</h2>
+    <h2 class="mb-4" id="formTitle">新增關於我們</h2>
     
     <!-- RWD Form - 全寬單欄 -->
     <form id="aboutForm">
@@ -19,8 +19,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">描述</label>
-                    <textarea class="form-control" id="aboutDescription" rows="6"></textarea>
+                    <label class="form-label fw-bold">描述 (支援 Markdown)</label>
+                    <textarea id="aboutDescription"></textarea>
                 </div>
 
                 <div class="mb-3">
@@ -57,6 +57,19 @@
 window.pageInit = async function() {
     let isEditMode = false;
     let editingId = null;
+    let descriptionEditor = null;
+
+    // Initialize EasyMDE for description
+    if (typeof EasyMDE !== 'undefined') {
+        descriptionEditor = new EasyMDE({
+            element: document.getElementById('aboutDescription'),
+            spellChecker: false,
+            placeholder: '請輸入描述...',
+            status: false,
+            minHeight: '200px',
+            toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide']
+        });
+    }
 
     // Check edit mode
     const hash = window.location.hash;
@@ -64,8 +77,8 @@ window.pageInit = async function() {
     if (match) {
         isEditMode = true;
         editingId = parseInt(match[1]);
-        $('#formTitle').text('編輯 About Us');
-        $('#pageHeader').text('編輯 About');
+        $('#formTitle').text('編輯關於我們');
+        $('#pageHeader').text('編輯關於我們');
         await loadAbout(editingId);
     }
 
@@ -75,7 +88,12 @@ window.pageInit = async function() {
             $('#aboutId').val(about.id);
             $('#aboutTitle').val(about.title || '');
             $('#aboutSubtitle').val(about.subtitle || '');
-            $('#aboutDescription').val(about.description || '');
+            
+            // Set description in EasyMDE
+            if (descriptionEditor) {
+                descriptionEditor.value(about.description || '');
+            }
+            
             $('#aboutEmail').val(about.contact_email || '');
             $('#aboutValues').val(JSON.stringify(about.values || [], null, 2));
         } catch (error) {
@@ -138,7 +156,7 @@ window.pageInit = async function() {
         const data = {
             title: $('#aboutTitle').val().trim() || null,
             subtitle: $('#aboutSubtitle').val().trim() || null,
-            description: $('#aboutDescription').val().trim() || null,
+            description: descriptionEditor ? descriptionEditor.value().trim() || null : null,
             contact_email: $('#aboutEmail').val().trim() || null,
             values: values
         };

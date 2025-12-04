@@ -1,5 +1,149 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 09:15:00 TST
+
+### Database LONGTEXT & Chinese Labels 資料庫 LONGTEXT 與中文標籤
+
+#### Database Schema Update 資料庫結構更新
+**Changed to LONGTEXT for Markdown content:**
+
+**Projects Model:**
+- ✅ `description` - TEXT → LONGTEXT
+
+**News Model:**
+- ✅ `excerpt` - TEXT → LONGTEXT
+- ✅ `content` - TEXT → LONGTEXT
+
+**About Model:**
+- ✅ `subtitle` - TEXT → LONGTEXT
+- ✅ `description` - TEXT → LONGTEXT
+
+**Benefits:**
+- Supports up to 4GB of text (vs 64KB for TEXT)
+- Perfect for Markdown content with images/formatting
+- No truncation issues
+- Better for long-form content
+
+#### Chinese Labels 中文標籤統一
+**Standardized terminology across all pages:**
+
+**Navigation & Titles:**
+- Projects 管理 → **專案管理**
+- News 管理 → **最新消息**
+- About 管理 → **關於我們**
+
+**Updated in:**
+- ✅ Sidebar navigation (admin.html)
+- ✅ Page titles (JavaScript titles object)
+- ✅ Form titles (add.html)
+- ✅ Button labels (list.html)
+- ✅ Confirmation messages (delete dialogs)
+
+**Consistency:**
+- All pages use same terminology
+- Professional Chinese labels
+- Clear and concise
+- User-friendly
+
+#### Full-Width Form Fields 全寬表單欄位
+**Changed from 2-column to single-column layout:**
+- ✅ Projects: All fields `col-12` (was `col-12 col-lg-6`)
+- ✅ News: All fields `col-12`
+- ✅ About: Already `col-12`
+
+**Benefits:**
+- Clearer reading flow
+- Better for long text fields
+- Consistent on all screen sizes
+- More professional appearance
+
+---
+
+## 2025-12-04 08:45:00 TST
+
+### Final RWD & User Dropdown 最終 RWD 與用戶下拉選單
+
+#### True RWD Implementation 真正的 RWD 實現
+**Responsive Sidebar 響應式側邊欄:**
+- ✅ Desktop (≥ 992px) - 固定在左側
+- ✅ Mobile/Tablet (< 992px) - 隱藏，改用漢堡選單
+- ✅ Hamburger Menu - 左上角漢堡按鈕（手機）
+- ✅ Overlay - 半透明遮罩（點擊關閉）
+- ✅ Slide Animation - 流暢的滑入/滑出動畫
+
+**True Flexbox Layout 真正的 Flexbox 佈局:**
+```html
+<div class="d-flex justify-content-between flex-wrap gap-3">
+    <div class="d-flex flex-wrap gap-3 flex-grow-1">
+        <input style="flex: 1 1 auto; max-width: 300px;">
+        <select style="width: auto;">
+    </div>
+    <button>新增</button>
+</div>
+```
+
+**效果：**
+- 寬螢幕：元素自然分散，按鈕自動推到最右
+- 窄螢幕：元素自動換行，保持可用性
+- 手機：垂直堆疊，按鈕全寬
+
+#### User Dropdown 用戶下拉選單
+**Header 改進:**
+- ✅ 移除獨立的登出按鈕
+- ✅ 用戶圖標 (fa-user-circle) + Email
+- ✅ Bootstrap Dropdown 下拉選單
+- ✅ 下拉內容：
+  - 登入身分顯示
+  - 分隔線
+  - 登出選項（紅色文字 + 圖標）
+- ✅ RWD: 手機上只顯示圖標，平板以上顯示 Email
+
+**Dropdown Features:**
+- Shadow 陰影效果
+- 右對齊 (dropdown-menu-end)
+- 懸停效果
+- 觸控友好
+
+#### Cleaned File Structure 清理檔案結構
+**移除所有舊版/中間版 HTML:**
+- ❌ Removed 10+ old HTML files
+- ✅ Keep only: 1 base + 9 fragments
+- ✅ Clean structure
+
+**Final Structure:**
+```
+static/
+├── admin.html (BASE - 唯一完整 HTML)
+├── login.html
+├── css/admin-bootstrap.css
+├── js/
+│   ├── admin.js
+│   └── template-loader.js
+└── admin/
+    ├── projects/ (list.html, add.html, edit.html)
+    ├── news/ (list.html, add.html, edit.html)
+    └── about/ (list.html, add.html, edit.html)
+```
+
+#### Mobile-First RWD 手機優先 RWD
+**Breakpoints:**
+- < 576px (xs) - 手機小屏
+- < 768px (sm) - 手機
+- < 992px (md) - 平板
+- ≥ 992px (lg) - 桌面
+- ≥ 1200px (xl) - 大桌面
+
+**Responsive Features:**
+- ✅ Collapsible sidebar on mobile
+- ✅ Hamburger menu button
+- ✅ Touch-friendly overlay
+- ✅ Flexible filter bar
+- ✅ Auto-wrapping elements
+- ✅ Proper font sizes
+- ✅ Adequate touch targets (44x44px+)
+
+---
+
 ## 2025-12-03 23:03:00 TST
 
 ### Bootstrap 5 + jQuery Integration Bootstrap 5 + jQuery 整合

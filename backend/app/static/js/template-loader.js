@@ -89,23 +89,49 @@ function loadAdminSidebar(activePage) {
 }
 
 /**
- * Load admin header
+ * Load admin header with user dropdown
  */
 function loadAdminHeader(pageTitle) {
     const headerHTML = `
         <h1 class="header-title m-0">${pageTitle}</h1>
-        <div class="header-actions">
-            <span class="user-info">
-                <i class="fas fa-user-circle me-2"></i>
-                <span id="userEmailText">載入中...</span>
-            </span>
-            <button onclick="adminLogout()" class="btn btn-danger btn-sm">
-                <i class="fas fa-sign-out-alt me-1"></i> 登出
+        <div class="dropdown">
+            <button class="btn btn-light d-flex align-items-center gap-1 px-2 py-1 rounded-pill" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle fs-4 text-primary"></i>
+                <i class="fas fa-chevron-down small text-muted"></i>
             </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 200px;">
+                <li class="px-3 py-2 border-bottom">
+                    <div class="small text-muted">登入身分</div>
+                    <div class="fw-bold" id="userEmailText">載入中...</div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="#" onclick="adminLogout(); return false;">
+                        <i class="fas fa-sign-out-alt me-2"></i> 登出
+                    </a>
+                </li>
+            </ul>
         </div>
     `;
     
     $('#adminHeader').html(headerHTML);
+    
+    // Load current user
+    loadCurrentUser();
+}
+
+/**
+ * Load current user information
+ */
+async function loadCurrentUser() {
+    try {
+        const user = await checkAuth();
+        if (user) {
+            $('#userEmailText').text(user.email);
+        }
+    } catch (error) {
+        console.error('Failed to load user:', error);
+    }
 }
 
 /**

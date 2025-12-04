@@ -1,14 +1,14 @@
 <!-- Projects Add/Edit Content Fragment (不含 html/head/body) -->
 <div class="admin-card">
-    <h2 class="mb-4" id="formTitle">新增 Project</h2>
+    <h2 class="mb-4" id="formTitle">新增專案</h2>
     
     <!-- RWD Form - 兩欄佈局 -->
     <form id="projectForm">
         <input type="hidden" id="projectId" />
         
         <div class="row g-4">
-            <!-- 左欄 -->
-            <div class="col-12 col-lg-6">
+            <!-- 全寬欄位 -->
+            <div class="col-12">
                 <div class="mb-3">
                     <label class="form-label fw-bold">
                         標題 <span class="text-danger">*</span>
@@ -17,8 +17,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">描述</label>
-                    <textarea class="form-control" id="projectDescription" rows="4"></textarea>
+                    <label class="form-label fw-bold">描述 (支援 Markdown)</label>
+                    <textarea id="projectDescription"></textarea>
                 </div>
 
                 <div class="mb-3">
@@ -34,12 +34,17 @@
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">日期</label>
-                    <input type="date" class="form-control" id="projectDate">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                        <input type="text" class="form-control" id="projectDate" placeholder="選擇日期...">
+                    </div>
                 </div>
             </div>
 
-            <!-- 右欄 -->
-            <div class="col-12 col-lg-6">
+            <!-- 繼續全寬欄位 -->
+            <div class="col-12">
                 <div class="mb-3">
                     <label class="form-label fw-bold">縮圖</label>
                     <div class="input-group mb-2">
@@ -86,6 +91,28 @@
 window.pageInit = async function() {
     let isEditMode = false;
     let editingId = null;
+    let descriptionEditor = null;
+
+    // Initialize Flatpickr for date
+    if (typeof flatpickr !== 'undefined') {
+        flatpickr('#projectDate', {
+            locale: flatpickr.l10ns.zh_tw || flatpickr.l10ns.default,
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            clickOpens: true
+        });
+    }
+
+    // Initialize EasyMDE for description
+    if (typeof EasyMDE !== 'undefined') {
+        descriptionEditor = new EasyMDE({
+            element: document.getElementById('projectDescription'),
+            spellChecker: false,
+            placeholder: '請輸入專案描述...',
+            status: false,
+            toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide']
+        });
+    }
 
     // Check if edit mode
     const hash = window.location.hash;
@@ -93,8 +120,8 @@ window.pageInit = async function() {
     if (match) {
         isEditMode = true;
         editingId = match[1];
-        $('#formTitle').text('編輯 Project');
-        $('#pageHeader').text('編輯 Project');
+        $('#formTitle').text('編輯專案');
+        $('#pageHeader').text('編輯專案');
         await loadProject(editingId);
     }
 
@@ -132,7 +159,12 @@ window.pageInit = async function() {
             const project = await apiRequest(`/api/admin/projects/${id}`);
             $('#projectId').val(project.id);
             $('#projectTitle').val(project.title);
-            $('#projectDescription').val(project.description || '');
+            
+            // Set description in EasyMDE
+            if (descriptionEditor) {
+                descriptionEditor.value(project.description || '');
+            }
+            
             $('#projectThumbnail').val(project.thumbnail_url || '');
             $('#projectCategory').val(project.category);
             $('#projectDate').val(project.date || '');
@@ -169,7 +201,7 @@ window.pageInit = async function() {
         const data = {
             id: projectId,
             title: title,
-            description: $('#projectDescription').val().trim() || null,
+            description: descriptionEditor ? descriptionEditor.value().trim() || null : null,
             thumbnail_url: $('#projectThumbnail').val().trim() || null,
             category: category,
             date: $('#projectDate').val() || null,

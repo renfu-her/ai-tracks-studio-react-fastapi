@@ -14,6 +14,7 @@ from app.database import create_tables
 from app.routers import projects, news, about
 from app.routers.admin import router as admin_router
 from app.init_admin import init_admin_user
+from app.db_migrate import auto_migrate_to_longtext
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,14 @@ async def lifespan(app: FastAPI):
     print("Creating database tables...")
     create_tables()
     print("Database tables created successfully!")
+    
+    # Auto-migrate TEXT to LONGTEXT
+    print("Checking database schema...")
+    try:
+        auto_migrate_to_longtext()
+        print("Database schema check completed!")
+    except Exception as e:
+        logger.warning(f"Schema migration warning: {e}")
     
     # Initialize admin user
     try:

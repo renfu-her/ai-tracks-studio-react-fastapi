@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from sqlalchemy import Column, String, Text, Date, DateTime
+from sqlalchemy.dialects.mysql import LONGTEXT
 from app.database import Base
 
 
@@ -12,8 +13,8 @@ class News(Base):
     
     id = Column(String(50), primary_key=True, index=True)
     title = Column(String(255), nullable=False)
-    excerpt = Column(Text, nullable=True)
-    content = Column(Text, nullable=True)
+    excerpt = Column(LONGTEXT, nullable=True)
+    content = Column(LONGTEXT, nullable=True)
     date = Column(Date, nullable=True)
     image_url = Column(String(500), nullable=True)
     author = Column(String(100), nullable=True)

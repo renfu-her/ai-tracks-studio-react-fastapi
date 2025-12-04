@@ -25,7 +25,7 @@
         
         <!-- 新增按鈕（自動推到右側） -->
         <a href="#projects/add" class="btn btn-primary" style="white-space: nowrap;">
-            <i class="fas fa-plus me-2"></i> 新增 Project
+            <i class="fas fa-plus me-2"></i> 新增專案
         </a>
     </div>
 
@@ -143,7 +143,7 @@ window.pageInit = async function() {
 
     window.deleteProject = async function(id) {
         confirmDelete(
-            `確定要刪除 Project 「<strong>${id}</strong>」嗎？<br><span class="text-danger">此操作無法復原。</span>`,
+            `確定要刪除專案「<strong>${id}</strong>」嗎？<br><span class="text-danger">此操作無法復原。</span>`,
             async function() {
                 try {
                     await apiRequest(`/api/admin/projects/${id}`, { method: 'DELETE' });

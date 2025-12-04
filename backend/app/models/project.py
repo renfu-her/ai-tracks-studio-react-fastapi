@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from sqlalchemy import Column, String, Text, Date, Enum, JSON, DateTime
+from sqlalchemy.dialects.mysql import LONGTEXT
 from app.database import Base
 import enum
 
@@ -20,7 +21,7 @@ class Project(Base):
     
     id = Column(String(50), primary_key=True, index=True)
     title = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
+    description = Column(LONGTEXT, nullable=True)
     thumbnail_url = Column(String(500), nullable=True)
     category = Column(Enum(CategoryEnum), nullable=False)
     date = Column(Date, nullable=True)

@@ -1,14 +1,14 @@
 <!-- News Add/Edit Content Fragment (不含 html/head/body) -->
 <div class="admin-card">
-    <h2 class="mb-4" id="formTitle">新增 News</h2>
+    <h2 class="mb-4" id="formTitle">新增消息</h2>
     
     <!-- RWD Form - 兩欄佈局 -->
     <form id="newsForm">
         <input type="hidden" id="newsId" />
         
         <div class="row g-4">
-            <!-- 左欄 -->
-            <div class="col-12 col-lg-6">
+            <!-- 全寬欄位 -->
+            <div class="col-12">
                 <div class="mb-3">
                     <label class="form-label fw-bold">
                         標題 <span class="text-danger">*</span>
@@ -17,18 +17,18 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">摘要</label>
-                    <textarea class="form-control" id="newsExcerpt" rows="3"></textarea>
+                    <label class="form-label fw-bold">摘要 (支援 Markdown)</label>
+                    <textarea id="newsExcerpt"></textarea>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">內容</label>
-                    <textarea class="form-control" id="newsContent" rows="8"></textarea>
+                    <label class="form-label fw-bold">內容 (支援 Markdown)</label>
+                    <textarea id="newsContent"></textarea>
                 </div>
             </div>
 
-            <!-- 右欄 -->
-            <div class="col-12 col-lg-6">
+            <!-- 繼續全寬欄位 -->
+            <div class="col-12">
                 <div class="mb-3">
                     <label class="form-label fw-bold">圖片</label>
                     <div class="input-group mb-2">
@@ -48,7 +48,12 @@
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">日期</label>
-                    <input type="date" class="form-control" id="newsDate">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-calendar"></i>
+                        </span>
+                        <input type="text" class="form-control" id="newsDate" placeholder="選擇日期...">
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -74,6 +79,40 @@
 window.pageInit = async function() {
     let isEditMode = false;
     let editingId = null;
+    let excerptEditor = null;
+    let contentEditor = null;
+
+    // Initialize Flatpickr for date
+    if (typeof flatpickr !== 'undefined') {
+        flatpickr('#newsDate', {
+            locale: flatpickr.l10ns.zh_tw || flatpickr.l10ns.default,
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            clickOpens: true
+        });
+    }
+
+    // Initialize EasyMDE for excerpt
+    if (typeof EasyMDE !== 'undefined') {
+        excerptEditor = new EasyMDE({
+            element: document.getElementById('newsExcerpt'),
+            spellChecker: false,
+            placeholder: '請輸入摘要...',
+            status: false,
+            minHeight: '120px',
+            toolbar: ['bold', 'italic', '|', 'quote', '|', 'preview']
+        });
+
+        // Initialize EasyMDE for content
+        contentEditor = new EasyMDE({
+            element: document.getElementById('newsContent'),
+            spellChecker: false,
+            placeholder: '請輸入完整內容...',
+            status: false,
+            minHeight: '300px',
+            toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image', '|', 'preview', 'side-by-side', 'fullscreen', '|', 'guide']
+        });
+    }
 
     // Check edit mode
     const hash = window.location.hash;
@@ -81,8 +120,8 @@ window.pageInit = async function() {
     if (match) {
         isEditMode = true;
         editingId = match[1];
-        $('#formTitle').text('編輯 News');
-        $('#pageHeader').text('編輯 News');
+        $('#formTitle').text('編輯消息');
+        $('#pageHeader').text('編輯消息');
         await loadNews(editingId);
     }
 
@@ -120,8 +159,15 @@ window.pageInit = async function() {
             const news = await apiRequest(`/api/news/${id}`);
             $('#newsId').val(news.id);
             $('#newsTitle').val(news.title);
-            $('#newsExcerpt').val(news.excerpt || '');
-            $('#newsContent').val(news.content || '');
+            
+            // Set values in EasyMDE editors
+            if (excerptEditor) {
+                excerptEditor.value(news.excerpt || '');
+            }
+            if (contentEditor) {
+                contentEditor.value(news.content || '');
+            }
+            
             $('#newsImage').val(news.image_url || '');
             $('#newsDate').val(news.date || '');
             $('#newsAuthor').val(news.author || '');
@@ -154,8 +200,8 @@ window.pageInit = async function() {
         const data = {
             id: newsId,
             title: title,
-            excerpt: $('#newsExcerpt').val().trim() || null,
-            content: $('#newsContent').val().trim() || null,
+            excerpt: excerptEditor ? excerptEditor.value().trim() || null : null,
+            content: contentEditor ? contentEditor.value().trim() || null : null,
             image_url: $('#newsImage').val().trim() || null,
             date: $('#newsDate').val() || null,
             author: $('#newsAuthor').val().trim() || null,

@@ -18,7 +18,7 @@
         
         <!-- 新增按鈕 -->
         <a href="#news/add" class="btn btn-primary" style="white-space: nowrap;">
-            <i class="fas fa-plus me-2"></i> 新增 News
+            <i class="fas fa-plus me-2"></i> 新增消息
         </a>
     </div>
 
@@ -119,7 +119,7 @@ window.pageInit = async function() {
 
     window.deleteNews = async function(id) {
         confirmDelete(
-            `確定要刪除 News 「<strong>${id}</strong>」嗎？<br><span class="text-danger">此操作無法復原。</span>`,
+            `確定要刪除消息「<strong>${id}</strong>」嗎？<br><span class="text-danger">此操作無法復原。</span>`,
             async function() {
                 try {
                     await apiRequest(`/api/admin/news/${id}`, { method: 'DELETE' });

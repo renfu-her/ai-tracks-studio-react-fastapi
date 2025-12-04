@@ -7,7 +7,7 @@
         
         <!-- 新增按鈕 -->
         <a href="#about/add" class="btn btn-primary" style="white-space: nowrap;">
-            <i class="fas fa-plus me-2"></i> 新增 About
+            <i class="fas fa-plus me-2"></i> 新增內容
         </a>
     </div>
 
@@ -105,7 +105,7 @@ window.pageInit = async function() {
 
     window.deleteAbout = async function(id) {
         confirmDelete(
-            `確定要刪除 About (ID: <strong>${id}</strong>) 嗎？<br><span class="text-danger">此操作無法復原。</span>`,
+            `確定要刪除關於我們內容 (ID: <strong>${id}</strong>) 嗎？<br><span class="text-danger">此操作無法復原。</span>`,
             async function() {
                 try {
                     await apiRequest(`/api/admin/about/${id}`, { method: 'DELETE' });

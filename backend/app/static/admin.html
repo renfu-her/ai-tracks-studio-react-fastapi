@@ -4,12 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">AI-Tracks Studio Admin</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <!-- EasyMDE (SimpleMDE) CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     
     <!-- Custom Admin CSS -->
     <style>
@@ -233,19 +240,19 @@
                             <li>
                                 <a href="#projects" class="nav-link-item" data-page="projects">
                                     <span class="nav-icon"><i class="fas fa-gamepad"></i></span>
-                                    <span>Projects 管理</span>
+                                    <span>專案管理</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="#news" class="nav-link-item" data-page="news">
                                     <span class="nav-icon"><i class="fas fa-newspaper"></i></span>
-                                    <span>News 管理</span>
+                                    <span>最新消息</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="#about" class="nav-link-item" data-page="about">
                                     <span class="nav-icon"><i class="fas fa-info-circle"></i></span>
-                                    <span>About 管理</span>
+                                    <span>關於我們</span>
                                 </a>
                             </li>
                         </ul>
@@ -259,14 +266,25 @@
             <!-- Header -->
             <div class="admin-header d-flex justify-content-between align-items-center">
                 <h1 class="h4 mb-0" id="pageHeader">載入中...</h1>
-                <div class="d-flex gap-3 align-items-center">
-                    <span class="text-muted small">
-                        <i class="fas fa-user-circle me-1"></i>
-                        <span id="userEmail">載入中...</span>
-                    </span>
-                    <button onclick="logout()" class="btn btn-danger btn-sm">
-                        <i class="fas fa-sign-out-alt me-1"></i> 登出
+                
+                <!-- User Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-light d-flex align-items-center gap-1 px-2 py-1 rounded-pill" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle fs-4 text-primary"></i>
+                        <i class="fas fa-chevron-down small text-muted"></i>
                     </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown" style="min-width: 200px;">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="small text-muted">登入身分</div>
+                            <div class="fw-bold" id="userEmail">載入中...</div>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="#" onclick="logout(); return false;">
+                                <i class="fas fa-sign-out-alt me-2"></i> 登出
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
@@ -287,6 +305,13 @@
     
     <!-- Bootstrap 5 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/zh-tw.js"></script>
+    
+    <!-- EasyMDE (SimpleMDE) JS -->
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     
     <!-- Admin Core JS -->
     <script src="/static/js/admin.js"></script>
@@ -358,9 +383,9 @@
 
             // Update page header
             const titles = {
-                'projects': 'Projects 管理',
-                'news': 'News 管理',
-                'about': 'About 管理'
+                'projects': '專案管理',
+                'news': '最新消息',
+                'about': '關於我們'
             };
             const pageTitle = titles[module] || 'Admin';
             $('#pageTitle').text(pageTitle + ' - AI-Tracks Studio Admin');
@@ -373,10 +398,12 @@
                 const response = await $.get(contentPath);
                 $('#contentArea').html(response);
                 
-                // Execute page-specific init if exists
-                if (typeof window.pageInit === 'function') {
-                    window.pageInit();
-                }
+                // Wait a bit for scripts to parse, then execute page-specific init
+                setTimeout(() => {
+                    if (typeof window.pageInit === 'function') {
+                        window.pageInit();
+                    }
+                }, 50);
             } catch (error) {
                 $('#contentArea').html(`
                     <div class="alert alert-danger">

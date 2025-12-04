@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, JSON, DateTime
+from sqlalchemy.dialects.mysql import LONGTEXT
 from app.database import Base
 
 
@@ -12,8 +13,8 @@ class AboutUs(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=True)
-    subtitle = Column(Text, nullable=True)
-    description = Column(Text, nullable=True)
+    subtitle = Column(LONGTEXT, nullable=True)
+    description = Column(LONGTEXT, nullable=True)
     values = Column(JSON, nullable=True, default=list)  # Array of {icon, title, description}
     contact_email = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
