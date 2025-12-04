@@ -4,6 +4,7 @@ import { projectsApi } from '../api';
 import { getImageUrl } from '../api/config';
 import { ProjectItem } from '../types';
 import { ArrowLeft, Calendar, Tag, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
+import { MarkdownContent } from './MarkdownContent';
 
 export const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -115,16 +116,12 @@ export const ProjectDetail: React.FC = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Description */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">About This Project</h2>
-              <div className="prose prose-slate max-w-none">
-                {project.description ? (
-                  <div className="text-slate-700 leading-relaxed whitespace-pre-wrap">
-                    {project.description}
-                  </div>
-                ) : (
-                  <p className="text-slate-500 italic">No description available.</p>
-                )}
-              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-6">About This Project</h2>
+              {project.description ? (
+                <MarkdownContent content={project.description} />
+              ) : (
+                <p className="text-slate-500 italic">No description available.</p>
+              )}
             </div>
           </div>
 

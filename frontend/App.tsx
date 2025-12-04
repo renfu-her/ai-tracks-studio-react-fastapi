@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { SectionHero } from './components/SectionHero';
 import { ItemGrid } from './components/ItemGrid';
 import { ProjectDetail } from './components/ProjectDetail';
+import { MarkdownContent } from './components/MarkdownContent';
 import { HERO_IMAGES } from './constants';
 import { ArrowRight, Calendar, User, Star, Zap, Mail, Loader2, AlertCircle } from 'lucide-react';
 import { projectsApi, newsApi, aboutApi } from './api';
@@ -78,11 +79,15 @@ const AboutPage: React.FC = () => {
           ) : about ? (
             <>
               {/* Introduction */}
-              <div className="text-center animate-in slide-in-from-bottom-4 duration-700">
-                <h2 className="text-3xl font-bold text-slate-800 mb-6">{about.title || 'Who We Are'}</h2>
-                <p className="text-xl text-slate-600 leading-relaxed">
-                  {about.description || 'AI-Tracks Studio is an innovative digital laboratory situated at the intersection of design, technology, and artificial intelligence.'}
-                </p>
+              <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-4 duration-700">
+                <h2 className="text-3xl font-bold text-slate-800 mb-6 text-center">{about.title || 'Who We Are'}</h2>
+                {about.description ? (
+                  <MarkdownContent content={about.description} />
+                ) : (
+                  <p className="text-xl text-slate-600 leading-relaxed text-center">
+                    AI-Tracks Studio is an innovative digital laboratory situated at the intersection of design, technology, and artificial intelligence.
+                  </p>
+                )}
               </div>
 
               {/* Grid of Values */}
@@ -193,9 +198,9 @@ const NewsPage: React.FC = () => {
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-800 group-hover:text-accent-600 transition-colors duration-300">
                       {item.title}
                     </h2>
-                    <p className="text-slate-600 leading-relaxed text-lg">
-                      {item.excerpt}
-                    </p>
+                    <div className="text-slate-600 leading-relaxed text-lg">
+                      <MarkdownContent content={item.excerpt} />
+                    </div>
                     <button className="flex items-center gap-2 text-accent-600 font-bold hover:gap-3 transition-all mt-2">
                       Read Full Story <ArrowRight size={18} />
                     </button>
@@ -305,10 +310,7 @@ const HomePage: React.FC = () => {
                           {game.category}
                         </span>
                       </div>
-                      <h3 className="text-white text-2xl font-bold mb-2">{game.title}</h3>
-                      <p className="text-slate-300 line-clamp-2 text-sm opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                        {game.description}
-                      </p>
+                      <h3 className="text-white text-2xl font-bold">{game.title}</h3>
                     </div>
                   </Link>
                 ))}

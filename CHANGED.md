@@ -1,5 +1,145 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 12:35:00 TST
+
+### Frontend: Removed Descriptions from List Pages 前端：移除列表頁面的描述
+
+#### Changes 更改
+
+**Removed descriptions from:**
+- ✅ Home page (featured games section)
+- ✅ Games page (game grid)
+- ✅ Websites page (website grid)
+
+**Why 為什麼：**
+- Cleaner card design
+- Focus on titles and images
+- Better visual hierarchy
+- Faster scanning
+
+**Where descriptions still show 仍然顯示描述的地方：**
+- ✅ Project detail pages (full Markdown)
+- ✅ News page (excerpts)
+- ✅ About Us page (full content)
+
+**Files Changed:**
+- `frontend/components/ItemGrid.tsx` - Removed description paragraph
+- `frontend/App.tsx` - Removed description from featured games
+
+**Before 之前:**
+```
+┌─────────────┐
+│   Image     │
+│   Title     │
+│ Description │  ← Removed
+│   Date      │
+└─────────────┘
+```
+
+**After 之後:**
+```
+┌─────────────┐
+│   Image     │
+│   Title     │
+│   Date      │
+└─────────────┘
+```
+
+## 2025-12-04 12:30:00 TST
+
+### Frontend: Markdown Rendering Support 前端：Markdown 渲染支持
+
+#### Added Features 新增功能
+
+**1. Markdown Support for All Content 所有內容支持 Markdown:**
+- ✅ Projects - Description fields
+- ✅ News - Excerpt and content fields  
+- ✅ About Us - Full description
+
+**2. Installed Packages 安裝的套件:**
+- `react-markdown@9.0.1` - Markdown to React renderer
+- `remark-gfm@4.0.0` - GitHub Flavored Markdown support
+
+**3. Created MarkdownContent Component 創建 Markdown 組件:**
+- File: `frontend/components/MarkdownContent.tsx`
+- Renders Markdown as styled HTML
+- Custom styling for all Markdown elements
+- Tailwind CSS integration
+
+**4. Updated Components 更新的組件:**
+- ✅ `ProjectDetail.tsx` - Project descriptions
+- ✅ `App.tsx` (NewsPage) - News excerpts
+- ✅ `App.tsx` (AboutPage) - About content
+
+#### Supported Markdown Features 支持的功能
+
+**Typography 排版:**
+- Headings (H1-H6) with proper hierarchy
+- Bold, italic, strikethrough
+- Paragraphs with line spacing
+
+**Lists 列表:**
+- Unordered lists (bullets)
+- Ordered lists (numbers)
+- Nested lists
+
+**Links & Media 連結與媒體:**
+- External links (open in new tab)
+- Images with responsive sizing
+- Alt text support
+
+**Code 代碼:**
+- Inline code with highlighting
+- Code blocks with dark theme
+- Monospace font
+
+**Advanced 進階:**
+- Blockquotes with accent border
+- Tables (GitHub Flavored Markdown)
+- Horizontal rules
+- HTML in Markdown (sanitized)
+
+#### Usage Example 使用示例
+
+**Backend (Admin Panel):**
+```markdown
+## Introduction
+
+**NEON TETRIS** is a modern game...
+
+### Features
+- Neon graphics
+- Smooth gameplay
+
+[Play Now](https://example.com)
+```
+
+**Frontend (Rendered):**
+- Professional typography
+- Styled lists
+- Clickable links with accent color
+- Beautiful, readable layout
+
+#### Files Changed 更改的文件
+
+**New Files:**
+- `frontend/components/MarkdownContent.tsx`
+- `frontend/MARKDOWN_SUPPORT.md`
+
+**Updated Files:**
+- `frontend/package.json` - Added dependencies
+- `frontend/components/ProjectDetail.tsx` - Use MarkdownContent
+- `frontend/App.tsx` - Use MarkdownContent for News and About
+
+#### Benefits 優點
+
+- ✅ Rich content formatting
+- ✅ Better readability
+- ✅ Professional appearance
+- ✅ Easy content management
+- ✅ Consistent styling across all pages
+- ✅ Supports GitHub Flavored Markdown
+
 ## 2025-12-04 12:20:00 TST
 
 ### Fixed: About Us Page Not Found 修復：找不到關於我們頁面
