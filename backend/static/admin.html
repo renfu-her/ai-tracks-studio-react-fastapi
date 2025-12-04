@@ -399,7 +399,7 @@
             }
 
             // Load content based on module and action
-            const contentPath = `/static/admin/${module}/${actualAction}.html`;
+            const contentPath = `/backend/static/admin/${module}/${actualAction}.html`;
             
             try {
                 const response = await $.get(contentPath);

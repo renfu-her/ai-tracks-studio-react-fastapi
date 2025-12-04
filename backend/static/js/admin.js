@@ -120,11 +120,11 @@ window.getImageUrl = function getImageUrl(filename) {
         console.log('getImageUrl: external URL:', filename);
         return filename;
     }
-    if (filename.startsWith('/static/uploads/')) {
+    if (filename.startsWith('/backend/static/uploads/')) {
         console.log('getImageUrl: already has path:', filename);
         return filename;
     }
-    const url = `/static/uploads/${filename}`;
+    const url = `/backend/static/uploads/${filename}`;
     console.log('[getImageUrl] generated URL:', url);
     return url;
 };

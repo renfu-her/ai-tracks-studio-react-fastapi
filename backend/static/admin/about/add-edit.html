@@ -92,8 +92,8 @@ if (typeof window.getImageUrl !== 'function') {
     window.getImageUrl = function(filename) {
         if (!filename) return '';
         if (filename.startsWith('http')) return filename;
-        if (filename.startsWith('/static')) return filename;
-        return `/static/uploads/${filename}`;
+        if (filename.startsWith('/backend/static')) return filename;
+        return `/backend/static/uploads/${filename}`;
     };
 }
 

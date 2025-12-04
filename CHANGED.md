@@ -28,7 +28,9 @@ backend/static/      ← Same level as app directory
 - ✅ `backend/app/main.py` - Changed static_dir path to `parent.parent / "static"`
 - ✅ `backend/app/routers/admin/upload.py` - Updated UPLOAD_DIR path
 - ✅ `frontend/api/config.ts` - Updated image URL to `/backend/static/uploads/`
-- ✅ `backend/app/static/admin.html` - Updated JS references to `/backend/static/js/`
+- ✅ `backend/static/admin.html` - Updated JS references and content path to `/backend/static/`
+- ✅ `backend/static/js/admin.js` - Updated getImageUrl to use `/backend/static/uploads/`
+- ✅ `backend/static/admin/about/add-edit.html` - Updated fallback getImageUrl path
 
 **Created migration tools:**
 - ✅ `backend/migrate_static.sh` - Automated migration script
