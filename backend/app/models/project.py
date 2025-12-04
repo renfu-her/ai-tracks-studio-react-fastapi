@@ -22,7 +22,7 @@ class Project(Base):
     id = Column(String(50), primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     description = Column(LONGTEXT, nullable=True)
-    thumbnail_url = Column(String(500), nullable=True)
+    image = Column(String(500), nullable=True)
     category = Column(Enum(CategoryEnum), nullable=False)
     date = Column(Date, nullable=True)
     tags = Column(JSON, nullable=True, default=list)

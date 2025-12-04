@@ -10,7 +10,7 @@ class ProjectBase(BaseModel):
     
     title: str = Field(..., max_length=255, description="Project title")
     description: str | None = Field(None, description="Project description")
-    thumbnail_url: str | None = Field(None, max_length=500, description="Thumbnail image URL")
+    image: str | None = Field(None, max_length=500, description="Project image filename")
     category: CategoryEnum = Field(..., description="Project category (GAME or WEBSITE)")
     date: Date | None = Field(None, description="Project date")
     tags: list[str] | None = Field(default_factory=list, description="Project tags")

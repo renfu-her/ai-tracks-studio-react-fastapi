@@ -4,7 +4,8 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from PIL import Image
 import io
-import uuid7
+import uuid
+from datetime import datetime
 from app.dependencies import require_admin
 from app.models.user import User
 
@@ -69,8 +70,9 @@ async def upload_image(
         elif image.mode != 'RGB':
             image = image.convert('RGB')
         
-        # Generate unique filename with UUID7
-        unique_id = str(uuid7.uuid7())
+        # Generate unique filename with UUID4 + timestamp
+        timestamp = datetime.now().strftime('%Y%m%d')
+        unique_id = f"{timestamp}-{uuid.uuid4()}"
         filename = f"{unique_id}.webp"
         filepath = UPLOAD_DIR / filename
         

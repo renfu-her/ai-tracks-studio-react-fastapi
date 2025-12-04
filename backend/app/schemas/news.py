@@ -11,7 +11,7 @@ class NewsBase(BaseModel):
     excerpt: str | None = Field(None, description="News excerpt")
     content: str | None = Field(None, description="News full content")
     date: Date | None = Field(None, description="News publication date")
-    image_url: str | None = Field(None, max_length=500, description="News image URL")
+    image: str | None = Field(None, max_length=500, description="News image filename")
     author: str | None = Field(None, max_length=100, description="Author name")
 
 

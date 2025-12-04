@@ -16,7 +16,7 @@ class News(Base):
     excerpt = Column(LONGTEXT, nullable=True)
     content = Column(LONGTEXT, nullable=True)
     date = Column(Date, nullable=True)
-    image_url = Column(String(500), nullable=True)
+    image = Column(String(500), nullable=True)
     author = Column(String(100), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

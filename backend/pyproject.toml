@@ -18,5 +18,4 @@ dependencies = [
     "itsdangerous>=2.2.0",
     "email-validator>=2.3.0",
     "pillow>=12.0.0",
-    "uuid7>=0.1.0",
 ]

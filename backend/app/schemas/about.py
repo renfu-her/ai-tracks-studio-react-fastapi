@@ -18,6 +18,7 @@ class AboutUsBase(BaseModel):
     title: str | None = Field(None, max_length=255, description="About page title")
     subtitle: str | None = Field(None, description="About page subtitle")
     description: str | None = Field(None, description="About page description")
+    image: str | None = Field(None, max_length=500, description="About image filename")
     values: list[ValueItem] | None = Field(default_factory=list, description="Company values")
     contact_email: str | None = Field(None, max_length=255, description="Contact email")
 
