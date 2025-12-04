@@ -170,18 +170,32 @@ curl -s https://studio.ai-tracks.com | grep -E '<title>|<meta'
 
 #### Next Steps 下一步
 
+**部署 SEO 文件：**
+1. ⚠️ **重要：** `robots.txt` 和 `sitemap.xml` 需要部署到生產環境
+2. 執行：`npm run build`（Vite 會自動複製 public/ 文件到 dist/）
+3. 上傳 `dist/*` 到服務器 `/public/` 目錄
+4. 詳細步驟請查看：`frontend/DEPLOY_SEO_FILES.md`
+
 **部署後：**
-1. 提交 sitemap 到 Google Search Console
-2. 提交 sitemap 到 Bing Webmaster Tools
-3. 驗證 Open Graph 標籤（Facebook Debugger）
-4. 驗證 Twitter Card（Twitter Validator）
-5. 運行 Lighthouse SEO 審核
+1. 驗證文件可訪問：
+   - https://studio.ai-tracks.com/robots.txt
+   - https://studio.ai-tracks.com/sitemap.xml
+2. 提交 sitemap 到 Google Search Console
+3. 提交 sitemap 到 Bing Webmaster Tools
+4. 驗證 Open Graph 標籤（Facebook Debugger）
+5. 驗證 Twitter Card（Twitter Validator）
+6. 運行 Lighthouse SEO 審核
 
 **可選改進：**
 - 動態 sitemap 生成（後端實現）
 - 添加更多 schema types
 - 多語言 SEO 支持
 - SEO 分析集成
+
+**文檔：**
+- ✅ `frontend/DEPLOY_SEO_FILES.md` - SEO 文件部署指南
+- ✅ `frontend/SEO_GUIDE.md` - 完整 SEO 指南
+- ✅ `frontend/SEO_QUICK_START.md` - 快速開始
 
 ---
 
