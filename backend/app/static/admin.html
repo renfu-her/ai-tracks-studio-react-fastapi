@@ -314,7 +314,7 @@
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     
     <!-- Admin Core JS (must load before fragments) -->
-    <script src="/static/js/admin.js"></script>
+    <script src="/static/js/admin.js?v=2024120401"></script>
     <script src="/static/js/template-loader.js"></script>
     
     <script>
@@ -399,12 +399,13 @@
                 const response = await $.get(contentPath);
                 $('#contentArea').html(response);
                 
-                // Wait a bit for scripts to parse, then execute page-specific init
+                // Wait for all scripts to be ready before executing page init
                 setTimeout(() => {
+                    console.log('[SPA] Executing pageInit, uploadImage:', typeof window.uploadImage);
                     if (typeof window.pageInit === 'function') {
                         window.pageInit();
                     }
-                }, 50);
+                }, 100);
             } catch (error) {
                 $('#contentArea').html(`
                     <div class="alert alert-danger">

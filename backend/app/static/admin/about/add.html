@@ -67,10 +67,44 @@
 </div>
 
 <script>
+// Ensure upload functions are available
+if (typeof window.uploadImage !== 'function') {
+    console.warn('Defining uploadImage as fallback');
+    window.uploadImage = async function(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await fetch('/api/admin/upload/image', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || '上傳失敗');
+        }
+        const result = await response.json();
+        return result.filename;
+    };
+}
+
+if (typeof window.getImageUrl !== 'function') {
+    console.warn('Defining getImageUrl as fallback');
+    window.getImageUrl = function(filename) {
+        if (!filename) return '';
+        if (filename.startsWith('http')) return filename;
+        if (filename.startsWith('/static')) return filename;
+        return `/static/uploads/${filename}`;
+    };
+}
+
 window.pageInit = async function() {
     let isEditMode = false;
     let editingId = null;
     let descriptionEditor = null;
+    
+    console.log('About pageInit started');
+    console.log('uploadImage type:', typeof window.uploadImage);
+    console.log('getImageUrl type:', typeof window.getImageUrl);
 
     // Initialize EasyMDE for description
     if (typeof EasyMDE !== 'undefined') {
@@ -89,24 +123,17 @@ window.pageInit = async function() {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Check if uploadImage function exists
-        if (typeof uploadImage !== 'function') {
-            console.error('uploadImage function not found');
-            alert('系統錯誤：上傳功能未載入，請重新整理頁面');
-            return;
-        }
-
         $('#imagePreview').show();
         $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
 
         try {
-            const filename = await uploadImage(file);
+            const filename = await window.uploadImage(file);
             
             // Save only filename (not path)
             $('#aboutImage').val(filename);
             
             // Display image preview with full URL
-            const imageUrl = getImageUrl(filename);
+            const imageUrl = window.getImageUrl(filename);
             $('#previewImg').attr('src', imageUrl);
             
             // Show UUID info

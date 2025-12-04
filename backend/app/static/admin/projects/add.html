@@ -141,13 +141,13 @@ window.pageInit = async function() {
         $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
 
         try {
-            const filename = await uploadImage(file);
+            const filename = await window.uploadImage(file);
             
             // Save only filename (not path)
             $('#projectThumbnail').val(filename);
             
             // Display image preview with full URL
-            const imageUrl = getImageUrl(filename);
+            const imageUrl = window.getImageUrl(filename);
             $('#previewImg').attr('src', imageUrl);
             
             // Show UUID info

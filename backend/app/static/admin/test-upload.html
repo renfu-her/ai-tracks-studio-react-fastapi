@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Function Test</title>
+</head>
+<body>
+    <h1>Upload Function Test</h1>
+    <button onclick="testFunctions()">Test Functions</button>
+    <pre id="output"></pre>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="/static/js/admin.js?v=2024120401"></script>
+    
+    <script>
+        function log(msg) {
+            document.getElementById('output').textContent += msg + '\n';
+            console.log(msg);
+        }
+
+        function testFunctions() {
+            document.getElementById('output').textContent = '';
+            
+            log('=== Testing Upload Functions ===');
+            log('');
+            
+            // Test 1: Check if window.uploadImage exists
+            log('1. window.uploadImage exists: ' + (typeof window.uploadImage !== 'undefined'));
+            log('   Type: ' + typeof window.uploadImage);
+            
+            // Test 2: Check if window.getImageUrl exists
+            log('');
+            log('2. window.getImageUrl exists: ' + (typeof window.getImageUrl !== 'undefined'));
+            log('   Type: ' + typeof window.getImageUrl);
+            
+            // Test 3: Test getImageUrl
+            log('');
+            log('3. Testing getImageUrl:');
+            try {
+                const result = window.getImageUrl('test.webp');
+                log('   Result: ' + result);
+                log('   Expected: /static/uploads/test.webp');
+                log('   Match: ' + (result === '/static/uploads/test.webp'));
+            } catch (e) {
+                log('   Error: ' + e.message);
+            }
+            
+            // Test 4: Check admin.js version
+            log('');
+            log('4. Check console for admin.js version info');
+            
+            log('');
+            log('=== Test Complete ===');
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(testFunctions, 100);
+        });
+    </script>
+</body>
+</html>
+
