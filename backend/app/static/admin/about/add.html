@@ -34,7 +34,7 @@
                         <small class="text-muted ms-2">自動轉換為 WebP</small>
                     </div>
                     
-                    <div id="imagePreview" class="mt-3 p-3 bg-light rounded border d-none">
+                    <div id="imagePreview" class="mt-3 p-3 bg-light rounded border" style="display: none;">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div class="flex-grow-1">
                                 <img id="previewImg" class="img-fluid rounded" style="max-height: 200px;">
@@ -89,7 +89,14 @@ window.pageInit = async function() {
         const file = e.target.files[0];
         if (!file) return;
 
-        $('#imagePreview').removeClass('d-none');
+        // Check if uploadImage function exists
+        if (typeof uploadImage !== 'function') {
+            console.error('uploadImage function not found');
+            alert('系統錯誤：上傳功能未載入，請重新整理頁面');
+            return;
+        }
+
+        $('#imagePreview').show();
         $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
 
         try {
@@ -117,11 +124,13 @@ window.pageInit = async function() {
         // Clear input and hide preview
         $('#aboutImage').val('');
         $('#previewImg').attr('src', '');
-        $('#imagePreview').addClass('d-none');
+        $('#imagePreview').hide();
         $('#imageInfo').html('');
         $('#aboutImageFile').val(''); // Reset file input
         
-        showSuccessToast('圖片已移除');
+        if (typeof showSuccessToast === 'function') {
+            showSuccessToast('圖片已移除');
+        }
     });
 
     // Check edit mode

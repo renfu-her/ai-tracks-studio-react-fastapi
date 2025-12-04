@@ -313,8 +313,9 @@
     <!-- EasyMDE (SimpleMDE) JS -->
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     
-    <!-- Admin Core JS -->
+    <!-- Admin Core JS (must load before fragments) -->
     <script src="/static/js/admin.js"></script>
+    <script src="/static/js/template-loader.js"></script>
     
     <script>
         let currentUser = null;
