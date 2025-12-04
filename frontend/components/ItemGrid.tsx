@@ -65,12 +65,9 @@ export const ItemGrid: React.FC<ItemGridProps> = ({ items, title, itemsPerPage =
                   </span>
                 ))}
               </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-accent-600 transition-colors">
+              <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-accent-600 transition-colors">
                 {item.title}
               </h3>
-              <p className="text-slate-600 text-sm mb-4 line-clamp-2">
-                {item.description}
-              </p>
               
               <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                 <div className="flex items-center text-slate-400 text-xs gap-1">
