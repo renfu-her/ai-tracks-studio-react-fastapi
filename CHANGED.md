@@ -1,5 +1,31 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 22:35:00 TST - Removed Test Account Display from Login Page
+
+### Removed Test Account Information 移除測試帳號顯示
+
+#### Changes 變更
+
+**Security Enhancement:**
+- ✅ 移除登入頁面的測試帳號顯示區塊
+- ✅ 移除郵箱輸入框的預填值（`admin@admin.com`）
+- ✅ 移除密碼輸入框的預填值（`admin123`）
+- ✅ 更改郵箱欄位 placeholder 為「請輸入管理員郵箱」
+
+**Updated File:**
+- `backend/static/login.html`
+
+**Benefits:**
+- ✅ 提高安全性 - 不在 UI 上顯示測試帳號
+- ✅ 更專業的登入頁面
+- ✅ 符合生產環境安全標準
+- ✅ 防止未授權訪問
+
+**Note:**
+測試帳號仍然存在於數據庫中，只是不在登入頁面顯示。管理員需要知道正確的登入憑證。
+
+---
+
 ## 2025-12-04 22:10:00 TST - Complete SEO Implementation
 
 ### Implemented Comprehensive SEO System 實現完整的 SEO 系統
