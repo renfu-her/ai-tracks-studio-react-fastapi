@@ -21,12 +21,17 @@
 - ✅ `backend/PYTHON_3.14_NOTES.md` - Python 3.14 compatibility notes and recommendations
 - ✅ `backend/switch_to_python_3.12.sh` - Automated script to switch from Python 3.14 to 3.12
 - ✅ `backend/SWITCH_TO_PYTHON_3.12.md` - Complete guide for switching to Python 3.12
+- ✅ `backend/switch_python_uv.sh` - **Simple UV method to switch Python version**
+- ✅ `backend/SWITCH_PYTHON_VERSION_UV.md` - **UV-based Python version switching guide**
 
 **Recommendation for Production 生產環境建議:**
 - Python 3.12 is more stable and fully tested
 - All packages have complete Python 3.12 support
 - Better for production environments
-- Use the automated script to switch in 2-5 minutes
+
+**Two Methods to Switch 兩種切換方法:**
+1. **UV Method (Recommended)** - If using UV: just change `.python-version` and run `uv sync`
+2. **Manual Method** - Use the automated script for manual venv management
 
 **Key Changes in Service Files:**
 ```ini
