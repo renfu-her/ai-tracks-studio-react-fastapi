@@ -1,5 +1,75 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-04 17:30:00 TST - Fixed Image URL Path for Production
+
+### Fixed Missing `/backend` Prefix in Image URLs 修復圖片 URL 缺少 /backend 前綴
+
+#### Problem 問題
+前端顯示的圖片路徑缺少 `/backend` 前綴：
+- ❌ 錯誤路徑：`https://studio.ai-tracks.com/static/uploads/20251204-xxx.webp`
+- ✅ 正確路徑：`https://studio.ai-tracks.com/backend/static/uploads/20251204-xxx.webp`
+
+#### Root Cause 根本原因
+代碼已經修正（`frontend/api/config.ts` 中包含正確路徑），但生產環境需要：
+1. 創建 `.env.production` 配置文件
+2. 重新構建前端
+3. 部署到生產服務器
+
+#### Solution 解決方案
+
+**1. 創建環境配置文件：**
+- ✅ `frontend/.env.example` - 環境變量範例
+- ✅ `frontend/DEPLOYMENT_STEPS.md` - 完整部署指南
+
+**2. 生產環境配置：**
+```env
+# frontend/.env.production
+VITE_API_BASE_URL=https://studio.ai-tracks.com
+```
+
+**3. 部署步驟：**
+```bash
+# 在本地機器（Windows）
+cd frontend
+echo "VITE_API_BASE_URL=https://studio.ai-tracks.com" > .env.production
+npm run build
+
+# 上傳 dist/* 到服務器 /public/ 目錄
+```
+
+#### Code Verification 代碼驗證
+
+確認 `frontend/api/config.ts` (Lines 40-48) 已經包含正確路徑：
+
+```typescript
+export const getImageUrl = (filename: string | null | undefined): string => {
+  if (!filename) {
+    return 'https://via.placeholder.com/800x600?text=No+Image';
+  }
+  
+  // ✅ Correct path with /backend prefix
+  return `${API_CONFIG.BASE_URL}/backend/static/uploads/${filename}`;
+};
+```
+
+#### Files Created 創建的文件
+- ✅ `frontend/.env.example` - 環境變量範例
+- ✅ `frontend/DEPLOYMENT_STEPS.md` - 部署步驟文檔
+
+#### Next Steps 下一步
+1. 在生產環境創建 `.env.production` 文件
+2. 運行 `npm run build` 構建前端
+3. 上傳 `dist/*` 到服務器
+4. 清除瀏覽器緩存並驗證
+
+#### Benefits 優點
+- ✅ 正確的靜態文件路徑
+- ✅ 圖片正常顯示
+- ✅ 環境變量分離（開發/生產）
+- ✅ 易於配置和部署
+
+---
+
 ## 2025-12-04 (Current Time) - Production Environment Fix
 
 ### Migrated Static Directory to Better Structure 遷移靜態目錄到更好的結構
