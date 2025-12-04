@@ -129,6 +129,10 @@ lerna-debug.log*
 backend/app/static/uploads/*
 !backend/app/static/uploads/.gitkeep
 
+# Also ignore any uploaded files in uploads subdirectories
+backend/app/static/uploads/**/*
+!backend/app/static/uploads/**/.gitkeep
+
 # Temporary files
 *.tmp
 *.temp
