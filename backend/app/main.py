@@ -83,8 +83,8 @@ app.include_router(about.router, prefix=settings.API_PREFIX)
 app.include_router(admin_router)  # Admin routes (already have /api/admin prefix)
 
 # Mount static files under /backend/static
-# This way it's handled by the existing Nginx location ~ ^/(docs|backend|...) rule
-static_dir = Path(__file__).parent / "static"
+# Static directory is at backend/static (same level as backend/app)
+static_dir = Path(__file__).parent.parent / "static"
 static_dir.mkdir(exist_ok=True)
 app.mount("/backend/static", StaticFiles(directory=str(static_dir)), name="static")
 

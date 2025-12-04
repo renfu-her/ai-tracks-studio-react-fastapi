@@ -2,6 +2,72 @@
 
 ## 2025-12-04 (Current Time) - Production Environment Fix
 
+### Migrated Static Directory to Better Structure 遷移靜態目錄到更好的結構
+
+#### Change 變更
+**Moved static directory from `backend/app/static/` to `backend/static/`**
+
+**Before:**
+```
+backend/app/static/  ← Inside app directory
+```
+
+**After:**
+```
+backend/static/      ← Same level as app directory
+```
+
+#### Benefits 優點
+1. ✅ **Clearer separation** - Application code and static files separated
+2. ✅ **Easier management** - Static files independent, easier to backup
+3. ✅ **Better deployment** - Can deploy static files separately or to CDN
+4. ✅ **Standard structure** - Follows common Python web app conventions
+
+#### Code Changes 代碼變更
+**Updated files:**
+- ✅ `backend/app/main.py` - Changed static_dir path to `parent.parent / "static"`
+- ✅ `backend/app/routers/admin/upload.py` - Updated UPLOAD_DIR path
+- ✅ `frontend/api/config.ts` - Updated image URL to `/backend/static/uploads/`
+- ✅ `backend/app/static/admin.html` - Updated JS references to `/backend/static/js/`
+
+**Created migration tools:**
+- ✅ `backend/migrate_static.sh` - Automated migration script
+- ✅ `backend/MIGRATE_STATIC_DIR.md` - Complete migration guide
+
+#### Migration Steps 遷移步驟
+```bash
+# On production server
+cd /home/ai-tracks-studio/htdocs/studio.ai-tracks.com/backend
+
+# Run migration script
+chmod +x migrate_static.sh
+bash migrate_static.sh
+
+# Restart service
+sudo systemctl restart studio-uvicorn
+```
+
+#### URL Structure (Unchanged) URL 結構（不變）
+- `/backend/static/uploads/` - Uploaded images
+- `/backend/static/js/` - Admin JavaScript files
+- `/backend/static/css/` - Admin CSS files
+
+#### New Directory Structure 新目錄結構
+```
+backend/
+├── app/              ← Python application code
+│   ├── main.py
+│   ├── models/
+│   └── routers/
+└── static/           ← Static files (HTML, CSS, JS, uploads)
+    ├── admin.html
+    ├── js/
+    ├── css/
+    └── uploads/
+```
+
+---
+
 ### Created Complete Production Deployment Guide 創建完整生產環境部署指南
 
 #### Problem 問題 #7

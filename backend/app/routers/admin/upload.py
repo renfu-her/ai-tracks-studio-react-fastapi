@@ -11,8 +11,8 @@ from app.models.user import User
 
 router = APIRouter(prefix="/api/admin/upload", tags=["admin-upload"])
 
-# Upload directory
-UPLOAD_DIR = Path(__file__).parent.parent.parent / "static" / "uploads"
+# Upload directory - backend/static/uploads (static is at same level as app)
+UPLOAD_DIR = Path(__file__).parent.parent.parent.parent / "static" / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Allowed image types
