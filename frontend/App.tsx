@@ -80,12 +80,6 @@ const AboutPage: React.FC = () => {
 
   return (
     <>
-      <SectionHero
-        title="About Us"
-        subtitle="We are a passionate team dedicated to redefining web experiences through AI."
-        bgImage={HERO_IMAGES.about}
-        overlayColor="from-teal-900/90 to-emerald-900/80"
-      />
       <div className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           {loading ? (
@@ -184,12 +178,6 @@ const NewsPage: React.FC = () => {
 
   return (
     <>
-      <SectionHero
-        title="Latest News"
-        subtitle="Insights, updates, and announcements from the AI-Tracks Studio team."
-        bgImage={HERO_IMAGES.news}
-        overlayColor="from-lively-pink/90 to-purple-900/80"
-      />
       <div className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {loading ? (
@@ -280,41 +268,6 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      {/* Home Banner */}
-      <div className="relative h-[450px] flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${HERO_IMAGES.home})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-accent-900/80 to-lively-pink/30" />
-
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <div className="inline-block px-4 py-1.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-sm font-semibold tracking-wide mb-2 text-lively-yellow">
-            <span className="mr-2">✨</span> Welcome to the future of play
-          </div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-2 leading-tight">
-            Design. <span className="text-transparent bg-clip-text bg-gradient-to-r from-lively-orange to-lively-yellow">Play.</span> <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-400 to-lively-pink">Innovate.</span>
-          </h1>
-          <p className="text-lg md:text-xl font-light text-slate-200 max-w-2xl mx-auto leading-relaxed">
-            AI-Tracks Studio brings you immersive mini-games and cutting-edge web demos driven by vibrant creativity.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Link
-              to="/game"
-              className="px-6 py-3 bg-gradient-to-r from-accent-600 to-accent-500 hover:from-accent-500 hover:to-accent-400 text-white rounded-full font-bold text-base transition-all transform hover:scale-105 shadow-xl hover:shadow-accent-500/25 flex items-center justify-center gap-2"
-            >
-              Explore Games <Star size={18} fill="currentColor" />
-            </Link>
-            <Link
-              to="/website"
-              className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-full font-bold text-base transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-2"
-            >
-              View Demos <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {/* Featured Section */}
       <div className="py-24 bg-slate-50 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
@@ -411,12 +364,6 @@ const GamesPage: React.FC = () => {
 
   return (
     <>
-      <SectionHero
-        title="Game Projects"
-        subtitle="Explore our collection of interactive experiences and mini-games."
-        bgImage={HERO_IMAGES.games}
-        overlayColor="from-indigo-900/90 to-accent-800/80"
-      />
       {loading ? (
         <LoadingSpinner message="Loading games..." />
       ) : error ? (
@@ -465,12 +412,6 @@ const WebsitesPage: React.FC = () => {
 
   return (
     <>
-      <SectionHero
-        title="Web Demos"
-        subtitle="A showcase of responsive, high-performance web development."
-        bgImage={HERO_IMAGES.websites}
-        overlayColor="from-blue-900/90 to-cyan-800/80"
-      />
       {loading ? (
         <LoadingSpinner message="Loading websites..." />
       ) : error ? (

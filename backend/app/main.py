@@ -11,7 +11,7 @@ import logging
 
 from app.config import settings
 from app.database import create_tables
-from app.routers import projects, news, about
+from app.routers import projects, news, about, banner
 from app.routers.admin import router as admin_router
 from app.init_admin import init_admin_user
 from app.db_migrate import auto_migrate_to_longtext
@@ -80,6 +80,7 @@ app.add_middleware(
 app.include_router(projects.router, prefix=settings.API_PREFIX)
 app.include_router(news.router, prefix=settings.API_PREFIX)
 app.include_router(about.router, prefix=settings.API_PREFIX)
+app.include_router(banner.router)  # Banner routes (already have /api/banners prefix)
 app.include_router(admin_router)  # Admin routes (already have /api/admin prefix)
 
 # Mount static files under /backend/static

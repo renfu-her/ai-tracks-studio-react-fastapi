@@ -8,6 +8,7 @@ export * from './client';
 export * from './projects';
 export * from './news';
 export * from './about';
+export * from './banner';
 
 // Re-export types that are commonly used with API
 export type { ProjectItem, NewsItem, AboutUs, Category } from '../types';

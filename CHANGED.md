@@ -1,5 +1,137 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-06 22:45:00 TST - Updated Navigation Background Color 更新導航背景顏色
+
+### Navigation Style Update 導航樣式更新
+
+#### Changes 變更
+
+**Navigation Background 導航背景:**
+- ✅ 將頂部導航背景色改為淡紫色（`bg-purple-100/90`）
+- ✅ 滾動時使用半透明淡紫色（`bg-purple-100/80`）
+- ✅ 添加 backdrop-blur 效果，保持現代感
+- ✅ 桌面選單使用白色半透明背景（`bg-white/60`）
+- ✅ 移動選單使用淡紫色背景（`bg-purple-50`）
+
+**Border Updates 邊框更新:**
+- ✅ 桌面選單邊框改為淡紫色（`border-purple-200/30`）
+- ✅ 移動選單按鈕添加淡紫色邊框
+- ✅ 移動選單下拉框使用淡紫色邊框（`border-purple-200`）
+
+**Text Color 文字顏色:**
+- ✅ Logo 文字顏色保持深色（`text-slate-800`），確保在淡紫色背景上清晰可見
+- ✅ 移除響應式文字顏色變化（不再需要白色文字）
+
+#### Updated File 更新的文件
+- `frontend/components/Layout.tsx`
+
+#### Benefits 優勢
+- ✅ 更柔和的視覺效果
+- ✅ 與整體設計風格更協調
+- ✅ 保持良好的可讀性
+- ✅ 現代化的半透明效果
+
+---
+
+## 2025-12-06 22:37:43 TST - Frontend Banner Integration 前端 Banner 整合
+
+### Frontend Banner Display Implementation 前端 Banner 顯示實現
+
+#### Features 功能
+
+**1. Public Banner API 公開 Banner API**
+- ✅ Created `backend/app/routers/banner.py` - 公開 Banner API
+- ✅ `GET /api/banners/page/{page_type}` - 根據頁面類型獲取 Banner（無需認證）
+- ✅ 支持所有頁面類型：HOME, GAME, WEBSITE, NEWS, ABOUT
+
+**2. Frontend Banner API 前端 Banner API**
+- ✅ Created `frontend/api/banner.ts` - Banner API 服務
+- ✅ `bannerApi.getBannerByPageType()` - 獲取指定頁面類型的 Banner
+- ✅ `bannerApi.getBannerImageUrl()` - 獲取 Banner 圖片 URL
+- ✅ 自動處理 404（Banner 不存在時返回 null）
+
+**3. Banner Component 組件**
+- ✅ Created `frontend/components/Banner.tsx` - Banner 顯示組件
+- ✅ 自動根據頁面類型載入對應的 Banner
+- ✅ 響應式設計（桌面 400px，移動 300px）
+- ✅ 優雅的漸層遮罩效果
+- ✅ 如果沒有 Banner 則不顯示（不佔用空間）
+
+**4. Layout Integration 布局整合**
+- ✅ 修改 `frontend/components/Layout.tsx` - 在導航下方添加 Banner
+- ✅ Banner 與頂部導航分開（獨立區域）
+- ✅ 自動根據當前路由判斷頁面類型
+- ✅ 支持所有頁面：首頁、Game、Website、News、About
+
+**5. Page Updates 頁面更新**
+- ✅ 移除所有頁面的 `SectionHero` 組件
+- ✅ 移除首頁的舊 Banner 代碼
+- ✅ Banner 統一在 Layout 中顯示，各頁面不再需要單獨處理
+
+#### Files Created 創建的文件
+
+**Backend:**
+- `backend/app/routers/banner.py` - 公開 Banner API
+
+**Frontend:**
+- `frontend/api/banner.ts` - Banner API 服務
+- `frontend/components/Banner.tsx` - Banner 顯示組件
+
+#### Files Updated 更新的文件
+
+**Backend:**
+- `backend/app/main.py` - 添加 banner router
+- `backend/app/routers/__init__.py` - 導出 banner router
+
+**Frontend:**
+- `frontend/components/Layout.tsx` - 添加 Banner 顯示邏輯
+- `frontend/App.tsx` - 移除各頁面的 SectionHero
+- `frontend/api/index.ts` - 導出 banner API
+
+#### Route to Page Type Mapping 路由到頁面類型映射
+
+- `/` → `HOME`
+- `/game` 或 `/game/*` → `GAME`
+- `/website` 或 `/website/*` → `WEBSITE`
+- `/news` 或 `/news/*` → `NEWS`
+- `/about` → `ABOUT`
+
+#### Banner Display Logic Banner 顯示邏輯
+
+1. **Layout 組件**根據當前路由判斷頁面類型
+2. **Banner 組件**根據頁面類型從 API 獲取 Banner
+3. 如果 Banner 存在，顯示圖片（300-400px 高度）
+4. 如果 Banner 不存在（404），不顯示任何內容
+5. Banner 位於導航下方，與導航完全分開
+
+#### Benefits 優勢
+
+- ✅ **統一管理** - 所有頁面 Banner 在後台統一管理
+- ✅ **自動切換** - 根據頁面自動顯示對應的 Banner
+- ✅ **分離設計** - Banner 與導航完全分開，互不影響
+- ✅ **優雅降級** - 沒有 Banner 時不顯示，不影響頁面布局
+- ✅ **響應式** - 適配各種螢幕尺寸
+- ✅ **性能優化** - 圖片自動轉換為 WebP，載入快速
+
+#### Usage 使用方式
+
+1. **後台管理 Banner:**
+   - 訪問 http://localhost:8000/backend#banners/list
+   - 為每個頁面類型上傳對應的 Banner 圖片
+
+2. **前端自動顯示:**
+   - 訪問首頁 → 顯示 HOME Banner
+   - 訪問 Game 頁面 → 顯示 GAME Banner
+   - 訪問 Website 頁面 → 顯示 WEBSITE Banner
+   - 訪問 News 頁面 → 顯示 NEWS Banner
+   - 訪問 About 頁面 → 顯示 ABOUT Banner
+
+3. **如果沒有設置 Banner:**
+   - 頁面正常顯示，只是沒有 Banner 圖片
+   - 不影響其他內容的顯示
+
+---
+
 ## 2025-12-06 22:08:55 TST - Added Banner Management System 新增 Banner 管理系統
 
 ### Complete Banner Management Implementation 完整 Banner 管理實現

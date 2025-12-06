@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Gamepad2, Globe, Newspaper, Home, Mail, Facebook, Twitter, Instagram, Info } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { Banner } from './Banner';
+import { PageType } from '../api/banner';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -59,12 +61,25 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Map route to page type for banner
+  const getPageType = (): PageType | null => {
+    const path = location.pathname;
+    if (path === '/') return PageType.HOME;
+    if (path === '/game' || path.startsWith('/game/')) return PageType.GAME;
+    if (path === '/website' || path.startsWith('/website/')) return PageType.WEBSITE;
+    if (path === '/news' || path.startsWith('/news/')) return PageType.NEWS;
+    if (path === '/about') return PageType.ABOUT;
+    return null;
+  };
+
+  const pageType = getPageType();
+
   return (
     <div className="min-h-screen flex flex-col font-sans">
       {/* Navigation */}
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          isScrolled ? 'bg-white/80 backdrop-blur-md shadow-md py-2' : 'bg-transparent py-4'
+          isScrolled ? 'bg-purple-100/80 backdrop-blur-md shadow-md py-2' : 'bg-purple-100/90 backdrop-blur-sm py-4'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
@@ -72,13 +87,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="bg-gradient-to-br from-accent-500 to-lively-orange p-2 rounded-xl text-white shadow-lg group-hover:rotate-12 transition-transform duration-300">
               <Gamepad2 size={24} />
             </div>
-            <span className={`text-2xl font-bold tracking-tight ${isScrolled ? 'text-slate-800' : 'text-slate-800 md:text-white'} transition-colors`}>
+            <span className="text-2xl font-bold tracking-tight text-slate-800 transition-colors">
               AI-Tracks <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-lively-pink">Studio</span>
             </span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-2 bg-white/50 backdrop-blur-sm p-1 rounded-full border border-white/20 shadow-sm">
+          <div className="hidden md:flex items-center gap-2 bg-white/60 backdrop-blur-sm p-1 rounded-full border border-purple-200/30 shadow-sm">
             <NavLink to="/" icon={Home} active={isActive('/')}>Home</NavLink>
             <NavLink to="/game" icon={Gamepad2} active={isActive('/game')}>Games</NavLink>
             <NavLink to="/website" icon={Globe} active={isActive('/website')}>Websites</NavLink>
@@ -89,7 +104,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-slate-700 bg-white/80 rounded-lg backdrop-blur-sm"
+            className="md:hidden p-2 text-slate-700 bg-white/80 rounded-lg backdrop-blur-sm border border-purple-200/30"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -97,7 +112,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         {/* Mobile Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="absolute top-full left-0 w-full bg-white shadow-xl border-t border-slate-100 flex flex-col md:hidden animate-in slide-in-from-top-5">
+          <div className="absolute top-full left-0 w-full bg-purple-50 shadow-xl border-t border-purple-200 flex flex-col md:hidden animate-in slide-in-from-top-5">
             <MobileNavLink to="/" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/')}>Home</MobileNavLink>
             <MobileNavLink to="/game" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/game')}>Games</MobileNavLink>
             <MobileNavLink to="/website" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/website')}>Websites</MobileNavLink>
@@ -106,6 +121,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         )}
       </nav>
+
+      {/* Banner - Separate from navigation, positioned below nav */}
+      <div className="w-full" style={{ marginTop: '80px' }}>
+        {pageType && <Banner pageType={pageType} />}
+      </div>
 
       {/* Main Content */}
       <main className="flex-grow">
