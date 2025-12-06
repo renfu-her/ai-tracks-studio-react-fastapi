@@ -48,3 +48,8 @@ export const useSEO = (config: SEOConfig, structuredData?: Record<string, any>):
 
 export default useSEO;
 
+
+
+
+
+

@@ -255,6 +255,12 @@
                                     <span>關於我們</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="#banners" class="nav-link-item" data-page="banners">
+                                    <span class="nav-icon"><i class="fas fa-image"></i></span>
+                                    <span>Banner 管理</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -386,7 +392,8 @@
             const titles = {
                 'projects': '專案管理',
                 'news': '最新消息',
-                'about': '關於我們'
+                'about': '關於我們',
+                'banners': 'Banner 管理'
             };
             const pageTitle = titles[module] || 'Admin';
             $('#pageTitle').text(pageTitle + ' - AI-Tracks Studio Admin');

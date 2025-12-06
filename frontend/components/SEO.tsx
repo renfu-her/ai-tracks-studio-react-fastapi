@@ -49,3 +49,8 @@ export const SEO: React.FC<SEOProps> = ({ structuredData, ...seoConfig }) => {
 
 export default SEO;
 
+
+
+
+
+

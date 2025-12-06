@@ -1,0 +1,188 @@
+<!-- Banner Add/Edit Content Fragment (不含 html/head/body) -->
+<div class="admin-card">
+    <h2 class="mb-4" id="formTitle">新增 Banner</h2>
+    
+    <form id="bannerForm">
+        <input type="hidden" id="bannerId" />
+        
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        頁面類型 <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select" id="bannerPageType" required>
+                        <option value="">請選擇頁面類型</option>
+                        <option value="HOME">首頁 (HOME)</option>
+                        <option value="GAME">Game</option>
+                        <option value="WEBSITE">Website</option>
+                        <option value="NEWS">News</option>
+                        <option value="ABOUT">About</option>
+                    </select>
+                    <small class="text-muted">每個頁面類型只能有一個 Banner</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        圖片 <span class="text-danger">*</span>
+                    </label>
+                    <input type="hidden" id="bannerImage">
+                    <div class="mb-2">
+                        <label for="bannerImageFile" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i> 上傳圖片
+                            <input type="file" id="bannerImageFile" accept="image/*" class="d-none">
+                        </label>
+                        <small class="text-muted ms-2">自動轉換為 WebP</small>
+                    </div>
+                    
+                    <div id="imagePreview" class="mt-3 p-3 bg-light rounded border" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="flex-grow-1">
+                                <img id="previewImg" class="img-fluid rounded" style="max-height: 300px; max-width: 100%;">
+                            </div>
+                            <button type="button" class="btn btn-sm btn-danger ms-2" id="deleteImageBtn" title="刪除圖片">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="small" id="imageInfo"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="border-top pt-4 mt-4">
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="fas fa-save me-2"></i> 儲存
+            </button>
+            <a href="#banners/list" class="btn btn-secondary px-4 ms-2">
+                <i class="fas fa-times me-2"></i> 取消
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+window.pageInit = async function() {
+    let isEditMode = false;
+    let editingId = null;
+
+    // Check if edit mode
+    const hash = window.location.hash;
+    const match = hash.match(/#banners\/edit\/(.+)/);
+    if (match) {
+        isEditMode = true;
+        editingId = match[1];
+        $('#formTitle').text('編輯 Banner');
+        $('#pageHeader').text('編輯 Banner');
+        $('#bannerPageType').prop('disabled', true); // Disable page type in edit mode
+        await loadBanner(editingId);
+    }
+
+    // Image upload
+    $('#bannerImageFile').change(async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        $('#imagePreview').show();
+        $('#imageInfo').html('<div class="spinner-border spinner-border-sm me-2"></div>上傳中...');
+
+        try {
+            const filename = await window.uploadImage(file);
+            
+            // Save only filename (not path)
+            $('#bannerImage').val(filename);
+            
+            // Display image preview with full URL
+            const imageUrl = window.getImageUrl(filename);
+            $('#previewImg').attr('src', imageUrl);
+            
+            // Show UUID info
+            const uuid = filename.split('.')[0];
+            $('#imageInfo').html(`<i class="fas fa-check-circle text-success"></i> 上傳成功！檔案: ${filename}`);
+        } catch (error) {
+            $('#imageInfo').html(`<i class="fas fa-times-circle text-danger"></i> ${error.message}`);
+        }
+    });
+
+    // Delete image button
+    $('#deleteImageBtn').click(function() {
+        if (confirm('確定要刪除這張圖片嗎？')) {
+            $('#bannerImage').val('');
+            $('#imagePreview').hide();
+            $('#bannerImageFile').val('');
+        }
+    });
+
+    async function loadBanner(id) {
+        try {
+            const banner = await apiRequest(`/api/admin/banners/${id}`);
+            $('#bannerId').val(banner.id);
+            $('#bannerPageType').val(banner.page_type);
+            
+            const imageFilename = banner.image || '';
+            $('#bannerImage').val(imageFilename);
+            
+            // Show preview if has image
+            if (imageFilename) {
+                $('#previewImg').attr('src', getImageUrl(imageFilename));
+                $('#imagePreview').show();
+                $('#imageInfo').html(`<i class="fas fa-image text-info"></i> 當前圖片: ${imageFilename}`);
+            }
+        } catch (error) {
+            showErrorToast('載入失敗: ' + error.message);
+            window.location.hash = 'banners/list';
+        }
+    }
+
+    $('#bannerForm').submit(async function(e) {
+        e.preventDefault();
+
+        const pageType = $('#bannerPageType').val();
+        const image = $('#bannerImage').val().trim();
+
+        if (!pageType) {
+            showErrorToast('請選擇頁面類型');
+            return;
+        }
+
+        if (!image) {
+            showErrorToast('請上傳圖片');
+            return;
+        }
+
+        let bannerId = $('#bannerId').val();
+        if (!isEditMode) {
+            bannerId = `banner-${pageType.toLowerCase()}-${Date.now().toString().slice(-6)}`;
+        }
+
+        const data = {
+            id: bannerId,
+            page_type: pageType,
+            image: image
+        };
+
+        try {
+            if (isEditMode) {
+                // Update only image
+                await apiRequest(`/api/admin/banners/${editingId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ image: image })
+                });
+                showSuccessToast('更新成功！');
+            } else {
+                await apiRequest('/api/admin/banners', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                showSuccessToast('新增成功！');
+            }
+
+            setTimeout(() => window.location.hash = 'banners/list', 1000);
+        } catch (error) {
+            showErrorToast('儲存失敗: ' + error.message);
+        }
+    });
+};
+</script>
+

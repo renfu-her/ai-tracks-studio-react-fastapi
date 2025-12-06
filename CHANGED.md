@@ -1,5 +1,156 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-06 22:08:55 TST - Added Banner Management System 新增 Banner 管理系統
+
+### Complete Banner Management Implementation 完整 Banner 管理實現
+
+#### Features 功能
+
+**1. Banner Model 模型**
+- ✅ Created `app/models/banner.py` - Banner 數據模型
+- ✅ Page type enumeration (HOME, GAME, WEBSITE, NEWS, ABOUT)
+- ✅ Image field with UUID-based WebP naming
+- ✅ Unique constraint on page_type (每個頁面類型只能有一個 Banner)
+- ✅ Automatic timestamps (created_at, updated_at)
+
+**2. Banner Repository 倉儲**
+- ✅ Created `app/repositories/banner.py` - Banner 倉儲模式
+- ✅ Extends BaseRepository for CRUD operations
+- ✅ `get_by_page_type()` - 根據頁面類型查詢 Banner
+
+**3. Banner Schemas 數據驗證**
+- ✅ Created `app/schemas/banner.py` - Pydantic schemas
+- ✅ BannerCreate, BannerUpdate, BannerResponse, BannerListResponse
+- ✅ Full type validation and serialization
+
+**4. Banner Admin API 管理 API**
+- ✅ Created `app/routers/admin/banner_admin.py` - Admin CRUD endpoints
+- ✅ `GET /api/admin/banners` - List all banners
+- ✅ `GET /api/admin/banners/{id}` - Get banner by ID
+- ✅ `GET /api/admin/banners/page/{page_type}` - Get banner by page type
+- ✅ `POST /api/admin/banners` - Create new banner
+- ✅ `PUT /api/admin/banners/{id}` - Update banner (自動刪除舊圖片)
+- ✅ `DELETE /api/admin/banners/{id}` - Delete banner (自動刪除圖片文件)
+- ✅ Admin authentication required (require_admin)
+
+**5. Banner Admin UI 管理界面**
+- ✅ Created `backend/static/admin/banner/list.html` - Banner 列表頁面
+- ✅ Created `backend/static/admin/banner/add-edit.html` - 新增/編輯表單
+- ✅ Image upload with WebP conversion (使用現有 upload API)
+- ✅ Image preview with thumbnail display
+- ✅ Page type selection (HOME, GAME, WEBSITE, NEWS, ABOUT)
+- ✅ Delete old image on edit (編輯時自動刪除舊圖片)
+- ✅ Responsive design (響應式設計)
+
+**6. Navigation Integration 導航整合**
+- ✅ Added Banner menu item to admin sidebar
+- ✅ Added Banner route handling in SPA router
+- ✅ Added Banner page title mapping
+
+#### Files Created 創建的文件
+
+**Models:**
+- `backend/app/models/banner.py` - Banner model with PageTypeEnum
+
+**Repositories:**
+- `backend/app/repositories/banner.py` - BannerRepository
+
+**Schemas:**
+- `backend/app/schemas/banner.py` - Banner Pydantic schemas
+
+**Admin APIs:**
+- `backend/app/routers/admin/banner_admin.py` - Banner CRUD API
+
+**Admin UI:**
+- `backend/static/admin/banner/list.html` - Banner list page
+- `backend/app/static/admin/banner/add-edit.html` - Banner form page
+
+#### Files Updated 更新的文件
+
+**Model Exports:**
+- `backend/app/models/__init__.py` - Added Banner, PageTypeEnum
+
+**Repository Exports:**
+- `backend/app/repositories/__init__.py` - Added BannerRepository
+
+**Schema Exports:**
+- `backend/app/schemas/__init__.py` - Added Banner schemas
+
+**Admin Router:**
+- `backend/app/routers/admin/__init__.py` - Added banner_admin router
+
+**Admin UI:**
+- `backend/static/admin.html` - Added Banner menu item and route
+
+#### Database Schema 數據庫結構
+
+```sql
+CREATE TABLE banners (
+    id VARCHAR(50) PRIMARY KEY,
+    page_type ENUM('HOME', 'GAME', 'WEBSITE', 'NEWS', 'ABOUT') NOT NULL UNIQUE,
+    image VARCHAR(500) NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL
+);
+```
+
+#### Usage 使用方式
+
+1. **Access Banner Management:**
+   - Navigate to: http://localhost:8000/backend
+   - Click "Banner 管理" in sidebar
+   - Or directly: http://localhost:8000/backend#banners/list
+
+2. **Create Banner:**
+   - Click "新增 Banner"
+   - Select page type (首頁, Game, Website, News, About)
+   - Upload image (自動轉換為 WebP)
+   - Save
+
+3. **Edit Banner:**
+   - Click edit button on banner list
+   - Upload new image (舊圖片自動刪除)
+   - Save
+
+4. **Delete Banner:**
+   - Click delete button
+   - Confirm deletion
+   - Banner and image file will be deleted
+
+#### Image Management 圖片管理
+
+- ✅ **Upload:** Uses existing `/api/admin/upload/image` endpoint
+- ✅ **Format:** All images converted to WebP format
+- ✅ **Naming:** UUID-based filename (e.g., `20251206-{uuid}.webp`)
+- ✅ **Storage:** `backend/static/uploads/` directory
+- ✅ **Auto-delete:** Old images deleted when updating or deleting banner
+- ✅ **Preview:** Thumbnail preview in list and form pages
+
+#### Page Types 頁面類型
+
+- **HOME** - 首頁 Banner
+- **GAME** - Game 頁面 Banner
+- **WEBSITE** - Website 頁面 Banner
+- **NEWS** - News 頁面 Banner
+- **ABOUT** - About 頁面 Banner
+
+#### Security 安全性
+
+- ✅ Admin authentication required for all operations
+- ✅ Session-based authentication
+- ✅ Image file validation (type, size)
+- ✅ Unique page type constraint (防止重複)
+
+#### Benefits 優勢
+
+- ✅ **統一管理** - 所有頁面 Banner 集中管理
+- ✅ **自動化** - 圖片自動轉換為 WebP，自動刪除舊圖片
+- ✅ **用戶友好** - 直觀的界面，圖片預覽
+- ✅ **類型安全** - 完整的 Pydantic 驗證
+- ✅ **可擴展** - 易於添加新的頁面類型
+
+---
+
 ## 2025-12-04 22:35:00 TST - Removed Test Account Display from Login Page
 
 ### Removed Test Account Information 移除測試帳號顯示
