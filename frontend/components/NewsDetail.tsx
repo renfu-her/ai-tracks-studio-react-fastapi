@@ -95,7 +95,7 @@ export const NewsDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Header with back button */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+      <div className="bg-orange-100/90 backdrop-blur-sm sticky top-0 z-10 shadow-sm border-b border-orange-200/30">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link
             to="/news"
@@ -118,6 +118,13 @@ export const NewsDetail: React.FC = () => {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent"></div>
+            
+            {/* Category Badge */}
+            <div className="absolute top-8 right-8">
+              <span className="px-4 py-2 rounded-full bg-orange-500 text-white text-sm font-bold uppercase tracking-wider shadow-lg">
+                NEWS
+              </span>
+            </div>
           </div>
         )}
 

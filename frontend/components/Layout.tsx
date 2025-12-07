@@ -59,7 +59,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    // For home page, exact match required
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    // For other paths, check if pathname starts with the path
+    // This handles detail pages like /game/123, /website/456, /news/789
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
 
   // Map route to page type for banner
   const getPageType = (): PageType | null => {

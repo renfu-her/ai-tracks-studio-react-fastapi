@@ -2444,3 +2444,178 @@ Access:
 - Resolved date type name collision in Pydantic schemas
 - Verified all imports load successfully
 
+---
+
+## 2025-12-07 08:11:39 - Detail 頁面 Top Navigator 顏色配置統一
+
+### 變更內容 / Changes
+
+統一 detail 頁面的 top navigator 顏色配置，使其與首頁一致。
+
+Unified the top navigator color configuration for detail pages to match the homepage.
+
+### 修改的檔案 / Modified Files
+
+1. **frontend/components/ProjectDetail.tsx**
+   - 將 header 的背景色從 `bg-white border-b border-slate-200` 改為 `bg-purple-100/90 backdrop-blur-sm border-b border-purple-200/30`
+   - Changed header background from `bg-white border-b border-slate-200` to `bg-purple-100/90 backdrop-blur-sm border-b border-purple-200/30`
+
+2. **frontend/components/NewsDetail.tsx**
+   - 將 header 的背景色從 `bg-white border-b border-slate-200` 改為 `bg-purple-100/90 backdrop-blur-sm border-b border-purple-200/30`
+   - Changed header background from `bg-white border-b border-slate-200` to `bg-purple-100/90 backdrop-blur-sm border-b border-purple-200/30`
+
+### 效果 / Effects
+
+- Detail 頁面的 top navigator 現在使用與首頁相同的 purple-100 顏色配置
+- Detail pages' top navigator now uses the same purple-100 color configuration as the homepage
+- 保持一致的視覺風格和用戶體驗
+- Maintains consistent visual style and user experience
+
+---
+
+## 2025-12-07 08:13:04 - Detail 頁面根據類型設置不同顏色
+
+### 變更內容 / Changes
+
+根據 detail 頁面的類型（GAME、WEBSITE、NEWS）設置不同的 top navigator 顏色配置，讓用戶可以通過顏色快速識別頁面類型。
+
+Set different top navigator color configurations based on detail page type (GAME, WEBSITE, NEWS) to help users quickly identify page types through color.
+
+### 顏色配置 / Color Configuration
+
+1. **GAME (遊戲)**: 藍色系
+   - Background: `bg-blue-100/90`
+   - Border: `border-blue-200/30`
+   - 使用藍色系突出遊戲頁面
+   - Uses blue color scheme to highlight game pages
+
+2. **WEBSITE (網站)**: 綠色系
+   - Background: `bg-emerald-100/90`
+   - Border: `border-emerald-200/30`
+   - 使用綠色系突出網站頁面
+   - Uses green color scheme to highlight website pages
+
+3. **NEWS (新聞)**: 橙色系
+   - Background: `bg-orange-100/90`
+   - Border: `border-orange-200/30`
+   - 使用橙色系突出新聞頁面
+   - Uses orange color scheme to highlight news pages
+
+### 修改的檔案 / Modified Files
+
+1. **frontend/components/ProjectDetail.tsx**
+   - 添加 `getHeaderColor()` 函數，根據 project.category 返回對應的顏色配置
+   - Added `getHeaderColor()` function that returns color configuration based on project.category
+   - GAME 類型使用藍色，WEBSITE 類型使用綠色
+   - GAME type uses blue, WEBSITE type uses green
+
+2. **frontend/components/NewsDetail.tsx**
+   - 將 header 顏色從 purple-100 改為 orange-100
+   - Changed header color from purple-100 to orange-100
+   - 使用橙色系突出新聞頁面
+   - Uses orange color scheme to highlight news pages
+
+### 效果 / Effects
+
+- 不同類型的 detail 頁面現在有獨特的顏色標識
+- Different types of detail pages now have unique color identifiers
+- 提升用戶體驗，讓用戶可以快速識別當前頁面類型
+- Improves user experience by allowing users to quickly identify the current page type
+- 保持視覺一致性的同時增加區分度
+- Maintains visual consistency while adding distinction
+
+---
+
+## 2025-12-07 08:17:30 - Detail 頁面 Category Badge 顏色配置
+
+### 變更內容 / Changes
+
+更新 detail 頁面中的 category badge（例如 "GAME"、"WEBSITE"、"NEWS"），使其根據類型顯示對應的顏色，與頁面 header 顏色保持一致。
+
+Updated category badges (e.g., "GAME", "WEBSITE", "NEWS") in detail pages to display corresponding colors based on type, matching the page header colors.
+
+### 修改的檔案 / Modified Files
+
+1. **frontend/components/ProjectDetail.tsx**
+   - 添加 `getCategoryBadgeColor()` 函數，根據 project.category 返回對應的 badge 顏色
+   - Added `getCategoryBadgeColor()` function that returns badge color based on project.category
+   - **GAME**: `bg-blue-500` (藍色)
+   - **WEBSITE**: `bg-emerald-500` (綠色)
+   - 更新 category badge 使用動態顏色
+   - Updated category badge to use dynamic color
+
+2. **frontend/components/NewsDetail.tsx**
+   - 在 hero image 上添加 "NEWS" category badge
+   - Added "NEWS" category badge on hero image
+   - 使用 `bg-orange-500` (橙色) 與頁面 header 顏色一致
+   - Uses `bg-orange-500` (orange) to match page header color
+
+### 顏色配置 / Color Configuration
+
+- **GAME Badge**: `bg-blue-500` - 藍色 badge，與藍色 header 一致
+- **WEBSITE Badge**: `bg-emerald-500` - 綠色 badge，與綠色 header 一致
+- **NEWS Badge**: `bg-orange-500` - 橙色 badge，與橙色 header 一致
+
+### 效果 / Effects
+
+- Category badge 現在與頁面 header 使用相同的顏色主題
+- Category badges now use the same color theme as page headers
+- 視覺一致性更好，用戶可以通過顏色快速識別頁面類型
+- Better visual consistency, users can quickly identify page types through color
+- News detail 頁面現在也有 category badge，與其他 detail 頁面保持一致
+- News detail page now also has category badge, consistent with other detail pages
+
+---
+
+## 2025-12-07 08:20:14 - 修復導航欄 Active 狀態判斷
+
+### 變更內容 / Changes
+
+修復導航欄的 active 狀態判斷邏輯，現在當進入 detail 頁面（如 `/game/123`、`/website/456`、`/news/789`）時，對應的導航項目會正確顯示為 active 狀態。
+
+Fixed navigation bar active state logic. Now when entering detail pages (e.g., `/game/123`, `/website/456`, `/news/789`), the corresponding navigation items will correctly display as active.
+
+### 問題描述 / Issue
+
+- 當點選 "Games" 進入 detail 頁面（如 `/game/123`）時，導航欄中的 "Games" 不會顯示為 active 狀態
+- When clicking "Games" to enter detail page (e.g., `/game/123`), the "Games" item in navigation bar doesn't show as active
+- 同樣的問題也存在於 "Websites" 和 "News" 導航項目
+- Same issue exists for "Websites" and "News" navigation items
+
+### 修改的檔案 / Modified Files
+
+**frontend/components/Layout.tsx**
+- 更新 `isActive()` 函數，支援子路徑匹配
+- Updated `isActive()` function to support sub-path matching
+- 首頁 (`/`) 需要完全匹配
+- Home page (`/`) requires exact match
+- 其他路徑（`/game`、`/website`、`/news`、`/about`）使用 `startsWith` 判斷，支援 detail 頁面
+- Other paths (`/game`, `/website`, `/news`, `/about`) use `startsWith` check to support detail pages
+
+### 邏輯說明 / Logic
+
+```typescript
+const isActive = (path: string) => {
+  // 首頁需要完全匹配
+  if (path === '/') {
+    return location.pathname === '/';
+  }
+  // 其他路徑：完全匹配或子路徑匹配
+  // 例如：/game 匹配 /game 和 /game/123
+  return location.pathname === path || location.pathname.startsWith(`${path}/`);
+};
+```
+
+### 效果 / Effects
+
+- ✅ 進入 `/game/123` 時，"Games" 導航項目顯示為 active
+- ✅ When entering `/game/123`, "Games" navigation item shows as active
+- ✅ 進入 `/website/456` 時，"Websites" 導航項目顯示為 active
+- ✅ When entering `/website/456`, "Websites" navigation item shows as active
+- ✅ 進入 `/news/789` 時，"News" 導航項目顯示為 active
+- ✅ When entering `/news/789`, "News" navigation item shows as active
+- ✅ 首頁 (`/`) 仍然正確判斷
+- ✅ Home page (`/`) still correctly identified
+- ✅ 桌面版和移動版導航都正確工作
+- ✅ Both desktop and mobile navigation work correctly
+
