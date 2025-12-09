@@ -1,5 +1,61 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-09 11:53:46 TST - Fixed Home Page Game Cards Navigation 修復首頁 Game 卡片導航
+
+### Home Page Featured Games Click Navigation 首頁精選遊戲點擊導航
+
+#### Changes 變更
+
+**Home Page Game Cards 首頁 Game 卡片:**
+- ✅ 修改首頁三個 Game 卡片的連結，從 `/game` 改為 `/game/${game.id}`
+- ✅ Changed home page three Game cards links from `/game` to `/game/${game.id}`
+- ✅ 點擊 Game 卡片現在會直接跳轉到對應的 detail 頁面
+- ✅ Clicking Game cards now directly navigates to corresponding detail page
+
+#### Problem 問題
+
+- 首頁的三個 Game 卡片點擊後只會跳轉到 `/game` 列表頁面
+- Home page three Game cards only navigated to `/game` list page when clicked
+- 無法直接進入 Game 的 detail 頁面
+- Could not directly access Game detail page
+
+#### Solution 解決方案
+
+**Updated File 更新的文件:**
+- `frontend/App.tsx` - 修改 HomePage 組件中的 Game 卡片 Link 路徑
+- `frontend/App.tsx` - Modified Game card Link path in HomePage component
+
+**Code Change 代碼變更:**
+```typescript
+// Before 之前:
+<Link to="/game" key={game.id} ...>
+
+// After 之後:
+<Link to={`/game/${game.id}`} key={game.id} ...>
+```
+
+#### User Flow 用戶流程
+
+```
+Home Page (/)
+  ↓ Click Featured Game Card
+Game Detail Page (/game/{id})
+  ↓ View full game details
+  ↓ Click "Back to All Games"
+Games List Page (/game)
+```
+
+#### Benefits 優勢
+
+- ✅ 用戶可以直接從首頁進入 Game detail 頁面
+- ✅ Users can directly access Game detail page from home page
+- ✅ 更直觀的導航體驗
+- ✅ More intuitive navigation experience
+- ✅ 與其他頁面的行為一致（ItemGrid 組件已經支持點擊跳轉）
+- ✅ Consistent with other pages behavior (ItemGrid component already supports click navigation)
+
+---
+
 ## 2025-12-06 22:45:00 TST - Updated Navigation Background Color 更新導航背景顏色
 
 ### Navigation Style Update 導航樣式更新

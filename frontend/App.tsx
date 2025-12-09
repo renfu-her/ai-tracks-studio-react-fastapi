@@ -298,7 +298,7 @@ const HomePage: React.FC = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {featuredGames.map((game) => (
-                  <Link to="/game" key={game.id} className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                  <Link to={`/game/${game.id}`} key={game.id} className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
                     <img src={getImageUrl(game.image)} alt={game.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent opacity-90"></div>
                     <div className="absolute bottom-0 left-0 p-8 w-full">
