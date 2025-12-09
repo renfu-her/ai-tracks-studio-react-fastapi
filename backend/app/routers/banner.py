@@ -38,3 +38,6 @@ async def get_banner_by_page_type(
         raise HTTPException(status_code=404, detail=f"Banner for page type {page_type} not found")
     return banner
 
+
+
+
