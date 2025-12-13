@@ -1,5 +1,32 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-13 16:06:18 TST - Fixed Missing Integer Import in Models 修復模型缺少 Integer 導入
+
+### Fixed Import Error 修復導入錯誤
+
+#### Problem 問題
+- `NameError: name 'Integer' is not defined` 在 `project.py` 和 `news.py` 中
+- 添加 `views` 欄位時使用了 `Integer`，但沒有從 `sqlalchemy` 導入
+
+#### Solution 解決方案
+- ✅ 在 `backend/app/models/project.py` 中添加 `Integer` 到導入語句
+- ✅ 在 `backend/app/models/news.py` 中添加 `Integer` 到導入語句
+
+#### Updated Files 更新的文件
+- `backend/app/models/project.py` - 添加 `Integer` 導入
+- `backend/app/models/news.py` - 添加 `Integer` 導入
+
+#### Code Changes 代碼變更
+```python
+# Before 之前:
+from sqlalchemy import Column, String, Text, Date, DateTime
+
+# After 之後:
+from sqlalchemy import Column, Integer, String, Text, Date, DateTime
+```
+
+---
+
 ## 2025-12-13 16:01:29 TST - Created Migration Scripts for Views Column 創建 Views 欄位遷移腳本
 
 ### Created Migration Scripts 創建遷移腳本

@@ -1,7 +1,7 @@
 """News model for articles and updates."""
 
 from datetime import datetime
-from sqlalchemy import Column, String, Text, Date, DateTime
+from sqlalchemy import Column, Integer, String, Text, Date, DateTime
 from sqlalchemy.dialects.mysql import LONGTEXT
 from app.database import Base
 

@@ -1,7 +1,7 @@
 """Project model for games and websites."""
 
 from datetime import datetime
-from sqlalchemy import Column, String, Text, Date, Enum, JSON, DateTime
+from sqlalchemy import Column, Integer, String, Text, Date, Enum, JSON, DateTime
 from sqlalchemy.dialects.mysql import LONGTEXT
 from app.database import Base
 import enum
