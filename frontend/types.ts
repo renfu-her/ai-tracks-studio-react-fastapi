@@ -12,6 +12,7 @@ export interface ProjectItem {
   date: string;
   tags: string[];
   link?: string;
+  views: number;
   created_at: string;
   updated_at: string;
 }
@@ -24,6 +25,7 @@ export interface NewsItem {
   date: string;
   image: string; // Changed from image_url - now stores filename only
   author: string;
+  views: number;
   created_at: string;
   updated_at: string;
 }
@@ -35,6 +37,7 @@ export interface AboutUs {
   description: string | null;
   image: string | null; // Image filename
   contact_email: string | null;
+  views: number;
   created_at: string;
   updated_at: string;
 }

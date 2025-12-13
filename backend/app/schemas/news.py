@@ -13,6 +13,7 @@ class NewsBase(BaseModel):
     date: Date | None = Field(None, description="News publication date")
     image: str | None = Field(None, max_length=500, description="News image filename")
     author: str | None = Field(None, max_length=100, description="Author name")
+    views: int = Field(0, description="View count")
 
 
 class NewsCreate(NewsBase):
@@ -31,6 +32,7 @@ class NewsResponse(NewsBase):
     """Schema for news response."""
     
     id: str
+    views: int
     created_at: datetime
     updated_at: datetime
     

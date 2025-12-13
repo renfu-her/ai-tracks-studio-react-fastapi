@@ -1,5 +1,135 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-13 16:01:29 TST - Created Migration Scripts for Views Column 創建 Views 欄位遷移腳本
+
+### Created Migration Scripts 創建遷移腳本
+
+#### Files Created 創建的文件
+
+**SQL Migration 腳本:**
+- ✅ `backend/migrate_add_views.sql` - SQL 遷移腳本
+  - 為 `about_us`、`news`、`projects` 表添加 `views` 欄位
+  - 包含驗證查詢以確認遷移成功
+
+**Python Migration 腳本:**
+- ✅ `backend/migrate_add_views.py` - Python 遷移腳本
+  - 使用 SQLAlchemy 進行安全的遷移
+  - 自動檢查欄位是否已存在（避免重複添加）
+  - 檢查表是否存在
+  - 包含確認提示和詳細的執行報告
+  - 遷移後自動驗證結果
+
+#### Usage 使用方式
+
+**方法 1: SQL 腳本（快速）**
+```bash
+mysql -u root studio < backend/migrate_add_views.sql
+```
+
+**方法 2: Python 腳本（推薦，更安全）**
+```bash
+cd backend
+uv run python migrate_add_views.py
+```
+
+#### Migration Details 遷移詳情
+
+**添加的欄位:**
+- `about_us.views` - INT DEFAULT 0 NOT NULL (位於 contact_email 之後)
+- `news.views` - INT DEFAULT 0 NOT NULL (位於 author 之後)
+- `projects.views` - INT DEFAULT 0 NOT NULL (位於 link 之後)
+
+**安全特性:**
+- ✅ 檢查表是否存在
+- ✅ 檢查欄位是否已存在（避免錯誤）
+- ✅ 使用事務確保數據一致性
+- ✅ 詳細的執行報告和驗證
+
+#### Benefits 優勢
+
+- ✅ 安全的數據庫遷移
+- ✅ 自動檢查避免重複執行
+- ✅ 詳細的執行日誌
+- ✅ 支持手動確認（Python 版本）
+- ✅ 遷移後自動驗證
+
+---
+
+## 2025-12-13 15:58:56 TST - Added Views Field to About, News, and Project 新增 Views 欄位到 About、News 和 Project
+
+### Added Views Field 新增 Views 欄位
+
+#### Changes 變更
+
+**Backend Models 後端模型:**
+- ✅ Added `views` field (Integer, default=0) to `AboutUs` model
+- ✅ Added `views` field (Integer, default=0) to `News` model
+- ✅ Added `views` field (Integer, default=0) to `Project` model
+
+**Backend Schemas 後端 Schema:**
+- ✅ Added `views: int = Field(0, description="View count")` to `AboutUsBase` schema
+- ✅ Added `views: int` to `AboutUsResponse` schema
+- ✅ Added `views: int = Field(0, description="View count")` to `NewsBase` schema
+- ✅ Added `views: int` to `NewsResponse` schema
+- ✅ Added `views: int = Field(0, description="View count")` to `ProjectBase` schema
+- ✅ Added `views: int` to `ProjectResponse` schema
+
+**Frontend Types 前端類型:**
+- ✅ Added `views: number` to `AboutUs` interface
+- ✅ Added `views: number` to `NewsItem` interface
+- ✅ Added `views: number` to `ProjectItem` interface
+
+**Frontend Display 前端顯示:**
+- ✅ Added views display in `NewsDetail.tsx` - shows "views: {count}" in meta information
+- ✅ Added views display in `ProjectDetail.tsx` - shows "views: {count}" in project details sidebar
+- ✅ Added views display in `App.tsx` AboutPage - shows "views: {count}" below title
+
+#### Updated Files 更新的文件
+
+**Backend:**
+- `backend/app/models/about.py` - Added views column
+- `backend/app/models/news.py` - Added views column
+- `backend/app/models/project.py` - Added views column
+- `backend/app/schemas/about.py` - Added views field to base and response schemas
+- `backend/app/schemas/news.py` - Added views field to base and response schemas
+- `backend/app/schemas/project.py` - Added views field to base and response schemas
+
+**Frontend:**
+- `frontend/types.ts` - Added views field to all three interfaces
+- `frontend/components/NewsDetail.tsx` - Added views display in meta section
+- `frontend/components/ProjectDetail.tsx` - Added views display in sidebar
+- `frontend/App.tsx` - Added views display in AboutPage
+
+#### Display Format 顯示格式
+
+All views are displayed in the format: **"views: {數量}"** (views: {count})
+
+**Examples:**
+- News detail page: "views: 123" in meta information section
+- Project detail page: "views: 456" in project details sidebar
+- About page: "views: 789" below the title
+
+#### Database Migration 數據庫遷移
+
+⚠️ **Note:** The database tables need to be updated to include the `views` column. You can either:
+1. Drop and recreate tables (development)
+2. Run a migration script to add the column:
+   ```sql
+   ALTER TABLE about_us ADD COLUMN views INT DEFAULT 0 NOT NULL;
+   ALTER TABLE news ADD COLUMN views INT DEFAULT 0 NOT NULL;
+   ALTER TABLE projects ADD COLUMN views INT DEFAULT 0 NOT NULL;
+   ```
+
+#### Benefits 優勢
+
+- ✅ Track view counts for all content types
+- ✅ Display view statistics to users
+- ✅ Consistent implementation across all models
+- ✅ Default value of 0 ensures backward compatibility
+- ✅ Integer type for efficient storage and queries
+
+---
+
 ## 2025-12-09 11:53:46 TST - Fixed Home Page Game Cards Navigation 修復首頁 Game 卡片導航
 
 ### Home Page Featured Games Click Navigation 首頁精選遊戲點擊導航

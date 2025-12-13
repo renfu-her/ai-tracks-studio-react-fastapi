@@ -27,6 +27,7 @@ class Project(Base):
     date = Column(Date, nullable=True)
     tags = Column(JSON, nullable=True, default=list)
     link = Column(String(500), nullable=True)
+    views = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     

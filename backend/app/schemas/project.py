@@ -15,6 +15,7 @@ class ProjectBase(BaseModel):
     date: Date | None = Field(None, description="Project date")
     tags: list[str] | None = Field(default_factory=list, description="Project tags")
     link: str | None = Field(None, max_length=500, description="External link to project")
+    views: int = Field(0, description="View count")
 
 
 class ProjectCreate(ProjectBase):
@@ -34,6 +35,7 @@ class ProjectResponse(ProjectBase):
     """Schema for project response."""
     
     id: str
+    views: int
     created_at: datetime
     updated_at: datetime
     

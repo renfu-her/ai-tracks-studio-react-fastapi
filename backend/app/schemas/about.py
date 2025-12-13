@@ -12,6 +12,7 @@ class AboutUsBase(BaseModel):
     description: str | None = Field(None, description="About page description")
     image: str | None = Field(None, max_length=500, description="About image filename")
     contact_email: str | None = Field(None, max_length=255, description="Contact email")
+    views: int = Field(0, description="View count")
 
 
 class AboutUsCreate(AboutUsBase):
@@ -28,6 +29,7 @@ class AboutUsResponse(AboutUsBase):
     """Schema for about us response."""
     
     id: int
+    views: int
     created_at: datetime
     updated_at: datetime
     

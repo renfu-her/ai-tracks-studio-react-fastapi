@@ -154,6 +154,9 @@ export const NewsDetail: React.FC = () => {
                 <span>{news.author}</span>
               </div>
             )}
+            <div className="flex items-center gap-2">
+              <span>views: {news.views}</span>
+            </div>
           </div>
         </header>
 

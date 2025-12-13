@@ -18,6 +18,7 @@ class News(Base):
     date = Column(Date, nullable=True)
     image = Column(String(500), nullable=True)
     author = Column(String(100), nullable=True)
+    views = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     

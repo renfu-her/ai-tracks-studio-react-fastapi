@@ -189,6 +189,13 @@ export const ProjectDetail: React.FC = () => {
                 </div>
               )}
 
+              {/* Views */}
+              <div className="flex items-start gap-3">
+                <div>
+                  <p className="text-sm font-medium text-slate-900">views: {project.views}</p>
+                </div>
+              </div>
+
               {/* Tags */}
               {project.tags && project.tags.length > 0 && (
                 <div className="flex items-start gap-3">

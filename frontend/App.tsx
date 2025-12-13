@@ -91,6 +91,9 @@ const AboutPage: React.FC = () => {
               {/* Introduction */}
               <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-4 duration-700">
                 <h2 className="text-3xl font-bold text-slate-800 mb-6 text-center">{about.title || 'Who We Are'}</h2>
+                <div className="text-center mb-6 text-slate-600">
+                  <span>views: {about.views}</span>
+                </div>
                 {about.description ? (
                   <MarkdownContent content={about.description} />
                 ) : (
