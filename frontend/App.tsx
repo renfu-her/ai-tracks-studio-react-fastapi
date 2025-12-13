@@ -7,7 +7,7 @@ import { ProjectDetail } from './components/ProjectDetail';
 import { NewsDetail } from './components/NewsDetail';
 import { MarkdownContent } from './components/MarkdownContent';
 import { HERO_IMAGES } from './constants';
-import { ArrowRight, Calendar, User, Star, Zap, Mail, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowRight, Calendar, User, Star, Zap, Mail, Loader2, AlertCircle, Eye } from 'lucide-react';
 import { projectsApi, newsApi, aboutApi } from './api';
 import type { ProjectItem, NewsItem, AboutUs } from './types';
 import { getImageUrl } from './api/config';
@@ -100,8 +100,9 @@ const AboutPage: React.FC = () => {
               {/* Introduction */}
               <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-4 duration-700">
                 <h2 className="text-3xl font-bold text-slate-800 mb-6 text-center">{about.title || 'Who We Are'}</h2>
-                <div className="text-center mb-6 text-slate-600">
-                  <span>views: {about.views}</span>
+                <div className="text-center mb-6 text-slate-600 flex items-center justify-center gap-2">
+                  <Eye size={18} />
+                  <span>{about.views}</span>
                 </div>
                 {about.description ? (
                   <MarkdownContent content={about.description} />
@@ -225,7 +226,7 @@ const NewsPage: React.FC = () => {
                         <User size={16} /> {item.author}
                       </span>
                       <span className="flex items-center gap-1">
-                        views: {item.views}
+                        <Eye size={16} /> {item.views}
                       </span>
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-800 group-hover:text-accent-600 transition-colors duration-300">

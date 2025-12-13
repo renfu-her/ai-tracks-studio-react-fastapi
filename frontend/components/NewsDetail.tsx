@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { newsApi } from '../api';
 import { getImageUrl, API_CONFIG } from '../api/config';
 import { NewsItem } from '../types';
-import { ArrowLeft, Calendar, User, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Loader2, AlertCircle, Eye } from 'lucide-react';
 import { MarkdownContent } from './MarkdownContent';
 import { useSEO } from '../hooks/useSEO';
 import { generateArticleData } from '../utils/seo';
@@ -164,7 +164,8 @@ export const NewsDetail: React.FC = () => {
               </div>
             )}
             <div className="flex items-center gap-2">
-              <span>views: {news.views}</span>
+              <Eye className="w-5 h-5" />
+              <span>{news.views}</span>
             </div>
           </div>
         </header>

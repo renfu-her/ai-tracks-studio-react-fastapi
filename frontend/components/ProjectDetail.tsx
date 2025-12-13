@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { projectsApi } from '../api';
 import { getImageUrl, API_CONFIG } from '../api/config';
 import { ProjectItem } from '../types';
-import { ArrowLeft, Calendar, Tag, ExternalLink, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, Tag, ExternalLink, Loader2, AlertCircle, Eye } from 'lucide-react';
 import { MarkdownContent } from './MarkdownContent';
 import { useSEO } from '../hooks/useSEO';
 import { generateProductData } from '../utils/seo';
@@ -200,8 +200,10 @@ export const ProjectDetail: React.FC = () => {
 
               {/* Views */}
               <div className="flex items-start gap-3">
+                <Eye className="w-5 h-5 text-accent-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-slate-900">views: {project.views}</p>
+                  <p className="text-sm font-medium text-slate-900">Views</p>
+                  <p className="text-sm text-slate-600">{project.views}</p>
                 </div>
               </div>
 

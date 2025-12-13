@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ProjectItem } from '../types';
-import { ArrowRight, Calendar, Tag } from 'lucide-react';
+import { ArrowRight, Calendar, Tag, Eye } from 'lucide-react';
 import { getImageUrl } from '../api/config';
 
 interface ItemGridProps {
@@ -76,7 +76,8 @@ export const ItemGrid: React.FC<ItemGridProps> = ({ items, title, itemsPerPage =
                     {item.date}
                   </div>
                   <div className="flex items-center gap-1">
-                    <span>views: {item.views}</span>
+                    <Eye size={14} />
+                    <span>{item.views}</span>
                   </div>
                 </div>
                 <div className="text-accent-500 font-semibold text-sm flex items-center gap-1 group/link">

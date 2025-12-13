@@ -1,5 +1,63 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-13 16:32:19 TST - Changed Views Display to Icon 將 Views 顯示改為圖標
+
+### Changed Views Display Format 更改 Views 顯示格式
+
+#### Changes 變更
+
+**UI Update UI 更新:**
+- ✅ Replaced "views: {count}" text with Eye icon + count
+- ✅ 將 "views: {數量}" 文字改為 Eye 圖標 + 數量
+- ✅ Consistent icon usage across all pages
+- ✅ 所有頁面統一使用圖標
+
+**Updated Components 更新的組件:**
+- ✅ `ItemGrid.tsx` - Projects list with Eye icon
+- ✅ `App.tsx` NewsPage - News list with Eye icon
+- ✅ `App.tsx` AboutPage - About page with Eye icon
+- ✅ `NewsDetail.tsx` - News detail with Eye icon
+- ✅ `ProjectDetail.tsx` - Project detail with Eye icon (styled like other sidebar items)
+
+#### Display Format 顯示格式
+
+**Before 之前:**
+```
+views: 123
+```
+
+**After 之後:**
+```
+👁️ 123
+```
+
+#### Icon Implementation 圖標實現
+
+- **Icon Library:** lucide-react Eye icon
+- **Size:** Consistent with other icons (14-18px depending on context)
+- **Styling:** Matches existing icon styles (text-slate-600, text-accent-600)
+- **Layout:** Icon + count in flex container with gap
+
+#### Updated Files 更新的文件
+
+- `frontend/components/ItemGrid.tsx` - Added Eye import, updated display
+- `frontend/App.tsx` - Added Eye import, updated NewsPage and AboutPage
+- `frontend/components/NewsDetail.tsx` - Added Eye import, updated meta section
+- `frontend/components/ProjectDetail.tsx` - Added Eye import, updated sidebar (styled like Date/Tags)
+
+#### Benefits 優勢
+
+- ✅ More visual and intuitive
+- ✅ 更視覺化和直觀
+- ✅ Consistent with other icons (Calendar, User, etc.)
+- ✅ 與其他圖標一致（Calendar、User 等）
+- ✅ Cleaner UI design
+- ✅ 更簡潔的 UI 設計
+- ✅ Better space utilization
+- ✅ 更好的空間利用
+
+---
+
 ## 2025-12-13 16:12:14 TST - Implemented Views Tracking and Display 實現 Views 追蹤和顯示
 
 ### Views Tracking System Views 追蹤系統
