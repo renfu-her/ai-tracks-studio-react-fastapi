@@ -5,6 +5,7 @@ import { SectionHero } from './components/SectionHero';
 import { ItemGrid } from './components/ItemGrid';
 import { ProjectDetail } from './components/ProjectDetail';
 import { NewsDetail } from './components/NewsDetail';
+import { Feedback } from './components/Feedback';
 import { MarkdownContent } from './components/MarkdownContent';
 import { HERO_IMAGES } from './constants';
 import { ArrowRight, Calendar, User, Star, Zap, Mail, Loader2, AlertCircle, Eye } from 'lucide-react';
@@ -452,6 +453,7 @@ const App: React.FC = () => {
           <Route path="/news" element={<NewsPage />} />
           <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </Layout>
     </Router>

@@ -1,0 +1,348 @@
+<!-- Feedback List Content Fragment (不含 html/head/body) -->
+<div class="admin-card">
+    <!-- RWD Filter Bar - Flexbox 分散佈局 -->
+    <div class="d-flex flex-wrap gap-3 mb-4 align-items-center justify-content-between">
+        <!-- 左側控制組 -->
+        <div class="d-flex flex-wrap gap-3 align-items-center flex-grow-1">
+            <!-- 搜尋框 -->
+            <input type="text" class="form-control" id="searchInput" placeholder="搜尋姓名、Email、主題..." style="min-width: 200px; max-width: 300px; flex: 1 1 auto;">
+            
+            <!-- 篩選選項 -->
+            <select class="form-select" id="filterRead" style="width: auto; min-width: 150px;">
+                <option value="all">全部</option>
+                <option value="unread">未讀</option>
+                <option value="read">已讀</option>
+            </select>
+            
+            <!-- 每頁筆數 -->
+            <select class="form-select" id="pageSize" style="width: auto; min-width: 120px;">
+                <option value="10">10筆/頁</option>
+                <option value="20">20筆/頁</option>
+                <option value="50">50筆/頁</option>
+                <option value="100">100筆/頁</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Table Container -->
+    <div id="feedbackTable">
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+        </div>
+    </div>
+
+    <!-- Pagination Info -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <small class="text-muted" id="pageInfo"></small>
+    </div>
+</div>
+
+<script>
+window.pageInit = async function() {
+    let allFeedback = [];
+    let currentPage = 1;
+    let pageSize = parseInt($('#pageSize').val() || '20');
+
+    await loadFeedback();
+
+    $('#searchInput').on('input', filterFeedback);
+    $('#filterRead').on('change', filterFeedback);
+    $('#pageSize').on('change', function() {
+        pageSize = parseInt($(this).val());
+        currentPage = 1;
+        filterFeedback();
+    });
+
+    async function loadFeedback() {
+        showLoading('feedbackTable');
+        try {
+            const data = await apiRequest('/api/admin/feedback?limit=1000');
+            allFeedback = data.items || [];
+            filterFeedback();
+        } catch (error) {
+            showError('feedbackTable', '載入失敗: ' + error.message);
+        }
+    }
+
+    function filterFeedback() {
+        const searchTerm = $('#searchInput').val().toLowerCase();
+        const readFilter = $('#filterRead').val();
+
+        let filtered = allFeedback.filter(feedback => {
+            const matchSearch = !searchTerm || 
+                feedback.name.toLowerCase().includes(searchTerm) ||
+                feedback.email.toLowerCase().includes(searchTerm) ||
+                (feedback.subject && feedback.subject.toLowerCase().includes(searchTerm)) ||
+                feedback.message.toLowerCase().includes(searchTerm);
+
+            const matchRead = readFilter === 'all' ||
+                (readFilter === 'unread' && !feedback.is_read) ||
+                (readFilter === 'read' && feedback.is_read);
+
+            return matchSearch && matchRead;
+        });
+
+        // Sort by created_at descending (newest first)
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        displayFeedback(filtered);
+    }
+
+    function displayFeedback(feedbackList) {
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const pageData = feedbackList.slice(start, end);
+        const totalPages = Math.ceil(feedbackList.length / pageSize);
+
+        if (pageData.length === 0) {
+            $('#feedbackTable').html('<div class="text-center py-5 text-muted">沒有找到 Feedback</div>');
+            $('#pageInfo').text('');
+            return;
+        }
+
+        let html = `
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">狀態</th>
+                            <th>姓名</th>
+                            <th>Email</th>
+                            <th>主題</th>
+                            <th style="width: 200px;">時間</th>
+                            <th style="width: 120px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        pageData.forEach(feedback => {
+            const date = new Date(feedback.created_at);
+            const dateStr = date.toLocaleString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const isReadClass = feedback.is_read ? '' : 'table-warning';
+            const readBadge = feedback.is_read 
+                ? '<span class="badge bg-success">已讀</span>'
+                : '<span class="badge bg-danger">未讀</span>';
+
+            html += `
+                <tr class="${isReadClass}" data-id="${feedback.id}">
+                    <td>${readBadge}</td>
+                    <td>${escapeHtml(feedback.name)}</td>
+                    <td>${escapeHtml(feedback.email)}</td>
+                    <td>${escapeHtml(feedback.subject || '(無主題)')}</td>
+                    <td><small class="text-muted">${dateStr}</small></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary view-btn" data-id="${feedback.id}" title="查看">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${feedback.is_read 
+                            ? `<button class="btn btn-sm btn-outline-warning mark-unread-btn" data-id="${feedback.id}" title="標記為未讀">
+                                <i class="fas fa-envelope"></i>
+                            </button>`
+                            : `<button class="btn btn-sm btn-outline-success mark-read-btn" data-id="${feedback.id}" title="標記為已讀">
+                                <i class="fas fa-check"></i>
+                            </button>`
+                        }
+                        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${feedback.id}" title="刪除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Add pagination
+        if (totalPages > 1) {
+            html += '<nav><ul class="pagination justify-content-center mt-3">';
+            for (let i = 1; i <= totalPages; i++) {
+                const active = i === currentPage ? 'active' : '';
+                html += `<li class="page-item ${active}">
+                    <a class="page-link" href="#" data-page="${i}">${i}</a>
+                </li>`;
+            }
+            html += '</ul></nav>';
+        }
+
+        $('#feedbackTable').html(html);
+        $('#pageInfo').text(`顯示 ${start + 1}-${Math.min(end, feedbackList.length)} / 共 ${feedbackList.length} 筆`);
+
+        // Bind events
+        $('.view-btn').on('click', function() {
+            const id = $(this).data('id');
+            viewFeedback(id);
+        });
+
+        $('.mark-read-btn').on('click', function() {
+            const id = $(this).data('id');
+            markAsRead(id);
+        });
+
+        $('.mark-unread-btn').on('click', function() {
+            const id = $(this).data('id');
+            markAsUnread(id);
+        });
+
+        $('.delete-btn').on('click', function() {
+            const id = $(this).data('id');
+            deleteFeedback(id);
+        });
+
+        $('.page-link').on('click', function(e) {
+            e.preventDefault();
+            currentPage = parseInt($(this).data('page'));
+            filterFeedback();
+        });
+    }
+
+    async function viewFeedback(id) {
+        try {
+            const feedback = await apiRequest(`/api/admin/feedback/${id}`);
+            
+            // Format date
+            const date = new Date(feedback.created_at);
+            const dateStr = date.toLocaleString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const modalHtml = `
+                <div class="modal fade" id="viewModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Feedback 詳情</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">姓名</label>
+                                    <div>${escapeHtml(feedback.name)}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Email</label>
+                                    <div><a href="mailto:${escapeHtml(feedback.email)}">${escapeHtml(feedback.email)}</a></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">主題</label>
+                                    <div>${escapeHtml(feedback.subject || '(無主題)')}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">訊息</label>
+                                    <div class="border p-3 rounded bg-light" style="white-space: pre-wrap;">${escapeHtml(feedback.message)}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">狀態</label>
+                                    <div>${feedback.is_read ? '<span class="badge bg-success">已讀</span>' : '<span class="badge bg-danger">未讀</span>'}</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">提交時間</label>
+                                    <div><small class="text-muted">${dateStr}</small></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                ${!feedback.is_read ? `
+                                    <button type="button" class="btn btn-success" onclick="markAsRead(${feedback.id}); $('#viewModal').modal('hide');">
+                                        <i class="fas fa-check me-2"></i>標記為已讀
+                                    </button>
+                                ` : `
+                                    <button type="button" class="btn btn-warning" onclick="markAsUnread(${feedback.id}); $('#viewModal').modal('hide');">
+                                        <i class="fas fa-envelope me-2"></i>標記為未讀
+                                    </button>
+                                `}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('body').append(modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('viewModal'));
+            modal.show();
+
+            // Remove modal from DOM after hide
+            $('#viewModal').on('hidden.bs.modal', function() {
+                $(this).remove();
+            });
+
+            // Auto-mark as read when viewing
+            if (!feedback.is_read) {
+                markAsRead(id, false);
+            }
+        } catch (error) {
+            showToast('載入失敗: ' + error.message, 'error');
+        }
+    }
+
+    async function markAsRead(id, showToast = true) {
+        try {
+            await apiRequest(`/api/admin/feedback/${id}`, 'PUT', { is_read: true });
+            if (showToast) showToast('已標記為已讀', 'success');
+            await loadFeedback();
+            updateUnreadBadge();
+        } catch (error) {
+            showToast('操作失敗: ' + error.message, 'error');
+        }
+    }
+
+    async function markAsUnread(id) {
+        try {
+            await apiRequest(`/api/admin/feedback/${id}`, 'PUT', { is_read: false });
+            showToast('已標記為未讀', 'success');
+            await loadFeedback();
+            updateUnreadBadge();
+        } catch (error) {
+            showToast('操作失敗: ' + error.message, 'error');
+        }
+    }
+
+    async function deleteFeedback(id) {
+        if (!confirm('確定要刪除這個 Feedback 嗎？')) return;
+
+        try {
+            await apiRequest(`/api/admin/feedback/${id}`, 'DELETE');
+            showToast('已刪除', 'success');
+            await loadFeedback();
+            updateUnreadBadge();
+        } catch (error) {
+            showToast('刪除失敗: ' + error.message, 'error');
+        }
+    }
+
+    async function updateUnreadBadge() {
+        try {
+            const stats = await apiRequest('/api/admin/feedback/stats/unread-count');
+            const count = stats.unread_count || 0;
+            const badge = $('#unreadFeedbackBadge');
+            if (count > 0) {
+                badge.text(count).show();
+            } else {
+                badge.hide();
+            }
+        } catch (error) {
+            console.error('Failed to update unread badge:', error);
+        }
+    }
+
+    // Update unread badge on load
+    updateUnreadBadge();
+    // Update badge every 30 seconds
+    setInterval(updateUnreadBadge, 30000);
+};
+</script>

@@ -5,6 +5,7 @@ from app.repositories.project import ProjectRepository
 from app.repositories.news import NewsRepository
 from app.repositories.about import AboutUsRepository
 from app.repositories.banner import BannerRepository
+from app.repositories.feedback import FeedbackRepository
 
 __all__ = [
     "BaseRepository",
@@ -12,5 +13,6 @@ __all__ = [
     "NewsRepository",
     "AboutUsRepository",
     "BannerRepository",
+    "FeedbackRepository",
 ]
 

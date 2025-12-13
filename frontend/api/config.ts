@@ -31,6 +31,7 @@ export const API_ENDPOINTS = {
   PROJECTS: '/projects',
   NEWS: '/news',
   ABOUT: '/about',
+  FEEDBACK: '/feedback',
 } as const;
 
 /**

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Gamepad2, Globe, Newspaper, Home, Mail, Facebook, Twitter, Instagram, Info } from 'lucide-react';
+import { Menu, X, Gamepad2, Globe, Newspaper, Home, Mail, Facebook, Twitter, Instagram, Info, MessageSquare } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Banner } from './Banner';
 import { PageType } from '../api/banner';
@@ -107,6 +107,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <NavLink to="/website" icon={Globe} active={isActive('/website')}>Websites</NavLink>
             <NavLink to="/news" icon={Newspaper} active={isActive('/news')}>News</NavLink>
             <NavLink to="/about" icon={Info} active={isActive('/about')}>About</NavLink>
+            <NavLink to="/feedback" icon={MessageSquare} active={isActive('/feedback')}>Feedback</NavLink>
           </div>
 
           {/* Mobile Menu Button */}
@@ -126,6 +127,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <MobileNavLink to="/website" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/website')}>Websites</MobileNavLink>
             <MobileNavLink to="/news" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/news')}>News</MobileNavLink>
             <MobileNavLink to="/about" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/about')}>About</MobileNavLink>
+            <MobileNavLink to="/feedback" onClick={() => setIsMobileMenuOpen(false)} active={isActive('/feedback')}>Feedback</MobileNavLink>
           </div>
         )}
       </nav>

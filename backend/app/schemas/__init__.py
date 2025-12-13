@@ -23,6 +23,12 @@ from app.schemas.banner import (
     BannerResponse,
     BannerListResponse,
 )
+from app.schemas.feedback import (
+    FeedbackCreate,
+    FeedbackUpdate,
+    FeedbackResponse,
+    FeedbackListResponse,
+)
 
 __all__ = [
     "ProjectCreate",
@@ -40,5 +46,9 @@ __all__ = [
     "BannerUpdate",
     "BannerResponse",
     "BannerListResponse",
+    "FeedbackCreate",
+    "FeedbackUpdate",
+    "FeedbackResponse",
+    "FeedbackListResponse",
 ]
 

@@ -1,5 +1,287 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-13 16:48:07 TST - Created Feedback Table Migration Scripts 創建 Feedback 表遷移腳本
+
+### Created Migration Scripts 創建遷移腳本
+
+#### Files Created 創建的文件
+
+**SQL Migration 腳本:**
+- ✅ `backend/migrate_add_feedback.sql` - SQL 遷移腳本
+  - 創建 `feedback` 表
+  - 包含所有必要欄位和索引
+  - 驗證查詢以確認遷移成功
+
+**Python Migration 腳本:**
+- ✅ `backend/migrate_add_feedback.py` - Python 遷移腳本
+  - 使用 SQLAlchemy 進行安全的遷移
+  - 自動檢查表是否已存在（避免重複創建）
+  - 包含確認提示和詳細的執行報告
+  - 遷移後自動驗證結果和顯示表結構
+
+#### Table Structure 表結構
+
+```sql
+CREATE TABLE feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    subject VARCHAR(255) NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_is_read (is_read),
+    INDEX idx_created_at (created_at)
+)
+```
+
+#### Usage 使用方式
+
+**方法 1: SQL 腳本（快速）**
+```bash
+mysql -u root studio < backend/migrate_add_feedback.sql
+```
+
+**方法 2: Python 腳本（推薦，更安全）**
+```bash
+cd backend
+uv run python migrate_add_feedback.py
+```
+
+#### Indexes 索引
+
+- `idx_email` - Email 欄位索引（用於搜索）
+- `idx_is_read` - 已讀狀態索引（用於篩選）
+- `idx_created_at` - 創建時間索引（用於排序）
+
+#### Benefits 優勢
+
+- ✅ 安全的數據庫遷移
+- ✅ 自動檢查避免重複執行
+- ✅ 詳細的執行日誌
+- ✅ 支持手動確認（Python 版本）
+- ✅ 遷移後自動驗證
+- ✅ 性能優化（包含索引）
+
+---
+
+## 2025-12-13 16:45:38 TST - Implemented Feedback System with Email Notifications 實現 Feedback 系統與郵件通知
+
+### Complete Feedback System 完整 Feedback 系統
+
+#### Backend Implementation 後端實現
+
+**1. Feedback Model 模型:**
+- ✅ Created `backend/app/models/feedback.py`
+- Fields: id, name, email, subject, message, is_read, created_at, updated_at
+- Tracks user feedback and inquiry status
+
+**2. Feedback Schema 數據驗證:**
+- ✅ Created `backend/app/schemas/feedback.py`
+- FeedbackCreate, FeedbackUpdate, FeedbackResponse, FeedbackListResponse
+- Email validation using EmailStr
+
+**3. Feedback Repository 倉儲:**
+- ✅ Created `backend/app/repositories/feedback.py`
+- Extends BaseRepository with CRUD operations
+- `get_unread_count()` - Count unread feedback
+- `get_unread()` - Get unread feedback list
+
+**4. Email Service 郵件服務:**
+- ✅ Created `backend/app/core/email.py`
+- EmailService class with SMTP support
+- `send_feedback_notification()` - Sends formatted HTML email
+- Gmail SMTP configuration support
+- Error handling and logging
+
+**5. Public API Endpoint 公開 API:**
+- ✅ Created `backend/app/routers/feedback.py`
+- `POST /api/feedback` - Submit feedback (public, no auth required)
+- Automatically sends email notification on submission
+- Non-blocking email (failures don't affect response)
+
+**6. Admin API Endpoints 後台管理 API:**
+- ✅ Created `backend/app/routers/admin/feedback_admin.py`
+- `GET /api/admin/feedback` - List all feedback (with filters)
+- `GET /api/admin/feedback/{id}` - Get feedback details
+- `PUT /api/admin/feedback/{id}` - Update feedback (mark as read/unread)
+- `DELETE /api/admin/feedback/{id}` - Delete feedback
+- `GET /api/admin/feedback/stats/unread-count` - Get unread count
+
+**7. Configuration 配置:**
+- ✅ Updated `backend/app/config.py` - Added email settings
+- ✅ Updated `backend/pyproject.toml` - Added aiosmtplib dependency
+- Email settings: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM_EMAIL, SMTP_FROM_NAME, FEEDBACK_TO_EMAIL
+
+#### Frontend Implementation 前端實現
+
+**1. Feedback API Service:**
+- ✅ Created `frontend/api/feedback.ts`
+- `submitFeedback()` - Submit feedback form
+- TypeScript interfaces for FeedbackCreate and FeedbackResponse
+
+**2. Feedback Form Component:**
+- ✅ Created `frontend/components/Feedback.tsx`
+- Beautiful, responsive feedback form
+- Fields: Name, Email, Subject (optional), Message
+- Success/error message display
+- Loading states
+- Form validation
+
+**3. Navigation Integration:**
+- ✅ Updated `frontend/App.tsx` - Added `/feedback` route
+- ✅ Updated `frontend/components/Layout.tsx` - Added Feedback navigation link
+- Desktop and mobile menu support
+
+#### Admin Interface 後台管理界面
+
+**1. Feedback Management Page:**
+- ✅ Created `backend/static/admin/feedback/list.html`
+- List all feedback with search and filter
+- Filter by read/unread status
+- View feedback details in modal
+- Mark as read/unread
+- Delete feedback
+- Unread count badge in navigation
+
+**2. Navigation Updates:**
+- ✅ Updated `backend/static/admin.html`
+- Added "Feedback 管理" menu item
+- Unread count badge display
+- Page title mapping
+
+#### Email Configuration 郵件配置
+
+**Environment Variables (.env):**
+```env
+# Email Settings (Gmail)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-16-char-app-password
+SMTP_FROM_EMAIL=your-email@gmail.com
+SMTP_FROM_NAME=AI-Tracks Studio
+FEEDBACK_TO_EMAIL=admin@example.com
+```
+
+**Documentation:**
+- ✅ Created `backend/EMAIL_SETUP.md` - Complete email setup guide
+- Gmail App Password setup instructions
+- Configuration examples
+- Troubleshooting guide
+
+#### Features 功能
+
+**Public Features:**
+- ✅ User-friendly feedback form
+- ✅ Email validation
+- ✅ Success/error feedback
+- ✅ Responsive design
+
+**Admin Features:**
+- ✅ View all feedback
+- ✅ Search by name, email, subject, message
+- ✅ Filter by read/unread status
+- ✅ View detailed feedback in modal
+- ✅ Mark as read/unread
+- ✅ Delete feedback
+- ✅ Unread count badge
+- ✅ Auto-mark as read when viewing
+
+**Email Features:**
+- ✅ HTML formatted email notifications
+- ✅ Includes all feedback details
+- ✅ Professional email template
+- ✅ Non-blocking (doesn't affect API response if email fails)
+
+#### Updated Files 更新的文件
+
+**Backend:**
+- `backend/app/models/feedback.py` - Feedback model
+- `backend/app/schemas/feedback.py` - Feedback schemas
+- `backend/app/repositories/feedback.py` - Feedback repository
+- `backend/app/core/email.py` - Email service
+- `backend/app/routers/feedback.py` - Public feedback API
+- `backend/app/routers/admin/feedback_admin.py` - Admin feedback API
+- `backend/app/config.py` - Email configuration
+- `backend/app/main.py` - Added feedback router
+- `backend/app/routers/admin/__init__.py` - Added feedback_admin router
+- `backend/app/models/__init__.py` - Export Feedback
+- `backend/app/schemas/__init__.py` - Export Feedback schemas
+- `backend/app/repositories/__init__.py` - Export FeedbackRepository
+- `backend/pyproject.toml` - Added aiosmtplib dependency
+- `backend/static/admin.html` - Added Feedback navigation
+- `backend/static/admin/feedback/list.html` - Feedback management page
+- `backend/EMAIL_SETUP.md` - Email setup documentation
+
+**Frontend:**
+- `frontend/api/feedback.ts` - Feedback API service
+- `frontend/api/config.ts` - Added FEEDBACK endpoint
+- `frontend/api/index.ts` - Export feedback API
+- `frontend/components/Feedback.tsx` - Feedback form component
+- `frontend/App.tsx` - Added /feedback route
+- `frontend/components/Layout.tsx` - Added Feedback navigation link
+
+#### User Flow 用戶流程
+
+**Public User:**
+1. Visit `/feedback` page
+2. Fill out feedback form (name, email, subject, message)
+3. Submit form
+4. See success message
+5. Admin receives email notification
+
+**Admin:**
+1. Navigate to "Feedback 管理" in admin panel
+2. View list of all feedback
+3. Filter by read/unread status
+4. Search by name, email, subject
+5. Click to view details
+6. Mark as read/unread
+7. Delete if needed
+
+#### Email Notification Format 郵件通知格式
+
+**Subject:** `New Feedback: {subject or 'No Subject'}`
+
+**Content:**
+- Name
+- Email (clickable mailto link)
+- Subject
+- Message (formatted)
+- Professional HTML template
+
+#### Benefits 優勢
+
+- ✅ **User Engagement** - Easy way for users to contact
+- ✅ **Email Notifications** - Instant notification to admin
+- ✅ **Admin Management** - Complete feedback management system
+- ✅ **Status Tracking** - Read/unread status tracking
+- ✅ **Search & Filter** - Easy to find specific feedback
+- ✅ **Professional UI** - Beautiful form and admin interface
+- ✅ **Error Handling** - Graceful error handling
+- ✅ **Non-blocking** - Email failures don't affect user experience
+
+#### Setup Instructions 設置說明
+
+1. **Configure Email (Gmail):**
+   - Enable 2-Step Verification on Gmail
+   - Create App Password
+   - Add email settings to `.env` file
+   - See `backend/EMAIL_SETUP.md` for details
+
+2. **Run Migration:**
+   - Database tables created automatically on startup
+   - Or run: `uv run python migrate_add_views.py` (if needed)
+
+3. **Access:**
+   - Public form: `http://localhost:3000/feedback`
+   - Admin panel: `http://localhost:8000/backend#feedback`
+
+---
+
 ## 2025-12-13 16:32:19 TST - Changed Views Display to Icon 將 Views 顯示改為圖標
 
 ### Changed Views Display Format 更改 Views 顯示格式

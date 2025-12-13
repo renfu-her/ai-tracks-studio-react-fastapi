@@ -42,6 +42,15 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"  # development, staging, production
     DEBUG: bool = False
     
+    # Email settings (Gmail)
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""  # Gmail address
+    SMTP_PASSWORD: str = ""  # Gmail App Password
+    SMTP_FROM_EMAIL: str = ""  # From email address (usually same as SMTP_USER)
+    SMTP_FROM_NAME: str = "AI-Tracks Studio"
+    FEEDBACK_TO_EMAIL: str = ""  # Email address to receive feedback
+    
     @property
     def database_url(self) -> str:
         """Construct the database URL."""

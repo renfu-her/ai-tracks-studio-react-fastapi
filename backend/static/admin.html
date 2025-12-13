@@ -261,6 +261,13 @@
                                     <span>關於我們</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="#feedback" class="nav-link-item" data-page="feedback">
+                                    <span class="nav-icon"><i class="fas fa-comments"></i></span>
+                                    <span>Feedback 管理</span>
+                                    <span class="badge bg-danger ms-auto" id="unreadFeedbackBadge" style="display: none;">0</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -393,7 +400,8 @@
                 'projects': '專案管理',
                 'news': '最新消息',
                 'about': '關於我們',
-                'banners': 'Banner 管理'
+                'banners': 'Banner 管理',
+                'feedback': 'Feedback 管理'
             };
             const pageTitle = titles[module] || 'Admin';
             $('#pageTitle').text(pageTitle + ' - AI-Tracks Studio Admin');
@@ -403,6 +411,11 @@
             let actualAction = action;
             if (action === 'add' || action === 'edit') {
                 actualAction = 'add-edit';
+            }
+
+            // Feedback only has list view
+            if (module === 'feedback') {
+                actualAction = 'list';
             }
 
             // Load content based on module and action
