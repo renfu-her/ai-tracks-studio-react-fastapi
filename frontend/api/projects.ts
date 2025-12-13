@@ -55,5 +55,12 @@ export const projectsApi = {
   getWebsites: async (skip?: number, limit?: number): Promise<ProjectListResponse> => {
     return projectsApi.getProjects({ category: Category.WEBSITE, skip, limit });
   },
+  
+  /**
+   * Increment view count for a project
+   */
+  incrementViews: async (id: string): Promise<ProjectItem> => {
+    return apiClient.post<ProjectItem>(`${API_ENDPOINTS.PROJECTS}/${id}/view`);
+  },
 };
 

@@ -67,6 +67,15 @@ const AboutPage: React.FC = () => {
     try {
       const data = await aboutApi.getAbout();
       setAbout(data);
+      
+      // Increment views
+      try {
+        const updatedData = await aboutApi.incrementViews(data.id);
+        setAbout(updatedData);
+      } catch (viewErr) {
+        // Silently fail if view increment fails
+        console.warn('Failed to increment views:', viewErr);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load about information');
     } finally {
@@ -214,6 +223,9 @@ const NewsPage: React.FC = () => {
                       </span>
                       <span className="flex items-center gap-1">
                         <User size={16} /> {item.author}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        views: {item.views}
                       </span>
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-800 group-hover:text-accent-600 transition-colors duration-300">

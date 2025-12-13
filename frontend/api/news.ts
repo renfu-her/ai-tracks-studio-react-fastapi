@@ -36,5 +36,12 @@ export const newsApi = {
   getNewsItem: async (id: string): Promise<NewsItem> => {
     return apiClient.get<NewsItem>(`${API_ENDPOINTS.NEWS}/${id}`);
   },
+  
+  /**
+   * Increment view count for a news article
+   */
+  incrementViews: async (id: string): Promise<NewsItem> => {
+    return apiClient.post<NewsItem>(`${API_ENDPOINTS.NEWS}/${id}/view`);
+  },
 };
 

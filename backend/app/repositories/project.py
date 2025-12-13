@@ -53,4 +53,23 @@ class ProjectRepository(BaseRepository[Project]):
             Count of projects in category
         """
         return self.db.query(Project).filter(Project.category == category).count()
+    
+    def increment_views(self, project_id: str) -> Project | None:
+        """
+        Increment view count for a project.
+        
+        Args:
+            project_id: Project identifier
+            
+        Returns:
+            Updated project or None if not found
+        """
+        project = self.get_by_id(project_id)
+        if not project:
+            return None
+        
+        project.views += 1
+        self.db.commit()
+        self.db.refresh(project)
+        return project
 

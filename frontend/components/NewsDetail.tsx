@@ -28,6 +28,15 @@ export const NewsDetail: React.FC = () => {
         setError(null);
         const data = await newsApi.getNewsItem(id);
         setNews(data);
+        
+        // Increment views
+        try {
+          const updatedData = await newsApi.incrementViews(id);
+          setNews(updatedData);
+        } catch (viewErr) {
+          // Silently fail if view increment fails
+          console.warn('Failed to increment views:', viewErr);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load news article');
       } finally {

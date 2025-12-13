@@ -144,3 +144,27 @@ def delete_project(
     if not success:
         raise HTTPException(status_code=404, detail="Project not found")
 
+
+@router.post("/{project_id}/view", response_model=ProjectResponse)
+def increment_project_views(
+    project_id: str,
+    repo: ProjectRepository = Depends(get_project_repo),
+):
+    """
+    Increment view count for a project.
+    
+    Args:
+        project_id: Project identifier
+        repo: Project repository instance
+        
+    Returns:
+        Updated project with incremented views
+        
+    Raises:
+        HTTPException: If project not found
+    """
+    project = repo.increment_views(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
+

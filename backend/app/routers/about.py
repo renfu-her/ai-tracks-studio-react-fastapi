@@ -128,3 +128,27 @@ def delete_about_us(
     if not success:
         raise HTTPException(status_code=404, detail="About Us content not found")
 
+
+@router.post("/{about_id}/view", response_model=AboutUsResponse)
+def increment_about_views(
+    about_id: int,
+    repo: AboutUsRepository = Depends(get_about_repo),
+):
+    """
+    Increment view count for About Us content.
+    
+    Args:
+        about_id: About Us identifier
+        repo: About Us repository instance
+        
+    Returns:
+        Updated About Us content with incremented views
+        
+    Raises:
+        HTTPException: If content not found
+    """
+    about = repo.increment_views(about_id)
+    if not about:
+        raise HTTPException(status_code=404, detail="About Us content not found")
+    return about
+

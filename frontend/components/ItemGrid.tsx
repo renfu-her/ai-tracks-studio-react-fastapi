@@ -70,9 +70,14 @@ export const ItemGrid: React.FC<ItemGridProps> = ({ items, title, itemsPerPage =
               </h3>
               
               <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                <div className="flex items-center text-slate-400 text-xs gap-1">
-                  <Calendar size={14} />
-                  {item.date}
+                <div className="flex items-center gap-4 text-slate-400 text-xs">
+                  <div className="flex items-center gap-1">
+                    <Calendar size={14} />
+                    {item.date}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span>views: {item.views}</span>
+                  </div>
                 </div>
                 <div className="text-accent-500 font-semibold text-sm flex items-center gap-1 group/link">
                   Learn More <ArrowRight size={16} className="group-hover/link:translate-x-1 transition-transform" />

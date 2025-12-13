@@ -28,6 +28,15 @@ export const ProjectDetail: React.FC = () => {
         setError(null);
         const data = await projectsApi.getProject(id);
         setProject(data);
+        
+        // Increment views
+        try {
+          const updatedData = await projectsApi.incrementViews(id);
+          setProject(updatedData);
+        } catch (viewErr) {
+          // Silently fail if view increment fails
+          console.warn('Failed to increment views:', viewErr);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load project details');
       } finally {

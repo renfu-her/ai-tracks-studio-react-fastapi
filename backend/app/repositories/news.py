@@ -16,4 +16,23 @@ class NewsRepository(BaseRepository[News]):
             db: Database session
         """
         super().__init__(News, db)
+    
+    def increment_views(self, news_id: str) -> News | None:
+        """
+        Increment view count for a news article.
+        
+        Args:
+            news_id: News identifier
+            
+        Returns:
+            Updated news article or None if not found
+        """
+        news = self.get_by_id(news_id)
+        if not news:
+            return None
+        
+        news.views += 1
+        self.db.commit()
+        self.db.refresh(news)
+        return news
 

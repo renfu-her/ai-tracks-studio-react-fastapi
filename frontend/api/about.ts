@@ -21,5 +21,12 @@ export const aboutApi = {
   getAboutById: async (id: number): Promise<AboutUs> => {
     return apiClient.get<AboutUs>(`${API_ENDPOINTS.ABOUT}/${id}`);
   },
+  
+  /**
+   * Increment view count for About Us content
+   */
+  incrementViews: async (id: number): Promise<AboutUs> => {
+    return apiClient.post<AboutUs>(`${API_ENDPOINTS.ABOUT}/${id}/view`);
+  },
 };
 

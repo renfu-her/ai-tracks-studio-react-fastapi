@@ -137,3 +137,27 @@ def delete_news(
     if not success:
         raise HTTPException(status_code=404, detail="News not found")
 
+
+@router.post("/{news_id}/view", response_model=NewsResponse)
+def increment_news_views(
+    news_id: str,
+    repo: NewsRepository = Depends(get_news_repo),
+):
+    """
+    Increment view count for a news article.
+    
+    Args:
+        news_id: News identifier
+        repo: News repository instance
+        
+    Returns:
+        Updated news article with incremented views
+        
+    Raises:
+        HTTPException: If news not found
+    """
+    news = repo.increment_views(news_id)
+    if not news:
+        raise HTTPException(status_code=404, detail="News not found")
+    return news
+

@@ -1,5 +1,85 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-13 16:12:14 TST - Implemented Views Tracking and Display 實現 Views 追蹤和顯示
+
+### Views Tracking System Views 追蹤系統
+
+#### Backend Changes 後端變更
+
+**Repositories 倉儲:**
+- ✅ Added `increment_views()` method to `ProjectRepository`
+- ✅ Added `increment_views()` method to `NewsRepository`
+- ✅ Added `increment_views()` method to `AboutUsRepository`
+- All methods increment views by 1 and return updated entity
+
+**API Endpoints:**
+- ✅ `POST /api/projects/{project_id}/view` - Increment project views
+- ✅ `POST /api/news/{news_id}/view` - Increment news views
+- ✅ `POST /api/about/{about_id}/view` - Increment about views
+
+#### Frontend Changes 前端變更
+
+**API Services:**
+- ✅ Added `incrementViews()` method to `projectsApi`
+- ✅ Added `incrementViews()` method to `newsApi`
+- ✅ Added `incrementViews()` method to `aboutApi`
+
+**List Pages 列表頁面:**
+- ✅ `ItemGrid.tsx` - Displays "views: {count}" for projects
+- ✅ `App.tsx` NewsPage - Displays "views: {count}" for news items
+
+**Detail Pages 詳細頁面:**
+- ✅ `ProjectDetail.tsx` - Automatically increments views on page load
+- ✅ `NewsDetail.tsx` - Automatically increments views on page load
+- ✅ `App.tsx` AboutPage - Automatically increments views on page load
+
+#### User Flow 用戶流程
+
+1. **List Page:** User sees views count displayed on each item
+2. **Click Item:** User clicks to view detail page
+3. **Detail Page Loads:** 
+   - Fetches item data
+   - Automatically calls increment views API
+   - Updates displayed views count
+4. **Views Updated:** Database views count incremented by 1
+
+#### Updated Files 更新的文件
+
+**Backend:**
+- `backend/app/repositories/project.py` - Added increment_views method
+- `backend/app/repositories/news.py` - Added increment_views method
+- `backend/app/repositories/about.py` - Added increment_views method
+- `backend/app/routers/projects.py` - Added POST /{id}/view endpoint
+- `backend/app/routers/news.py` - Added POST /{id}/view endpoint
+- `backend/app/routers/about.py` - Added POST /{id}/view endpoint
+
+**Frontend:**
+- `frontend/api/projects.ts` - Added incrementViews method
+- `frontend/api/news.ts` - Added incrementViews method
+- `frontend/api/about.ts` - Added incrementViews method
+- `frontend/components/ItemGrid.tsx` - Added views display
+- `frontend/App.tsx` - Added views display in NewsPage and increment in AboutPage
+- `frontend/components/ProjectDetail.tsx` - Auto-increment views on load
+- `frontend/components/NewsDetail.tsx` - Auto-increment views on load
+
+#### Features 功能
+
+- ✅ **Automatic Tracking** - Views automatically increment when detail page loads
+- ✅ **List Display** - Views shown on all list pages
+- ✅ **Real-time Update** - Views count updates immediately after increment
+- ✅ **Error Handling** - Silently fails if view increment fails (doesn't break page)
+- ✅ **Consistent Format** - All views displayed as "views: {count}"
+
+#### Benefits 優勢
+
+- ✅ Track content popularity
+- ✅ User engagement metrics
+- ✅ Automatic tracking (no manual intervention needed)
+- ✅ Non-blocking (page loads even if increment fails)
+- ✅ Consistent user experience
+
+---
+
 ## 2025-12-13 16:06:18 TST - Fixed Missing Integer Import in Models 修復模型缺少 Integer 導入
 
 ### Fixed Import Error 修復導入錯誤
