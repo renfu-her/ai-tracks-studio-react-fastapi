@@ -1,5 +1,19 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-15 15:41:02 - 驗證碼輸入強制大寫
+
+### What changed
+- ✅ 驗證碼輸入欄位自動轉換為大寫
+- ✅ 視覺上顯示大寫（CSS text-transform）
+
+### Frontend
+- `frontend/components/Feedback.tsx`: 
+  - `handleChange` 函數中，當欄位為 `captcha_answer` 時自動轉換為大寫
+  - 輸入框加入 `uppercase` class 和 `textTransform: 'uppercase'` style
+
+### Notes
+- 用戶輸入任何文字都會自動轉為大寫，方便輸入驗證碼
+
 ## 2025-12-15 15:21:46 - Fixed Captcha Image Generation Issue 修復驗證碼圖片生成問題
 
 ### What changed

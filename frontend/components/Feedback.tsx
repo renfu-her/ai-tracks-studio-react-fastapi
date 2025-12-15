@@ -21,7 +21,9 @@ export const Feedback: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Force uppercase for captcha input
+    const processedValue = name === 'captcha_answer' ? value.toUpperCase() : value;
+    setFormData((prev) => ({ ...prev, [name]: processedValue }));
     // Clear error when user starts typing
     if (error) setError(null);
   };
@@ -207,9 +209,10 @@ export const Feedback: React.FC = () => {
                   required
                   value={formData.captcha_answer}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors uppercase"
                   placeholder="請輸入圖中文字"
                   disabled={captchaLoading}
+                  style={{ textTransform: 'uppercase' }}
                 />
               </div>
               <div className="flex items-center gap-2">
