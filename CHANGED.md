@@ -1,5 +1,71 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-15 15:51:04 - 驗證碼排除 0 與 O
+
+### What changed
+- ✅ 驗證碼生成排除了數字 0 與字母 O，避免混淆
+
+### Backend
+- `backend/app/core/captcha.py`:
+  - `_random_text()` 改為使用 `ABCDEFGHIJKLMNPQRSTUVWXYZ123456789`
+  - 驗證碼只包含大寫英文字母與數字 1-9（不含 0, O）
+
+### Notes
+- 去除易混淆的 0 與 O，提升可讀性
+
+## 2025-12-15 15:49:56 - 驗證碼含英文與數字
+
+### What changed
+- ✅ 驗證碼生成改為包含大寫英文字母與數字
+
+### Backend
+- `backend/app/core/captcha.py`:
+  - `_random_text()` 現在使用 `ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
+  - 驗證碼同時包含字母與數字
+
+### Notes
+- 驗證碼可包含 A-Z 與 0-9，使用者體驗更豐富
+
+## 2025-12-15 15:49:09 - 驗證碼改為英文顯示和純字母生成
+
+### What changed
+- ✅ 驗證碼相關的中文文字全部改為英文
+- ✅ 驗證碼生成改為只使用英文字母（不含數字）
+- ✅ 排除容易混淆的字母（O, I, L）
+
+### Frontend
+- `frontend/components/Feedback.tsx`: 
+  - 標籤文字："驗證碼 *" → "Captcha *"
+  - 輸入框 placeholder："請輸入圖中文字" → "Enter the text in the image"
+  - 載入狀態："載入中..." → "Loading..."
+  - 錯誤狀態："無法載入" → "Failed to load"
+  - 驗證錯誤："請完成驗證碼" → "Please complete the captcha"
+
+### Backend
+- `backend/app/core/captcha.py`:
+  - `_random_text()` 函數：從 "ABCDEFGHJKMNPQRSTUVWXYZ23456789" 改為 "ABCDEFGHJKMNPQRSTUVWXYZ"
+  - 現在只生成大寫英文字母，排除數字和容易混淆的字母（O, I, L）
+
+### Notes
+- 驗證碼現在只包含清晰的英文字母，更容易識別
+- 所有用戶界面文字已改為英文，提供一致的英文體驗
+
+## 2025-12-15 15:46:53 - 驗證碼錯誤時自動刷新
+
+### What changed
+- ✅ 當驗證碼輸入錯誤時，自動刷新驗證碼
+- ✅ 在 Send Message 提交後，如果出現驗證碼錯誤，會自動載入新的驗證碼
+
+### Frontend
+- `frontend/components/Feedback.tsx`: 
+  - 在 `handleSubmit` 的 catch 區塊中，檢查錯誤信息是否包含 "captcha" 或 "驗證碼"
+  - 如果是驗證碼相關錯誤，自動調用 `loadCaptcha()` 刷新驗證碼
+  - 用戶無需手動點擊刷新按鈕
+
+### Notes
+- 提升用戶體驗，驗證碼錯誤時自動提供新的驗證碼
+- 錯誤信息檢查支援英文（"captcha"）和中文（"驗證碼"）關鍵字
+
 ## 2025-12-15 15:41:02 - 驗證碼輸入強制大寫
 
 ### What changed

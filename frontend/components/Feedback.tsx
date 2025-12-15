@@ -57,7 +57,7 @@ export const Feedback: React.FC = () => {
     setSuccess(false);
 
     if (!formData.captcha_answer || !formData.captcha_id) {
-      setError('請完成驗證碼');
+      setError('Please complete the captcha');
       setLoading(false);
       return;
     }
@@ -79,7 +79,15 @@ export const Feedback: React.FC = () => {
       // Clear success message after 5 seconds
       setTimeout(() => setSuccess(false), 5000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit feedback');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit feedback';
+      setError(errorMessage);
+      
+      // Auto refresh captcha if captcha validation failed
+      const isCaptchaError = errorMessage.toLowerCase().includes('captcha') || 
+                            errorMessage.toLowerCase().includes('驗證碼');
+      if (isCaptchaError) {
+        await loadCaptcha();
+      }
     } finally {
       setLoading(false);
     }
@@ -198,7 +206,7 @@ export const Feedback: React.FC = () => {
           <div>
             <label htmlFor="captcha" className="block text-sm font-medium text-slate-700 mb-2">
               <ShieldCheck className="w-4 h-4 inline mr-2" />
-              驗證碼 *
+              Captcha *
             </label>
             <div className="flex items-center gap-3">
               <div className="flex-1">
@@ -210,7 +218,7 @@ export const Feedback: React.FC = () => {
                   value={formData.captcha_answer}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors uppercase"
-                  placeholder="請輸入圖中文字"
+                  placeholder="Enter the text in the image"
                   disabled={captchaLoading}
                   style={{ textTransform: 'uppercase' }}
                 />
@@ -224,7 +232,7 @@ export const Feedback: React.FC = () => {
                   />
                 ) : (
                   <div className="h-12 w-28 flex items-center justify-center border border-slate-300 rounded text-slate-500 text-sm">
-                    {captchaLoading ? '載入中...' : '無法載入'}
+                    {captchaLoading ? 'Loading...' : 'Failed to load'}
                   </div>
                 )}
                 <button

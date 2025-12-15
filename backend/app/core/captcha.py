@@ -38,8 +38,8 @@ def _cleanup() -> None:
 
 
 def _random_text(length: int = _CAPTCHA_LEN) -> str:
-    # Uppercase letters and digits without ambiguous characters
-    chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  # exclude 0, O, I, L, 1
+    # Uppercase letters (exclude O) and digits (exclude 0)
+    chars = "ABCDEFGHIJKLMNPQRSTUVWXYZ123456789"
     return "".join(random.choices(chars, k=length))
 
 
