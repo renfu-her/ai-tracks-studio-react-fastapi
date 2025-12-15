@@ -18,6 +18,14 @@
 - 解決前端顯示驗證碼圖片失敗的問題（之前返回空的 base64 字串）
 - 現在會正確生成並返回完整的 base64 圖片數據
 
+## 2025-12-15 15:36:01 - Captcha 字型放大
+
+### What changed
+- `backend/app/core/captcha.py`: 嘗試載入 `arial.ttf` 或 `DejaVuSans.ttf`，字級依高度自動放大（約 65% 高度）；若無字型仍會 fallback 至預設字型。
+
+### Notes
+- 文字會比之前顯眼，若要再調整大小可調整 `font_size = int(_HEIGHT * 0.65)`。
+
 ## 2025-12-15 14:51:01 - Added Captcha to Feedback Form 回饋表單新增驗證碼
 
 ### What changed

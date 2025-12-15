@@ -50,10 +50,20 @@ def _generate_image(text: str) -> str:
     draw = ImageDraw.Draw(image)
 
     # Try to use a default PIL font
+    # Choose font and size
+    font = None
+    font_size = int(_HEIGHT * 0.65)  # scale with height
     try:
-        font = ImageFont.load_default()
-    except Exception:  # pragma: no cover
-        font = None
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except Exception:
+        try:
+            font = ImageFont.truetype("DejaVuSans.ttf", font_size)
+        except Exception:
+            try:
+                # Default bitmap font (smaller)
+                font = ImageFont.load_default()
+            except Exception:  # pragma: no cover
+                font = None
 
     # Get text size (compatible with Pillow 10+)
     try:
