@@ -14,29 +14,56 @@ window.API_BASE = window.API_BASE || '';
 
 // Check authentication
 window.checkAuth = async function checkAuth() {
+    console.log('[checkAuth] Starting authentication check...');
     try {
         const response = await fetch('/api/admin/me', {
-            credentials: 'include'
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
         });
         
+        console.log('[checkAuth] Response status:', response.status, response.statusText);
+        
         if (!response.ok) {
-            console.error('Auth check failed:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('[checkAuth] API error:', response.status, errorText);
+            
             if (response.status === 401 || response.status === 403) {
+                console.log('[checkAuth] Unauthorized, redirecting to login');
                 window.location.href = '/backend/login';
+                return null;
             }
+            
+            // For other errors, return null but don't redirect
             return null;
         }
         
         const user = await response.json();
-        console.log('User profile loaded:', user);
+        console.log('[checkAuth] User profile loaded successfully:', user);
+        
+        // Validate user data
+        if (!user || typeof user !== 'object') {
+            console.error('[checkAuth] Invalid user data:', user);
+            return null;
+        }
+        
         return user;
     } catch (error) {
-        console.error('Auth check failed:', error);
-        // Only redirect on network errors, not on API errors
-        if (error.name === 'TypeError' || error.message.includes('fetch')) {
-            console.error('Network error, redirecting to login');
+        console.error('[checkAuth] Exception occurred:', error);
+        console.error('[checkAuth] Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        
+        // Only redirect on network errors
+        if (error.name === 'TypeError' && (error.message.includes('fetch') || error.message.includes('Failed to fetch'))) {
+            console.error('[checkAuth] Network error detected, redirecting to login');
             window.location.href = '/backend/login';
         }
+        
         return null;
     }
 };

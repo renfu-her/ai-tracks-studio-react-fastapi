@@ -124,22 +124,31 @@ function loadAdminHeader(pageTitle) {
  * Load current user information
  */
 async function loadCurrentUser() {
+    console.log('[template-loader] loadCurrentUser() called');
     try {
         const user = await checkAuth();
+        console.log('[template-loader] checkAuth() returned:', user);
+        
         if (user && user.email) {
+            console.log('[template-loader] Updating email elements with:', user.email);
             $('#userEmailText').text(user.email);
             // Also update #userEmail if it exists (for admin.html)
             if ($('#userEmail').length > 0) {
                 $('#userEmail').text(user.email);
+                console.log('[template-loader] Updated #userEmail');
+            }
+            if ($('#userEmailText').length > 0) {
+                console.log('[template-loader] Updated #userEmailText');
             }
         } else {
+            console.warn('[template-loader] No user data or email found');
             $('#userEmailText').text('無法載入');
             if ($('#userEmail').length > 0) {
                 $('#userEmail').text('無法載入');
             }
         }
     } catch (error) {
-        console.error('Failed to load user:', error);
+        console.error('[template-loader] Failed to load user:', error);
         $('#userEmailText').text('載入失敗');
         if ($('#userEmail').length > 0) {
             $('#userEmail').text('載入失敗');

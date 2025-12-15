@@ -333,19 +333,47 @@
     <script>
         let currentUser = null;
 
-        $(document).ready(async function() {
-            // Check auth and load user profile
+        // Load user profile function
+        async function loadUserProfile() {
+            console.log('[Profile] Starting to load user profile...');
+            const emailElement = $('#userEmail');
+            
+            if (emailElement.length === 0) {
+                console.error('[Profile] #userEmail element not found!');
+                return;
+            }
+            
             try {
+                console.log('[Profile] Calling checkAuth()...');
                 currentUser = await checkAuth();
+                console.log('[Profile] checkAuth() returned:', currentUser);
+                
                 if (currentUser && currentUser.email) {
-                    $('#userEmail').text(currentUser.email);
+                    console.log('[Profile] Setting email to:', currentUser.email);
+                    emailElement.text(currentUser.email);
+                    console.log('[Profile] Email updated successfully');
                 } else {
-                    $('#userEmail').text('無法載入');
+                    console.warn('[Profile] No user data or email found');
+                    emailElement.text('無法載入');
                 }
             } catch (error) {
-                console.error('Failed to load user profile:', error);
-                $('#userEmail').text('載入失敗');
+                console.error('[Profile] Failed to load user profile:', error);
+                emailElement.text('載入失敗');
             }
+        }
+
+        $(document).ready(async function() {
+            // Load user profile immediately
+            await loadUserProfile();
+            
+            // Also try again after a short delay to ensure DOM is ready
+            setTimeout(async () => {
+                const emailElement = $('#userEmail');
+                if (emailElement.text() === '載入中...' || emailElement.text() === '無法載入' || emailElement.text() === '載入失敗') {
+                    console.log('[Profile] Retrying profile load...');
+                    await loadUserProfile();
+                }
+            }, 500);
 
             // Setup navigation
             setupNavigation();

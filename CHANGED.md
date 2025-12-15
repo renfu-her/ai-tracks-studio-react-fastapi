@@ -1,5 +1,40 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-15 14:31:59 - Enhanced Profile API Loading with Better Error Handling 加強 Profile API 載入和錯誤處理
+
+### Enhanced Features 加強的功能
+
+#### Profile API 載入優化
+- ✅ 加強 `checkAuth()` 函數的錯誤處理和調試日誌
+- ✅ 改進 `loadUserProfile()` 函數，加入重試機制
+- ✅ 優化 `loadCurrentUser()` 函數，加入詳細的調試日誌
+- ✅ 確保 Profile 資料在頁面載入時正確顯示
+
+#### Files Modified 修改的文件
+- `backend/static/admin.html` - 改進 Profile 載入邏輯，加入重試機制和詳細日誌
+- `backend/static/js/admin.js` - 加強 `checkAuth()` 函數的錯誤處理和調試
+- `backend/static/js/template-loader.js` - 優化 `loadCurrentUser()` 函數，加入詳細日誌
+
+#### Changes 變更內容
+1. **admin.html**: 
+   - 創建獨立的 `loadUserProfile()` 函數，加入詳細的調試日誌
+   - 加入重試機制，確保 Profile 資料正確載入
+   - 檢查元素是否存在，避免錯誤
+   
+2. **admin.js**:
+   - 加強 `checkAuth()` 函數的錯誤處理
+   - 加入詳細的調試日誌，包括 API 響應狀態和錯誤詳情
+   - 改進錯誤判斷邏輯，只在真正的網路錯誤時重定向
+   
+3. **template-loader.js**:
+   - 優化 `loadCurrentUser()` 函數，加入詳細的調試日誌
+   - 確保同時更新 `#userEmailText` 和 `#userEmail` 元素
+
+#### Debugging 調試功能
+- 所有 Profile 相關函數都加入了 `[Profile]`、`[checkAuth]`、`[template-loader]` 前綴的日誌
+- 可以在瀏覽器控制台查看詳細的載入過程和錯誤訊息
+- 有助於排查 Profile 資料無法顯示的問題
+
 ## 2025-12-15 14:11:00 - Fixed Profile API Display Issue 修復 Profile API 顯示問題
 
 ### Fixed Issues 修復的問題
