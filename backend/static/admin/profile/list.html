@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12">
         <div class="admin-card mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
@@ -19,18 +19,10 @@
                     <input type="text" class="form-control" id="profileName" placeholder="輸入顯示名稱">
                 </div>
 
-                <hr>
-
-                <div class="mb-3">
-                    <label class="form-label">目前密碼</label>
-                    <input type="password" class="form-control" id="currentPassword" placeholder="變更密碼時必填">
-                    <div class="form-text">僅在更改密碼時需要填寫。</div>
-                </div>
-
                 <div class="mb-3">
                     <label class="form-label">新密碼</label>
                     <input type="password" class="form-control" id="newPassword" placeholder="輸入新密碼">
-                    <div class="form-text">至少 6 碼，若不更改密碼可留空。</div>
+                    <div class="form-text">至少 6 碼；若不更改密碼可留空。</div>
                 </div>
 
                 <div class="mb-3">
@@ -64,17 +56,12 @@
         event.preventDefault();
 
         const name = $('#profileName').val().trim();
-        const currentPassword = $('#currentPassword').val();
         const newPassword = $('#newPassword').val();
         const confirmPassword = $('#confirmPassword').val();
 
         if (newPassword || confirmPassword) {
             if (newPassword !== confirmPassword) {
                 showErrorToast('新密碼與確認密碼不一致');
-                return;
-            }
-            if (!currentPassword) {
-                showErrorToast('變更密碼需要填寫目前密碼');
                 return;
             }
             if (newPassword.length < 6) {
@@ -86,7 +73,6 @@
         const payload = {};
         if (name) payload.name = name;
         if (newPassword) {
-            payload.current_password = currentPassword;
             payload.new_password = newPassword;
         }
 
@@ -101,7 +87,6 @@
                 body: JSON.stringify(payload)
             });
             showSuccessToast('已更新個人資料');
-            $('#currentPassword').val('');
             $('#newPassword').val('');
             $('#confirmPassword').val('');
             await loadProfile();

@@ -18,7 +18,7 @@
 - `backend/static/js/admin.js`：強化 `checkAuth` 供 Profile 讀取使用
 
 ### Notes 注意事項
-- 更改密碼時必填目前密碼，且新密碼至少 6 碼並須與確認欄位一致
+- 更改密碼時不再需要目前密碼；新密碼至少 6 碼並須與確認欄位一致
 - Email 為唯讀欄位，不可修改
 
 ## 2025-12-15 14:31:59 - Enhanced Profile API Loading with Better Error Handling 加強 Profile API 載入和錯誤處理

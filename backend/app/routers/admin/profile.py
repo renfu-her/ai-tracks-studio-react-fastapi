@@ -31,9 +31,6 @@ class ProfileUpdateRequest(BaseModel):
     """Payload for updating profile. Email is immutable."""
 
     name: Optional[str] = Field(None, description="Display name")
-    current_password: Optional[str] = Field(
-        None, description="Current password, required when changing password"
-    )
     new_password: Optional[str] = Field(
         None, min_length=6, description="New password (min length 6)"
     )
@@ -62,7 +59,7 @@ async def update_profile(
 
     - Name can be updated directly.
     - Email is immutable.
-    - Password change requires current_password + new_password.
+    - Password change only needs new_password (no current_password required).
     """
     updated = False
 
@@ -73,18 +70,6 @@ async def update_profile(
 
     # Change password if requested
     if payload.new_password:
-        if not payload.current_password:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Current password is required to change password",
-            )
-
-        if not verify_password(payload.current_password, current_user.password_hash):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Current password is incorrect",
-            )
-
         current_user.password_hash = get_password_hash(payload.new_password)
         updated = True
 
