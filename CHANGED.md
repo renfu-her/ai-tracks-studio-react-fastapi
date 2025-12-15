@@ -21,6 +21,14 @@
 - 驗證碼為簡單加法題，10 分鐘有效，答題一次即失效
 - 回饋必須填寫正確驗證碼才會提交成功
 
+## 2025-12-15 15:02:23 - Frontend API base URL fallback 前端 API 網址回退機制
+
+### What changed
+- `frontend/api/config.ts`: 若未設定 `VITE_API_BASE_URL`，在瀏覽器自動使用 `window.location.origin`，避免生產環境預設連到 localhost。
+
+### Notes
+- 正式環境仍建議設定 `VITE_API_BASE_URL`，此回退僅作為安全網，避免 `Failed to fetch` 因錯誤主機。
+
 ## 2025-12-15 14:40:09 - Added Admin Profile Page (Name/Password, Email Read-only) 新增後台個人資料頁面（名稱/密碼可改，Email 唯讀）
 
 ### New Features 新增功能

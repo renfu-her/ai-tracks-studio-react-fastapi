@@ -10,6 +10,11 @@ const getApiBaseUrl = (): string => {
   if (env?.VITE_API_BASE_URL) {
     return env.VITE_API_BASE_URL;
   }
+
+  // Fallback to current origin in browser (useful in production)
+  if (typeof window !== 'undefined' && window?.location?.origin) {
+    return window.location.origin;
+  }
   
   // Default to localhost in development
   return 'http://localhost:8000';
