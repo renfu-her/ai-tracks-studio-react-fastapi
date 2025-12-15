@@ -76,6 +76,20 @@ function loadAdminSidebar(activePage) {
                         </li>
                     </ul>
                 </li>
+                <li class="nav-section expanded">
+                    <div class="nav-section-title">
+                        <span><i class="fas fa-user-cog me-2"></i> 帳號設定</span>
+                        <span class="nav-section-icon"><i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <ul class="nav-section-items list-unstyled">
+                        <li class="nav-item">
+                            <a href="/backend/profile" class="nav-link-item ${activePage === 'profile' ? 'active' : ''}">
+                                <span class="nav-icon"><i class="fas fa-id-badge"></i></span>
+                                <span>個人資料</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </nav>
     `;

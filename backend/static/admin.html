@@ -270,6 +270,20 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-section" id="accountSection">
+                        <div class="nav-section-title">
+                            <span><i class="fas fa-user-cog me-2"></i> 帳號設定</span>
+                            <span class="nav-section-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <ul class="nav-items list-unstyled">
+                            <li>
+                                <a href="#profile" class="nav-link-item" data-page="profile">
+                                    <span class="nav-icon"><i class="fas fa-id-badge"></i></span>
+                                    <span>個人資料</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
         </aside>
@@ -418,12 +432,21 @@
         }
 
         function setupNavigation() {
-            // Expand content section by default
+            // Expand content/account sections by default
             $('#contentSection').removeClass('collapsed');
+            $('#accountSection').removeClass('collapsed');
         }
 
         async function loadPage() {
-            const hash = window.location.hash.slice(1) || 'projects/list';
+            const pathModule = window.location.pathname.split('/').pop();
+            let hash = window.location.hash.slice(1);
+            if (!hash) {
+                if (pathModule === 'profile') {
+                    hash = 'profile/list';
+                } else {
+                    hash = 'projects/list';
+                }
+            }
             const [module, action = 'list', id] = hash.split('/');
 
             // Update active nav
@@ -436,7 +459,8 @@
                 'news': '最新消息',
                 'about': '關於我們',
                 'banners': 'Banner 管理',
-                'feedback': 'Feedback 管理'
+                'feedback': 'Feedback 管理',
+                'profile': '個人資料'
             };
             const pageTitle = titles[module] || 'Admin';
             $('#pageTitle').text(pageTitle + ' - AI-Tracks Studio Admin');

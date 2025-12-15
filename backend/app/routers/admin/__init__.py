@@ -1,7 +1,18 @@
 """Admin routers package."""
 
 from fastapi import APIRouter
-from app.routers.admin import login, logout, me, projects_admin, news_admin, about_admin, banner_admin, feedback_admin, upload
+from app.routers.admin import (
+    login,
+    logout,
+    me,
+    projects_admin,
+    news_admin,
+    about_admin,
+    banner_admin,
+    feedback_admin,
+    upload,
+    profile,
+)
 
 # Create main admin router
 router = APIRouter()
@@ -10,6 +21,7 @@ router = APIRouter()
 router.include_router(login.router, tags=["admin-auth"])
 router.include_router(logout.router, tags=["admin-auth"])
 router.include_router(me.router, tags=["admin-auth"])
+router.include_router(profile.router, tags=["admin-profile"])
 
 # Include CRUD routers
 router.include_router(projects_admin.router, tags=["admin-projects"])

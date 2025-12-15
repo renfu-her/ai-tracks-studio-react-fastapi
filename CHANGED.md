@@ -1,5 +1,26 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-15 14:40:09 - Added Admin Profile Page (Name/Password, Email Read-only) 新增後台個人資料頁面（名稱/密碼可改，Email 唯讀）
+
+### New Features 新增功能
+- ✅ 新增後台「個人資料」頁面，支援修改名稱與密碼（Email 不可修改）
+- ✅ 新增 Profile API：`GET /api/admin/profile`、`PUT /api/admin/profile`
+- ✅ 導覽列加入「帳號設定 / 個人資料」入口，可直接訪問 `/backend/profile`
+
+### Backend 後端
+- `backend/app/routers/admin/profile.py`：新增取得與更新個人資料的 API（需目前密碼才可改密碼）
+- `backend/app/routers/admin/__init__.py`：註冊 profile 路由
+
+### Frontend 前端
+- `backend/static/admin/profile/list.html`：個人資料表單（Email 只讀、名稱可改、密碼需目前密碼與確認新密碼）
+- `backend/static/admin.html`：加入帳號設定導航、profile 模組標題、支援 `/backend/profile` 直接進入
+- `backend/static/js/template-loader.js`：側邊欄加入個人資料入口
+- `backend/static/js/admin.js`：強化 `checkAuth` 供 Profile 讀取使用
+
+### Notes 注意事項
+- 更改密碼時必填目前密碼，且新密碼至少 6 碼並須與確認欄位一致
+- Email 為唯讀欄位，不可修改
+
 ## 2025-12-15 14:31:59 - Enhanced Profile API Loading with Better Error Handling 加強 Profile API 載入和錯誤處理
 
 ### Enhanced Features 加強的功能
