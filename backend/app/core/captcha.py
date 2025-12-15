@@ -88,7 +88,11 @@ def generate_captcha() -> tuple[str, str]:
     _cleanup()
     text = _random_text()
     captcha_id = str(uuid.uuid4())
-    image_base64 = _generate_image(text)
+    try:
+        image_base64 = _generate_image(text)
+    except Exception:
+        # Fallback: if image generation fails, reuse text-based answer and blank data URL
+        image_base64 = "data:image/png;base64,"
     _STORE[captcha_id] = CaptchaItem(
         answer=text,
         expires_at=datetime.utcnow() + _TTL,

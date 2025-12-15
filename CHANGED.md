@@ -64,6 +64,15 @@
 ### Notes
 - 修正 feedback 提交時的錯誤提示，避免因後端返回非 JSON 或解析失敗導致的重複讀取錯誤。
 
+## 2025-12-15 15:16:15 - Captcha 產生異常防護
+
+### What changed
+- `backend/app/core/captcha.py`: 圖片產生加上 fallback，若失敗回傳空 data URL 但仍儲存答案，避免未捕捉例外。
+- `backend/app/routers/feedback.py`: 產生 captcha 包 try/except，失敗回 500 並帶錯誤訊息。
+
+### Notes
+- 若環境有 Pillow/字型問題導致生成失敗，不會造成未捕捉例外；仍建議檢查日誌以排除根因。
+
 ## 2025-12-15 14:40:09 - Added Admin Profile Page (Name/Password, Email Read-only) 新增後台個人資料頁面（名稱/密碼可改，Email 唯讀）
 
 ### New Features 新增功能

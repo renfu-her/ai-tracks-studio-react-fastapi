@@ -28,8 +28,11 @@ class CaptchaResponse(BaseModel):
 @router.get("/captcha", response_model=CaptchaResponse)
 def get_feedback_captcha() -> CaptchaResponse:
     """Generate a new captcha for feedback form."""
-    captcha_id, image_base64 = generate_captcha()
-    return CaptchaResponse(captcha_id=captcha_id, image_base64=image_base64)
+    try:
+        captcha_id, image_base64 = generate_captcha()
+        return CaptchaResponse(captcha_id=captcha_id, image_base64=image_base64)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate captcha: {e}")
 
 
 @router.post("", response_model=FeedbackResponse, status_code=201)
