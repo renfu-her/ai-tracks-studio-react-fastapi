@@ -48,11 +48,13 @@ async function request<T>(
     
     // Handle non-2xx responses
     if (!response.ok) {
-      let errorData;
+      // Read body once to avoid "body stream already read"
+      const rawText = await response.text();
+      let errorData: any = rawText;
       try {
-        errorData = await response.json();
+        errorData = rawText ? JSON.parse(rawText) : rawText;
       } catch {
-        errorData = await response.text();
+        // keep raw text
       }
       
       throw new ApiError(

@@ -56,6 +56,14 @@
 ### Affected file
 - `backend/app/core/captcha.py`
 
+## 2025-12-15 15:13:45 - 修正前端錯誤處理避免重複讀取 body
+
+### What changed
+- `frontend/api/client.ts`: 非 2xx 回應時先讀取一次 response.text，再嘗試 JSON parse，避免 "Failed to execute 'text' on 'Response': body stream already read"。
+
+### Notes
+- 修正 feedback 提交時的錯誤提示，避免因後端返回非 JSON 或解析失敗導致的重複讀取錯誤。
+
 ## 2025-12-15 14:40:09 - Added Admin Profile Page (Name/Password, Email Read-only) 新增後台個人資料頁面（名稱/密碼可改，Email 唯讀）
 
 ### New Features 新增功能
