@@ -1,5 +1,26 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-15 14:51:01 - Added Captcha to Feedback Form 回饋表單新增驗證碼
+
+### What changed
+- ✅ 新增數學驗證碼 API：`GET /api/feedback/captcha` 取得驗證碼題目
+- ✅ 回饋提交需驗證碼：`POST /api/feedback` 需 `captcha_id` + `captcha_answer`
+- ✅ 前端回饋表單加入驗證碼輸入與重新取得按鈕
+
+### Backend
+- `backend/app/core/captcha.py`：簡易記憶體驗證碼（10 分鐘有效）
+- `backend/app/schemas/feedback.py`：FeedbackCreate 增加 `captcha_id`、`captcha_answer`
+- `backend/app/routers/feedback.py`：新增 captcha 端點並在提交時驗證
+
+### Frontend
+- `frontend/api/config.ts`：新增 FEEDBACK_CAPTCHA 端點
+- `frontend/api/feedback.ts`：加入 captcha 型別與 API（getCaptcha + submitFeedback）
+- `frontend/components/Feedback.tsx`：表單新增驗證碼輸入、刷新按鈕，提交時帶驗證碼
+
+### Notes
+- 驗證碼為簡單加法題，10 分鐘有效，答題一次即失效
+- 回饋必須填寫正確驗證碼才會提交成功
+
 ## 2025-12-15 14:40:09 - Added Admin Profile Page (Name/Password, Email Read-only) 新增後台個人資料頁面（名稱/密碼可改，Email 唯讀）
 
 ### New Features 新增功能

@@ -5,9 +5,10 @@
 
 // Get API base URL from environment or use default
 const getApiBaseUrl = (): string => {
+  const env = (import.meta as any)?.env;
   // Check for Vite environment variable
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  if (env?.VITE_API_BASE_URL) {
+    return env.VITE_API_BASE_URL;
   }
   
   // Default to localhost in development
@@ -32,6 +33,7 @@ export const API_ENDPOINTS = {
   NEWS: '/news',
   ABOUT: '/about',
   FEEDBACK: '/feedback',
+  FEEDBACK_CAPTCHA: '/feedback/captcha',
 } as const;
 
 /**

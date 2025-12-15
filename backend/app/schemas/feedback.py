@@ -14,8 +14,10 @@ class FeedbackBase(BaseModel):
 
 
 class FeedbackCreate(FeedbackBase):
-    """Schema for creating a new feedback."""
-    pass
+    """Schema for creating a new feedback (with captcha)."""
+    
+    captcha_id: str = Field(..., description="Captcha identifier")
+    captcha_answer: str = Field(..., description="Captcha answer")
 
 
 class FeedbackResponse(FeedbackBase):

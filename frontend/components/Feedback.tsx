@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { feedbackApi, type FeedbackCreate } from '../api';
-import { Send, Loader2, CheckCircle, AlertCircle, Mail, User, MessageSquare, FileText } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { feedbackApi, type FeedbackCreate, type CaptchaResponse } from '../api';
+import { Send, Loader2, CheckCircle, AlertCircle, Mail, User, MessageSquare, FileText, ShieldCheck, RefreshCw } from 'lucide-react';
 
 export const Feedback: React.FC = () => {
   const [formData, setFormData] = useState<FeedbackCreate>({
@@ -8,10 +8,14 @@ export const Feedback: React.FC = () => {
     email: '',
     subject: '',
     message: '',
+    captcha_id: '',
+    captcha_answer: '',
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captcha, setCaptcha] = useState<CaptchaResponse | null>(null);
+  const [captchaLoading, setCaptchaLoading] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -22,11 +26,39 @@ export const Feedback: React.FC = () => {
     if (error) setError(null);
   };
 
+  const loadCaptcha = async () => {
+    try {
+      setCaptchaLoading(true);
+      const data = await feedbackApi.getCaptcha();
+      setCaptcha(data);
+      setFormData((prev) => ({
+        ...prev,
+        captcha_id: data.captcha_id,
+        captcha_answer: '',
+      }));
+      if (error) setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load captcha');
+    } finally {
+      setCaptchaLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCaptcha();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setSuccess(false);
+
+    if (!formData.captcha_answer || !formData.captcha_id) {
+      setError('請完成驗證碼');
+      setLoading(false);
+      return;
+    }
 
     try {
       await feedbackApi.submitFeedback(formData);
@@ -37,7 +69,11 @@ export const Feedback: React.FC = () => {
         email: '',
         subject: '',
         message: '',
+        captcha_id: '',
+        captcha_answer: '',
       });
+      setCaptcha(null);
+      await loadCaptcha();
       // Clear success message after 5 seconds
       setTimeout(() => setSuccess(false), 5000);
     } catch (err) {
@@ -154,6 +190,41 @@ export const Feedback: React.FC = () => {
               className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors resize-none"
               placeholder="Tell us what's on your mind..."
             />
+          </div>
+
+          {/* Captcha */}
+          <div>
+            <label htmlFor="captcha" className="block text-sm font-medium text-slate-700 mb-2">
+              <ShieldCheck className="w-4 h-4 inline mr-2" />
+              驗證碼 *
+            </label>
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  id="captcha"
+                  name="captcha_answer"
+                  required
+                  value={formData.captcha_answer}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors"
+                  placeholder={captcha?.question ? `請回答：${captcha.question}` : '載入驗證碼中...'}
+                  disabled={captchaLoading}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={loadCaptcha}
+                className="p-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+                disabled={captchaLoading}
+                aria-label="Refresh captcha"
+              >
+                <RefreshCw className={`w-5 h-5 ${captchaLoading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+            {captcha?.question && (
+              <p className="text-sm text-slate-600 mt-2">問題：{captcha.question}</p>
+            )}
           </div>
 
           {/* Submit Button */}
