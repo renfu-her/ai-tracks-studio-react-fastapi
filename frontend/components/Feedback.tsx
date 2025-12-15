@@ -208,23 +208,33 @@ export const Feedback: React.FC = () => {
                   value={formData.captcha_answer}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-colors"
-                  placeholder={captcha?.question ? `請回答：${captcha.question}` : '載入驗證碼中...'}
+                  placeholder="請輸入圖中文字"
                   disabled={captchaLoading}
                 />
               </div>
-              <button
-                type="button"
-                onClick={loadCaptcha}
-                className="p-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
-                disabled={captchaLoading}
-                aria-label="Refresh captcha"
-              >
-                <RefreshCw className={`w-5 h-5 ${captchaLoading ? 'animate-spin' : ''}`} />
-              </button>
+              <div className="flex items-center gap-2">
+                {captcha?.image_base64 ? (
+                  <img
+                    src={captcha.image_base64}
+                    alt="captcha"
+                    className="h-12 w-28 rounded border border-slate-300 object-contain bg-white"
+                  />
+                ) : (
+                  <div className="h-12 w-28 flex items-center justify-center border border-slate-300 rounded text-slate-500 text-sm">
+                    {captchaLoading ? '載入中...' : '無法載入'}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={loadCaptcha}
+                  className="p-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
+                  disabled={captchaLoading}
+                  aria-label="Refresh captcha"
+                >
+                  <RefreshCw className={`w-5 h-5 ${captchaLoading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
-            {captcha?.question && (
-              <p className="text-sm text-slate-600 mt-2">問題：{captcha.question}</p>
-            )}
           </div>
 
           {/* Submit Button */}

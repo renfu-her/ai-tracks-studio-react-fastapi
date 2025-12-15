@@ -28,7 +28,7 @@ export interface FeedbackResponse {
 
 export interface CaptchaResponse {
   captcha_id: string;
-  question: string;
+  image_base64: string;
 }
 
 export const feedbackApi = {

@@ -29,6 +29,33 @@
 ### Notes
 - 正式環境仍建議設定 `VITE_API_BASE_URL`，此回退僅作為安全網，避免 `Failed to fetch` 因錯誤主機。
 
+## 2025-12-15 15:09:17 - Feedback 圖形驗證碼改版
+
+### What changed
+- 改為圖片驗證碼（隨機 4 碼字母/數字 + 雜訊），有效期 10 分鐘，單次使用後失效。
+- `GET /api/feedback/captcha` 現在回傳 `captcha_id` 與 `image_base64`，前端直接顯示圖片。
+- 提交 `POST /api/feedback` 仍需 `captcha_id`、`captcha_answer`，比對不分大小寫。
+
+### Backend
+- `backend/app/core/captcha.py`: 生成 PNG captcha（Pillow），存 base64；驗證改為字串比對。
+- `backend/app/routers/feedback.py`: captcha 回傳圖片，提交時沿用驗證。
+
+### Frontend
+- `frontend/api/feedback.ts`: CaptchaResponse 改為 `image_base64`。
+- `frontend/components/Feedback.tsx`: 顯示圖片驗證碼、刷新按鈕，placeholder 改為「請輸入圖中文字」。
+
+### Notes
+- 若需不同尺寸/字元長度，可調整 `_WIDTH/_HEIGHT/_CAPTCHA_LEN`（captcha.py）。
+
+## 2025-12-15 15:10:34 - Captcha 字元集與長度調整
+
+### What changed
+- Captcha 長度改為 6 碼。
+- 字元集改為大寫且排除易混淆字元（0, O, I, L, 1），實際使用 `ABCDEFGHJKMNPQRSTUVWXYZ23456789`。
+
+### Affected file
+- `backend/app/core/captcha.py`
+
 ## 2025-12-15 14:40:09 - Added Admin Profile Page (Name/Password, Email Read-only) 新增後台個人資料頁面（名稱/密碼可改，Email 唯讀）
 
 ### New Features 新增功能

@@ -22,14 +22,14 @@ class CaptchaResponse(BaseModel):
     """Response model for captcha generation."""
 
     captcha_id: str
-    question: str
+    image_base64: str
 
 
 @router.get("/captcha", response_model=CaptchaResponse)
 def get_feedback_captcha() -> CaptchaResponse:
     """Generate a new captcha for feedback form."""
-    captcha_id, question = generate_captcha()
-    return CaptchaResponse(captcha_id=captcha_id, question=question)
+    captcha_id, image_base64 = generate_captcha()
+    return CaptchaResponse(captcha_id=captcha_id, image_base64=image_base64)
 
 
 @router.post("", response_model=FeedbackResponse, status_code=201)
