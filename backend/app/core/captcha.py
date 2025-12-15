@@ -55,13 +55,28 @@ def _generate_image(text: str) -> str:
     except Exception:  # pragma: no cover
         font = None
 
-    # Slightly randomize text position
-    text_width, text_height = draw.textsize(text, font=font)
-    x = (_WIDTH - text_width) / 2 + random.randint(-5, 5)
-    y = (_HEIGHT - text_height) / 2 + random.randint(-3, 3)
+    # Get text size (compatible with Pillow 10+)
+    try:
+        # Pillow 10+ uses textbbox
+        if hasattr(draw, 'textbbox'):
+            bbox = draw.textbbox((0, 0), text, font=font)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
+        else:
+            # Fallback for older Pillow versions
+            text_width, text_height = draw.textsize(text, font=font)
+    except (AttributeError, TypeError) as e:
+        # If both fail, use estimated size
+        text_width = len(text) * 10
+        text_height = 20
 
-    # Draw text with random color
-    draw.text((x, y), text, fill=(random.randint(0, 120), random.randint(0, 120), random.randint(0, 120)), font=font)
+    # Slightly randomize text position
+    x = max(5, (_WIDTH - text_width) / 2 + random.randint(-5, 5))
+    y = max(5, (_HEIGHT - text_height) / 2 + random.randint(-3, 3))
+
+    # Draw text with random color (darker for better visibility)
+    text_color = (random.randint(0, 100), random.randint(0, 100), random.randint(0, 100))
+    draw.text((x, y), text, fill=text_color, font=font)
 
     # Add noise lines
     for _ in range(6):
@@ -69,11 +84,25 @@ def _generate_image(text: str) -> str:
         end = (random.randint(0, _WIDTH), random.randint(0, _HEIGHT))
         draw.line([start, end], fill=(random.randint(100, 200), random.randint(100, 200), random.randint(100, 200)), width=1)
 
+    # Add some noise dots
+    for _ in range(20):
+        x_dot = random.randint(0, _WIDTH)
+        y_dot = random.randint(0, _HEIGHT)
+        draw.point((x_dot, y_dot), fill=(random.randint(150, 255), random.randint(150, 255), random.randint(150, 255)))
+
     # Save to base64
     buffer = io.BytesIO()
     image.save(buffer, format="PNG")
     image_bytes = buffer.getvalue()
+    
+    if not image_bytes:
+        raise ValueError("Failed to generate image bytes")
+    
     base64_str = base64.b64encode(image_bytes).decode("utf-8")
+    
+    if not base64_str:
+        raise ValueError("Failed to encode image to base64")
+    
     return f"data:image/png;base64,{base64_str}"
 
 
@@ -84,15 +113,24 @@ def generate_captcha() -> tuple[str, str]:
     Returns:
         captcha_id: Unique identifier
         image_base64: Captcha image in base64 data URL
+
+    Raises:
+        Exception: If image generation fails
     """
     _cleanup()
     text = _random_text()
     captcha_id = str(uuid.uuid4())
     try:
         image_base64 = _generate_image(text)
-    except Exception:
-        # Fallback: if image generation fails, reuse text-based answer and blank data URL
-        image_base64 = "data:image/png;base64,"
+        # Verify that base64 data is not empty
+        if not image_base64 or image_base64 == "data:image/png;base64,":
+            raise ValueError("Generated empty captcha image")
+    except Exception as e:
+        # Log error for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to generate captcha image: {e}", exc_info=True)
+        raise
     _STORE[captcha_id] = CaptchaItem(
         answer=text,
         expires_at=datetime.utcnow() + _TTL,

@@ -1,5 +1,23 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-15 15:21:46 - Fixed Captcha Image Generation Issue 修復驗證碼圖片生成問題
+
+### What changed
+- ✅ 修復 Pillow 10+ 相容性問題：`textsize()` 已棄用，改用 `textbbox()` 並加入 fallback
+- ✅ 改進錯誤處理：圖片生成失敗時會記錄詳細錯誤並拋出異常，而非返回空字串
+- ✅ 增強圖片生成：加入噪點點陣，改善文字位置計算，確保 base64 編碼正確
+
+### Backend
+- `backend/app/core/captcha.py`: 
+  - 修復 `textsize()` 相容性問題，支援 Pillow 10+ 的 `textbbox()`
+  - 改進錯誤處理，確保生成失敗時拋出異常而非返回空 base64
+  - 加入驗證確保 base64 編碼不為空
+  - 改善文字位置計算，避免超出邊界
+
+### Notes
+- 解決前端顯示驗證碼圖片失敗的問題（之前返回空的 base64 字串）
+- 現在會正確生成並返回完整的 base64 圖片數據
+
 ## 2025-12-15 14:51:01 - Added Captcha to Feedback Form 回饋表單新增驗證碼
 
 ### What changed
