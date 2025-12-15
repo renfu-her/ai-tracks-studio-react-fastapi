@@ -288,7 +288,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown" style="min-width: 200px;">
                         <li class="px-3 py-2 border-bottom">
-                            <div class="small text-muted">登入身分</div>
+                            <div class="small text-muted">登入身份</div>
                             <div class="fw-bold" id="userEmail">載入中...</div>
                         </li>
                         <li><hr class="dropdown-divider"></li>
@@ -334,10 +334,17 @@
         let currentUser = null;
 
         $(document).ready(async function() {
-            // Check auth
-            currentUser = await checkAuth();
-            if (currentUser) {
-                $('#userEmail').text(currentUser.email);
+            // Check auth and load user profile
+            try {
+                currentUser = await checkAuth();
+                if (currentUser && currentUser.email) {
+                    $('#userEmail').text(currentUser.email);
+                } else {
+                    $('#userEmail').text('無法載入');
+                }
+            } catch (error) {
+                console.error('Failed to load user profile:', error);
+                $('#userEmail').text('載入失敗');
             }
 
             // Setup navigation

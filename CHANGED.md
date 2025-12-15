@@ -1,5 +1,36 @@
 # CHANGED.md - 更新紀錄 / Change Log
 
+## 2025-12-15 14:11:00 - Fixed Profile API Display Issue 修復 Profile API 顯示問題
+
+### Fixed Issues 修復的問題
+
+#### Profile API 顯示問題
+- ✅ 修正 `admin.html` 中的文字顯示（從"登入身分"改為"登入身份"）
+- ✅ 優化前端載入邏輯，加入錯誤處理機制
+- ✅ 修正 `template-loader.js` 中的元素 ID 處理，確保 Profile 資料正確顯示
+- ✅ 優化 `checkAuth()` 函數，加入更詳細的錯誤處理和日誌記錄
+
+#### Files Modified 修改的文件
+- `backend/static/admin.html` - 修正文字顯示並優化用戶資料載入邏輯
+- `backend/static/js/template-loader.js` - 修正元素 ID 處理並加入錯誤處理
+- `backend/static/js/admin.js` - 優化 `checkAuth()` 函數的錯誤處理
+
+#### Changes 變更內容
+1. **admin.html**: 
+   - 修正下拉選單中的文字（"登入身分" → "登入身份"）
+   - 加入 try-catch 錯誤處理，確保 Profile 載入失敗時顯示適當訊息
+   
+2. **template-loader.js**:
+   - 修正 `loadCurrentUser()` 函數，同時更新 `#userEmailText` 和 `#userEmail` 元素
+   - 加入錯誤處理，顯示"無法載入"或"載入失敗"訊息
+   
+3. **admin.js**:
+   - 優化 `checkAuth()` 函數，加入更詳細的日誌記錄
+   - 改進錯誤處理邏輯，只在網路錯誤時重定向到登入頁面
+
+#### Profile API Endpoint
+- `/api/admin/me` - 返回當前登入管理員的資料（id, name, email, role, status）
+
 ## 2025-12-13 16:48:07 TST - Created Feedback Table Migration Scripts 創建 Feedback 表遷移腳本
 
 ### Created Migration Scripts 創建遷移腳本

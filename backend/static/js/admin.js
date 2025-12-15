@@ -20,15 +20,23 @@ window.checkAuth = async function checkAuth() {
         });
         
         if (!response.ok) {
-            window.location.href = '/backend/login';
+            console.error('Auth check failed:', response.status, response.statusText);
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '/backend/login';
+            }
             return null;
         }
         
         const user = await response.json();
+        console.log('User profile loaded:', user);
         return user;
     } catch (error) {
         console.error('Auth check failed:', error);
-        window.location.href = '/backend/login';
+        // Only redirect on network errors, not on API errors
+        if (error.name === 'TypeError' || error.message.includes('fetch')) {
+            console.error('Network error, redirecting to login');
+            window.location.href = '/backend/login';
+        }
         return null;
     }
 };

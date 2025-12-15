@@ -101,7 +101,7 @@ function loadAdminHeader(pageTitle) {
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 200px;">
                 <li class="px-3 py-2 border-bottom">
-                    <div class="small text-muted">登入身分</div>
+                    <div class="small text-muted">登入身份</div>
                     <div class="fw-bold" id="userEmailText">載入中...</div>
                 </li>
                 <li><hr class="dropdown-divider"></li>
@@ -126,11 +126,24 @@ function loadAdminHeader(pageTitle) {
 async function loadCurrentUser() {
     try {
         const user = await checkAuth();
-        if (user) {
+        if (user && user.email) {
             $('#userEmailText').text(user.email);
+            // Also update #userEmail if it exists (for admin.html)
+            if ($('#userEmail').length > 0) {
+                $('#userEmail').text(user.email);
+            }
+        } else {
+            $('#userEmailText').text('無法載入');
+            if ($('#userEmail').length > 0) {
+                $('#userEmail').text('無法載入');
+            }
         }
     } catch (error) {
         console.error('Failed to load user:', error);
+        $('#userEmailText').text('載入失敗');
+        if ($('#userEmail').length > 0) {
+            $('#userEmail').text('載入失敗');
+        }
     }
 }
 
